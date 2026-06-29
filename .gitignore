@@ -30,5 +30,5 @@ logs/
 .DS_Store
 
 #doc
-docs/*
-!docs/map.md
+docs/000-Architecture Governance.md
+docs/temp.md
