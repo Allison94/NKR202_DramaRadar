@@ -1,0 +1,34 @@
+# Virtual Environment
+.env
+.envrc
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment Variables
+.env
+
+# SSH Keys
+*.pem
+
+# Python
+__pycache__/
+*.py[codz]
+*$py.class
+
+#IDE
+.vscode
+
+# Logs
+logs/
+*.log
+
+# mac
+.DS_Store
+
+#doc
+docs/*
+! docs/map.md
