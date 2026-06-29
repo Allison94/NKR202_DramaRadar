@@ -31,4 +31,4 @@ logs/
 
 #doc
 docs/*
-! docs/map.md
+!docs/map.md
