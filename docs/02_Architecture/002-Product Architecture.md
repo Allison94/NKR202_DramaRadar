@@ -13,7 +13,7 @@
 
 ## Figure 2-1 Overall Architecture
 
-![alt text](../diagrams/image-2.png)
+![alt text](../diagrams/OverallArchitecture.png)
 Note：描述 Service 間的依賴關係，並非實際呼叫流程。
 
 # 3. Domain Responsibility
@@ -31,11 +31,11 @@ Note：描述 Service 間的依賴關係，並非實際呼叫流程。
 # 4. Data Flow Diagram
 
 ## Figure 4-1 Data Flow
-![alt text](../diagrams/image-1.png)
+![alt text](../diagrams/DataFlow.png)
 # 5. Business Workflow Diagram
 
 ## Figure 5-1 Daily Workflow
-![alt text](../diagrams/image-5.png)
+![alt text](../diagrams/DailyWorkflow.png)
 > **Note**
 >
 > 本圖描述 DramaRadar 每日執行流程與各 Service 之業務依賴關係。
@@ -45,7 +45,7 @@ Note：描述 Service 間的依賴關係，並非實際呼叫流程。
 # 6. Production Architecture
 
 ## Figure 6-1 Production Architecture
-![alt text](../diagrams/image.png)
+![alt text](../diagrams/ProductionArchitecture.png)
 # 7. Business Decision Flow
 > 缺 待補
 

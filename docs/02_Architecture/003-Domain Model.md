@@ -15,7 +15,7 @@
 # 2. Domain Model
 
 ## Figure 2-1 Domain Model
-![alt text](../diagrams/image-3.png)
+![alt text](../diagrams/DomainModel.png)
 
 # 3. Entity Definition
 
