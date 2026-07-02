@@ -1,0 +1,36 @@
+{
+  "name": "DRAMARADAR Python UV DEV",
+  
+  // 用 docker-compose 啟動多容器
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/nkr202_dramaradar",
+  //github ssh key login
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  
+  // 所有服務的port [FastAPI, Streamlit, Airflow, Postgres]
+  "forwardPorts": [8000, 8501, 8080, 5432],
+  
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+        "python.analysis.extraPaths": ["${workspaceFolder}/.venv/lib/python3.12/site-packages"]
+      },
+      "extensions": [//VSCODE EXTENSION
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "vivaxy.vscode-conventional-commits",//git push comment 快速功能
+        "oderwat.indent-rainbow",//行線提示
+        "shd101wyy.markdown-preview-enhanced",//markdown預覽工具
+        "usernamehw.errorlens",//錯誤提示工具,
+        "eamodio.gitlens",//git lens觀察git紀錄
+        "mtxr.sqltools",// 資料庫可視化工具
+        "mtxr.sqltools-driver-pg" // Postgres 的資料庫工具
+      ]
+    }
+  },
+  "remoteUser": "vscode"
+}

@@ -1,0 +1,14 @@
+[project]
+name = "nkr202_dramaradar"
+version = "0.1.0"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
+    "pandas>=2.2.0",
+    "requests>=2.31.0",
+    "streamlit>=1.32.0",
+    "folium>=0.16.0",          # 火焰地圖
+    "psycopg2-binary>=2.9.9",  # 連線 PostgreSQL 必備
+    "google-genai>=0.1.0",     # Gemini 官方最新 SDK
+    "apache-airflow>=2.8.0"    # 本地開發測試 Airflow 邏輯
+]

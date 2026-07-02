@@ -1,0 +1,33 @@
+services:
+  # 服務 A：程式碼執行環境 (VS Code 會連進這裡)
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    volumes:
+      # 將本機的專案目錄，照鏡子般同步掛載到 Docker 內部的同名全小寫資料夾
+      - ..:/nkr202_dramaradar:cached
+    # 保持容器在背景運作不退出
+    command: sleep infinity
+    environment:
+      # 設定資料庫連線字串，讓 Python 程式碼可以直接連到隔壁的 db 容器
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      - db
+
+  # 服務 B：本地的 PostgreSQL 資料庫
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      # 建立一個虛擬硬碟，確保資料庫重啟時，爬蟲進去的資料不會不見
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
