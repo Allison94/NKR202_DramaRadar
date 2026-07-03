@@ -2,13 +2,28 @@
 name = "nkr202_dramaradar"
 version = "0.1.0"
 dependencies = [
+    # 網頁後端與前端展示
     "fastapi>=0.110.0",
     "uvicorn>=0.28.0",
+    "streamlit>=1.32.0",
+    "folium>=0.16.0", # 火焰地圖視覺化
+
+    # 大數據清洗與爬蟲
     "pandas>=2.2.0",
     "requests>=2.31.0",
-    "streamlit>=1.32.0",
-    "folium>=0.16.0",          # 火焰地圖
-    "psycopg2-binary>=2.9.9",  # 連線 PostgreSQL 必備
-    "google-genai>=0.1.0",     # Gemini 官方最新 SDK
-    "apache-airflow>=2.8.0"    # 本地開發測試 Airflow 邏輯
+    "beautifulsoup4>=4.12.0", # HTML網頁結構解析
+    "lxml>=5.1.0", # 加速網頁解析的核心引擎
+    "thefuzz>=0.22.0", # 秒速計算文字相似度，精準排除>=80% 重複店家與公關發言
+    "python-Levenshtein>=0.25.0", # 加速thefuzz運算，爬蟲大數據必備
+
+    # API 串接與 LLM
+    "google-genai>=0.1.0", # Gemini官方最新SDK
+
+    # 資料庫連線與資安管理
+    "psycopg2-binary>=2.9.9", # 連線PostgreSQL驅動
+    "sqlalchemy>=2.0.0", # 高階ORM，方便管理place_id與is_hidden欄位
+    "python-dotenv>=1.0.1", # 讓Python程式能讀取本機.env機密密碼本
+
+    # 排程定時更新
+    "apache-airflow>=2.8.0" # 本地開發測試Airflow邏輯
 ]

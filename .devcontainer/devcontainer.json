@@ -9,7 +9,9 @@
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
   },
-  
+
+  "postCreateCommand": "uv sync",//自動安裝pyproject.toml內的套件
+
   // 所有服務的port [FastAPI, Streamlit, Airflow, Postgres]
   "forwardPorts": [8000, 8501, 8080, 5432],
   
