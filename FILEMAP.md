@@ -13,6 +13,7 @@ nkr202_dramaradar/
 ├── Dockerfile              <-- 以Python 3.12+uv為基底，加裝Git憑證與Postgres驅動
 ├── pyproject.toml          <-- 定義專案所需的套件
 ├── .gitignore              <-- 設定git排除上傳內容
+├── .dockerignore           <-- 設定docker排除內容
 └── docs                    <-- 專案所有架構文件
 
 ```

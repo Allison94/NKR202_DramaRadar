@@ -1,75 +1,58 @@
-# R001-Appify_API
+---
+title: R001-Apify API (Google Maps Extractor)
 
-* **Project Name**：DramaRadar
-* **Version**：v1.0
-* **Date**：2026/6/30
+---
+
+# R001-Apify API (Google Maps Extractor)
+* **Version**：v1.1
+* **Date**：2026/7/4
 * **Researcher**：Allison
 
+# 1. API Overview
+
+| Item                   | Description                                                     |
+| ---------------------- | --------------------------------------------------------------- |
+| Provider               | [Compass](https://apify.com/compass)                            |
+| API Name               | Apify API (Google Maps Extractor)                               |
+| Official Documentation | [Link](https://apify.com/compass/google-maps-extractor)         |
+| Authentication         |API Token 存.env                                        |
+| Pricing                | [Link](https://apify.com/compass/google-maps-extractor/pricing) |
+#### Usage Limits
+- 使用 location 搜尋一次最多約120筆 
+- 建議改用 city + searchStrings 
+- 大量資料需拆批搜尋
+
+#### Implementation
+- python 安裝 apify_client
 ---
 
-# 1. Purpose
+# 3. Request Analysis
 
-說明研究此 API 的目的，以及它在 DramaRadar 中的用途。
-
-# 2. API Overview
-
-| Item                   | Value |
-| ---------------------- | ----- |
-| API Name               |  Apify API(Google Maps Extractor)     |
-| Provider               |Compass|
-| Official Documentation |  [Link](https://apify.com/compass/google-maps-extractor)   |
-| Base URL               | compass/google-maps-extractor     |
-| Pricing                | [Link](https://apify.com/compass/google-maps-extractor/pricing)|
-
----
-
-# 3. API Flow
-
-說明此 API 的完整呼叫流程。
-
-```text
-DramaRadar
-      │
-      ▼
-Install SDK (apify-client)
-      │
-      ▼
-Request
-      │
-      ▼
-Receive Response
-      │
-      ▼
-Processing
-```
-
----
-
-# 4. Request
-
-## Query Parameters / Request Body
+## Required Parameters
 
 | Parameter | 資料型別 | 範例  | Required| Description |
 | --- | --- | --- | --- | --- |
 | `searchStringsArray` | `string[]` | `["restaurant"]` | ✔   | 搜尋關鍵字，可放多個，例如 `restaurant`、`hotel`、`coffee`。 |
-| `locationQuery` | `string` | `"New York, USA"` | ✖   | 搜尋地區，可輸入城市、國家或完整地址。 |
 | `maxCrawledPlacesPerSearch` | `number` | `50` | ✖   | 每個搜尋關鍵字最多抓取的 Google Maps 地點數量。 |
 | `language` | `string` | `"en"` | ✖   | Google Maps 搜尋語言，例如 `en`、`zh-TW`。 |
 | `categoryFilterWords` | `string[]` | `["pizza","italian"]` | ✖   | 類別過濾，只保留符合這些分類的店家。 |
 | `searchMatching` | `string` | `"all"` | ✖   | 關鍵字匹配方式，通常為 `all` 或 `any`。`all` 表示需符合所有條件。 |
 | `placeMinimumStars` | `number \| string` | `4.5` | ✖   | 最低 Google 評分，例如 `4.5`。空字串代表不限制。 |
-| `skipClosedPlaces` | `boolean` | `false` | ✖   | 是否略過已永久停業或暫停營業店家。 |
 | `scrapePlaceDetailPage` | `boolean` | `false` | ✖   | 是否進一步抓取店家詳細頁資訊（較慢）。 |
-| `maximumLeadsEnrichmentRecords` | `number` | `0` | ✖   | 最多進行 Lead Enrichment 的筆數。 |
 | `countryCode` | `string` | `"US"` | ✖   | 國家代碼（ISO 3166-1 Alpha-2）。 |
 | `city` | `string` | `"New York"` | ✖   | 城市名稱。 |
+
+## Optional Parameters
+| Parameter | 資料型別 | 範例  | Required| Description |
+| --- | --- | --- | --- | --- |
 | `state` | `string` | `"New York"` | ✖   | 州、省或行政區。 |
+| `skipClosedPlaces` | `boolean` | `false` | ✖   | 是否略過已永久停業或暫停營業店家。 |
 | `postalCode` | `string` | `"10001"` | ✖   | 郵遞區號。 |
-| `customGeolocation.coordinates` | `number[]` | `[-73.9857,40.7484]` | ✖   | 經緯度座標，格式為 `[longitude, latitude]`。 |
 | `startUrls` | `object[]` | `[{"url":"https://www.google.com/maps/..."}]` | ✖   | 從指定 Google Maps URL 開始爬取，而不是使用搜尋關鍵字。 |
 | `startUrls[].url` | `string` | `"https://www.google.com/maps/place/..."` | ✖   | Google Maps 地點、搜尋或列表 URL。 |
+| `customGeolocation.coordinates` | `number[]` | `[-73.9857,40.7484]` | ✖   | 經緯度座標，格式為 `[longitude, latitude]`。 |
 
-## Sample Request
+## Request Example
 
 ```json=
 //    ✖不要用locationQuery 篩選資料，這個一次只能抓120筆
@@ -83,17 +66,18 @@ Processing
   "city": "Taipei",
   "maxCrawledPlacesPerSearch": 99999,
   "scrapePlaceDetailPage": true, //如果使用city抓法這欄必填
-  "language": "zh-TW"
+  "language": "zh-TW",
+  "placeMinimumStars":4.5
 }
 ```
 
-# 5. Response
+# 4. Response Analysis
 
-## Sample Response
-資料量過大，自行參考官方output-schema
-https://apify.com/compass/google-maps-extractor/output-schema
-
+## Response Structure
+[OutPut Schema](https://apify.com/compass/google-maps-extractor/output-schema)
 ## Important Fields
+
+僅列出 DramaRadar 會使用的欄位。
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -103,79 +87,101 @@ https://apify.com/compass/google-maps-extractor/output-schema
 | categories | string[] | ✔ | All categories |
 | description | string | ✖ | Description of the place |
 | address | string | ✖ | Full address |
-| street | string | ✖ | Street address |
-| city | string | ✖ | City |
-| state | string | ✖ | State / Province |
-| postalCode | string | ✖ | Postal code |
-| countryCode | string | ✖ | Country code (ISO-3166-1 Alpha-2) |
-| location.lat | number | ✖ | Latitude |
-| location.lng | number | ✖ | Longitude |
-| phone | string | ✖ | Formatted phone number |
-| phoneUnformatted | string | ✖ | Phone number with country code |
-| website | string | ✖ | Official website |
 | url | string | ✔ | Google Maps URL |
 | imageUrl | string | ✖ | Main image URL |
-| imagesCount | number | ✔ | Total number of images |
-| price | string | ✖ | Price level ($ ~ $$$$) |
-| openingHours | OpeningHour[] | ✖ | Business opening hours |
-| additionalInfo | object | ✖ | Amenities and business information |
 | totalScore | number | ✖ | Average Google rating |
 | reviewsCount | number | ✖ | Total number of reviews |
-| reviewsDistribution | ReviewDistribution | ✖ | Distribution of review ratings |
-| reviewsTags | Tag[] | ✖ | Frequently mentioned review keywords |
-| placesTags | Tag[] | ✖ | Place characteristic tags |
-| menu | string | ✖ | Restaurant menu URL |
-| reserveTableUrl | string | ✖ | Table reservation URL |
-| orderOnline | OrderOnline | ✖ | Online ordering information |
-| popularTimesLiveText | string | ✖ | Current popularity description |
-| popularTimesLivePercent | number | ✖ | Current popularity percentage |
-| popularTimesHistogram | object | ✖ | Popular times histogram |
-| permanentlyClosed | boolean | ✔ | Whether the place is permanently closed |
-| temporarilyClosed | boolean | ✔ | Whether the place is temporarily closed |
-| scrapedAt | string (ISO-8601) | ✔ | Timestamp when the data was scraped |
+| reviewsDistribution | ReviewDistribution | ✖ | 評論星等分布 |
+| permanentlyClosed | boolean | ✔ | 是否歇業 |
+| temporarilyClosed | boolean | ✔ | 是否暫停營業 |
+| scrapedAt | string (ISO-8601) | ✔ | 資料抓取時間 |
 
-# 7. Error Handling
+`其他欄位全存入raw_json 不ETL`
 
-| HTTP Code | Meaning | Handling |
-| --------- | ------- | -------- |
-|           |         |          |
+## Response Example
+```json=
+{
+  "title": "Din Tai Fung Taipei 101",
+  "placeId": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+  "categoryName": "Taiwanese restaurant",
+  "categories": [
+    "Taiwanese restaurant",
+    "Dim sum restaurant",
+    "Restaurant"
+  ],
+  "description": "A popular Taiwanese restaurant famous for its xiaolongbao and traditional dishes.",
+  "address": "B1, Taipei 101, No. 7, Section 5, Xinyi Rd, Xinyi District, Taipei City 110, Taiwan",
+  "url": "https://maps.google.com/?cid=1234567890123456789",
+  "imageUrl": "https://lh3.googleusercontent.com/p/AF1QipMockImage123=w800-h600",
+  "totalScore": 4.7,
+  "reviewsCount": 18432,
+  "reviewsDistribution": {
+    "oneStar": 143,
+    "twoStar": 218,
+    "threeStar": 694,
+    "fourStar": 3951,
+    "fiveStar": 13426
+  },
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "scrapedAt": "2026-07-04T15:42:31.128Z"
+}
+```
+# 5. Data Mapping
 
-# 8. Design Decisions
+```
+    API Response
 
-根據研究結果所做出的設計決策。
+    ↓
 
-* 使用 `placeId` 作為 Store 的 External Identifier。
-* Source Data 保留完整 JSON。
-* Application Data 僅保存系統實際使用欄位。
+    原始資料(raw_json)存入SQL
 
-# 9. Open Questions
+    ↓
 
-目前尚未確認，需要後續研究的問題。
+    ETL
+    
+    ↓
+    
+    產出資料存入SQL
+```
 
-# 11. Design Impact
+# 6. Constraints
+- 不建議使用 locationQuery。
+- 不支援 Incremental Sync。
+- Place Detail 速度較慢。
+- 大量資料須拆批。
 
-## 11.1 DramaRadar 將使用哪些欄位？
+# 7. Design Impact
 
-列出實際會進入 Database 或 Processing 的欄位。
+此 API 對專案設計造成哪些影響。
 
-| Field | Used For |
-| ----- | -------- |
-|       |          |
+- Architecture
+`Store Domain 使用此 API 作為唯一店家資料來源。`
+- Database
+`需建立 store_source 保存完整 Raw JSON。`
+- ETL
+`由 Store ETL 將 Raw JSON 轉換為 store Table。`
+- Scheduler
+`每日執行一次全店家同步。`
+- Business Rule
+`僅同步符合搜尋條件之店家。`
+- Data Contract
+`以 placeId 作為唯一外部識別碼。`
 
-## 11.3 對 Database Design 有哪些影響？
+# 8. Conclusion
 
-記錄此 API 對 DOC-004 Database Design 的影響。
+## Suitable
+✅
 
-* 是否需要保存 External Identifier。NO
-* 是否需要建立 Source Table。YES
-* 是否需要建立 Index。NO
-* 是否需要保存完整 Raw JSON。YES
+## Risks
+`費用問題，請注意不要一次CALL所有資料`
 
-# 12. Conclusion
+# 9. Decision
 
-本次研究結論。
-* Source Data 保留完整 JSON。
-* 可作為 DramaRadar 的資料來源。
-* Response 結構穩定。
-* 滿足 MVP 需求。
-* 可開始進行 DOC-004 Database Design。
+✓ 採用 countryCode + city + categoryFilterWords + searchStrings 搜尋。
+
+✗ 不使用 locationQuery。
+
+✓ 保留完整 Raw JSON。
+
+✓ placeId 作為唯一識別。
