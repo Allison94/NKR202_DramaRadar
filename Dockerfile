@@ -1,5 +1,6 @@
 # 1. 用 uv 官方的 Python 3.12 輕量版環境
-FROM ghcr.io/astral-sh/uv:python3.12-slim
+# FROM ghcr.io/astral-sh/uv:python3.12-slim
+FROM astral/uv:python3.12-bookworm-slim
 
 # 2. 設定容器內部的虛擬工作目錄
 WORKDIR /nkr202_dramaradar
@@ -32,7 +33,7 @@ ENV PATH="/nkr202_dramaradar/.venv/bin:$PATH"
 
 # 6. 複製套件清單並執行uv同步
 COPY --chown=$USERNAME:$USERNAME pyproject.toml uv.lock* ./
-RUN uv sync --frozen --no-cache
+RUN uv sync --no-cache
 
 # 7. 預先開放連接埠 (8000:FastAPI, 8501:Streamlit, 8080:Airflow, 5432:Postgres)
 EXPOSE 8000 8501 8080 5432
