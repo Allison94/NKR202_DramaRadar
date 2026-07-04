@@ -18,6 +18,7 @@ dependencies = [
 
     # API 串接與 LLM
     "google-genai>=0.1.0", # Gemini官方最新SDK
+    "apify-client>=3.0.4",#apify官方SDK
 
     # 資料庫連線與資安管理
     "psycopg2-binary>=2.9.9", # 連線PostgreSQL驅動
