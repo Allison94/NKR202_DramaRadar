@@ -7,6 +7,7 @@ dependencies = [
     "uvicorn>=0.28.0",
     "streamlit>=1.32.0",
     "folium>=0.16.0", # 火焰地圖視覺化
+    "streamlit-folium>=0.27.2"
 
     # 大數據清洗與爬蟲
     "pandas>=2.2.0",
