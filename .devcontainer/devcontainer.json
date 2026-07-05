@@ -9,7 +9,7 @@
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
   },
-  "initializeCommand": "python init_env.py",//產出本地env檔，自動設定資料庫密碼
+  "initializeCommand": "python3 init_env.py 2>nul || python init_env.py 2>nul || py init_env.py 2>nul || python3 init_env.py || python init_env.py || py init_env.py",//產出本地env檔，自動設定資料庫密碼
   "postCreateCommand": "uv sync",//自動安裝pyproject.toml內的套件
 
   // 所有服務的port [FastAPI, Streamlit, Airflow, Postgres]
