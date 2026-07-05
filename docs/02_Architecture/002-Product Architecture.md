@@ -20,9 +20,9 @@ Note：描述 Service 間的依賴關係，並非實際呼叫流程。
 
 | Domain / Component           | Responsibility                                                                             |
 | ---------------------------- | ------------------------------------------------------------------------------------------ |
-| **Store Domain**             | 負責串接 Apify API（Google Maps Extractor）、店家資料蒐集、Raw JSON 儲存、ETL、店家資料更新，以及提供 Store API。        |
-| **Review Domain**            | 負責串接 Apify API（Google Maps Reviews Scraper）、評論資料蒐集、Raw JSON 儲存、ETL、評論資料更新，以及提供 Review API。 |
-| **AI Analysis Domain**       | 負責呼叫 Gemini API、評論分析、Drama 判斷、摘要、分類、分析結果儲存，以及提供 AI Analysis API。                           |
+| **Store Domain**             | 負責串接 Apify API（Google Maps Extractor）、店家資料蒐集、Raw JSON 儲存、ETL、店家資料更新。        |
+| **Review Domain**            | 負責串接 Apify API（Google Maps Reviews Scraper）、評論資料蒐集、Raw JSON 儲存、ETL、評論資料更新。 |
+| **AI Analysis Domain**       | 負責呼叫 Gemini API、評論分析、Drama 判斷、摘要、分類、分析結果儲存。                           |
 | **Threads Domain**           | 負責依 AI Analysis 結果產生 Threads 內容、發布至 Threads API，並保存發文紀錄。                                   |
 | **Dashboard**                | 提供 Drama 排行榜、Drama Map、統計資訊、查詢與資料視覺化。                                                      |
 | **Scheduler (Orchestrator)** | 依排程協調各 Domain 執行流程，控制整體 Pipeline，不負責任何 Business Logic。                                     |
@@ -56,4 +56,4 @@ Note：描述 Service 間的依賴關係，並非實際呼叫流程。
 | Data Flow               | 資料怎麼流，描述資料生命週期。      |
 | Business Workflow       | 執行順序，描述每日業務流程。      |
 | Production Architecture | 部署在哪，描述正式環境元件與互動方式。 |
-|Business Decision Flow   |判斷條件，描述邏輯運算方式。|
+| Business Decision Flow   |判斷條件，描述邏輯運算方式。|
