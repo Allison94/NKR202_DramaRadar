@@ -26,6 +26,7 @@ dependencies = [
     "sqlalchemy>=2.0.0", # 高階ORM，方便管理place_id與is_hidden欄位
     "python-dotenv>=1.0.1", # 讓Python程式能讀取本機.env機密密碼本
     "pydantic>=2.13.4", #資料驗證
+    "pydantic-settings", #env變數驗證
 
     # 排程定時更新
     "apache-airflow>=2.8.0" # 本地開發測試Airflow邏輯
