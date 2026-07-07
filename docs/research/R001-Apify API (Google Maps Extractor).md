@@ -4,26 +4,28 @@ title: R001-Apify API (Google Maps Extractor)
 ---
 
 # R001-Apify API (Google Maps Extractor)
-* **Version**：v1.1
-* **Date**：2026/7/4
-* **Researcher**：Allison
 
-# 1. API Overview
+## 1. Document Information
+
+| Item         | Content                           |
+| ------------ | --------------------------------- |
+| Document ID  | R001                              |
+| Title        | Apify API (Google Maps Extractor) |
+| Author       | Allison                           |
+| Version      | v1.0                              |
+| Last Updated | 2026/7/4                          |
+
+# 2. API Overview
 
 | Item                   | Description                                                     |
 | ---------------------- | --------------------------------------------------------------- |
 | Provider               | [Compass](https://apify.com/compass)                            |
 | API Name               | Apify API (Google Maps Extractor)                               |
 | Official Documentation | [Link](https://apify.com/compass/google-maps-extractor)         |
-| Authentication         |API Token 存.env                                        |
+| Authentication         |API Token、python 安裝 apify_client                                        |
 | Pricing                | [Link](https://apify.com/compass/google-maps-extractor/pricing) |
-#### Usage Limits
-- 使用 location 搜尋一次最多約120筆 
-- 建議改用 city + searchStrings 
-- 大量資料需拆批搜尋
+| Usage Limits           | 使用`location`欄位，一次只能抓120筆，請勿使用!!                 |
 
-#### Implementation
-- python 安裝 apify_client
 ---
 
 # 3. Request Analysis
@@ -96,8 +98,6 @@ title: R001-Apify API (Google Maps Extractor)
 | temporarilyClosed | boolean | ✔ | 是否暫停營業 |
 | scrapedAt | string (ISO-8601) | ✔ | 資料抓取時間 |
 
-`其他欄位全存入raw_json 不ETL`
-
 ## Response Example
 ```json=
 {
@@ -134,7 +134,7 @@ title: R001-Apify API (Google Maps Extractor)
 
     ↓
 
-    原始資料(raw_json)存入SQL
+    原始資料存入SQL
 
     ↓
 
@@ -146,42 +146,24 @@ title: R001-Apify API (Google Maps Extractor)
 ```
 
 # 6. Constraints
-- 不建議使用 locationQuery。
-- 不支援 Incremental Sync。
-- Place Detail 速度較慢。
-- 大量資料須拆批。
+
 
 # 7. Design Impact
 
 此 API 對專案設計造成哪些影響。
 
 - Architecture
-`Store Domain 使用此 API 作為唯一店家資料來源。`
 - Database
-`需建立 store_source 保存完整 Raw JSON。`
 - ETL
-`由 Store ETL 將 Raw JSON 轉換為 store Table。`
 - Scheduler
-`每日執行一次全店家同步。`
 - Business Rule
-`僅同步符合搜尋條件之店家。`
 - Data Contract
-`以 placeId 作為唯一外部識別碼。`
 
 # 8. Conclusion
 
 ## Suitable
+
 ✅
 
 ## Risks
-`費用問題，請注意不要一次CALL所有資料`
-
-# 9. Decision
-
-✓ 採用 countryCode + city + categoryFilterWords + searchStrings 搜尋。
-
-✗ 不使用 locationQuery。
-
-✓ 保留完整 Raw JSON。
-
-✓ placeId 作為唯一識別。
+費用問題，請注意不要一次CALL所有資料
