@@ -2,11 +2,11 @@ services:
   # 服務 A：程式碼執行環境 (VS Code 會連進這裡)
   app:
     build:
-      context: ..
+      context: .
       dockerfile: Dockerfile
     volumes:
       # 將本機的專案目錄，照鏡子般同步掛載到 Docker 內部的同名全小寫資料夾
-      - ..:/nkr202_dramaradar:cached
+      - .:/nkr202_dramaradar:cached
     # 保持容器在背景運作不退出
     command: sleep infinity
     environment:
@@ -20,7 +20,7 @@ services:
     image: postgres:15-alpine
     restart: always
     env_file:
-      - ../.env
+      - .env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
