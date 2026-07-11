@@ -1,7 +1,3 @@
-# 給自己用的資料
-# 
-# 我是白癡 資料JASON格式
- ```
  {
     "searchString": "place_id:ChIJi67FDQCrQjQRNnqJst4-2C8",
     "reviewerId": "104689586595406588133",
@@ -69,6 +65,3 @@
     "language": "zh-TW",
     "kgmid": "/g/11vsh419j7"
   },
- ```
-
-  #
