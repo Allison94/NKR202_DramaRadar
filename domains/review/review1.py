@@ -1,67 +1,39 @@
- {
-    "searchString": "place_id:ChIJi67FDQCrQjQRNnqJst4-2C8",
-    "reviewerId": "104689586595406588133",
-    "reviewerUrl": "https://www.google.com/maps/contrib/104689586595406588133?hl=zh-TW",
-    "name": "William Luo",
-    "reviewerNumberOfReviews": 10,
-    "isLocalGuide": true,
-    "reviewerPhotoUrl": "https://lh3.googleusercontent.com/a-/ALV-UjUSv1QguwBBB6SvTg1ib6ysDtfDIXL1i3s4Z2es9RqXp0ECG8t4=s1920-c-rp-mo-ba12-br100",
-    "text": "假日正在煩惱午餐，查了一下難得假日也有營業，順便介紹朋友來吃。 🍛👍\n跟其它咖哩比起來多了很多蔬菜水果，搭配著吃就不會膩，內用還可以免費續咖哩和飯，這個價錢其實不算貴，還有果醋飲料可以點。",
-    "textTranslated": null,
-    "publishAt": "1 週前",
-    "publishedAtDate": "2026-06-28T06:43:16.807Z",
-    "likesCount": 0,
-    "reviewId": "Ci9DQUlRQUNvZENodHljRjlvT21GVFMwSnZZWGd3Tm5vek1uazFTbGx6YjNKUFVYYxAB",
-    "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21GVFMwSnZZWGd3Tm5vek1uazFTbGx6YjNKUFVYYxAB!2m1!1s0x0:0x2fd83edeb2897a36!3m1!1s2@1:CAIQACodChtycF9oOmFTS0JvYXgwNnozMnk1Sllzb3JPUXc%7C%7C?hl=zh-TW",
-    "reviewOrigin": "Google",
-    "stars": 5,
-    "rating": null,
-    "responseFromOwnerDate": null,
-    "responseFromOwnerText": null,
-    "reviewImageUrls": [
-      "https://lh3.googleusercontent.com/grass-cs/ANxoTn2HXN5inoBEcZj-I09L5qtxoLv0a5Lq8pJRw8iY7n0Nv3miLnQU5LV3pV2J6TLPGo7TVkM46Su0hxOvDQ46FEUj4mS5Bvv0xXx3aUQqCQBWPUJMicxQTDZt4rtCveZ-QQwUFSOx8edlvHwa=k-no",
-      "https://lh3.googleusercontent.com/grass-cs/ANxoTn0nJHaBJxn4vP90FCqQSA-aEfNAU3Hr_udG7IvwH_PfawsROoOyhgmv3chHSB_1ie_k-ZN7EqUdUbhMssX8TclvvkTMKXHHIoZkehqEg-BW5HIo4wm_8cTv4apQclvPAk49NMH-6nk-gYyQ=k-no",
-      "https://lh3.googleusercontent.com/grass-cs/ANxoTn09SQ9f97mtPga0WEXk42heTAI1TZigit-eRhMReMMNqUqv2B9L9kNttmWUZMET1gw7Nn0kCF6c4KkPMtJMWXJgojEFbbofZUpVK6HtnTSD1LRfe3CG5r6vZUBY6eGJ0c8-iK0fq_0l43B7=k-no"
-    ],
-    "reviewContext": {},
-    "reviewDetailedRating": {
-      "餐點": 5,
-      "服務": 5,
-      "氣氛": 5
-    },
-    "visitedIn": null,
-    "originalLanguage": "zh-Hant",
-    "translatedLanguage": null,
-    "isAdvertisement": false,
-    "placeId": "ChIJi67FDQCrQjQRNnqJst4-2C8",
-    "location": {
-      "lat": 25.0505127,
-      "lng": 121.5809709
-    },
-    "address": "115台灣臺北市南港區玉成里玉成街14-14號",
-    "neighborhood": null,
-    "street": "玉成街14-14號",
-    "city": "玉成里",
-    "postalCode": "115",
-    "state": "臺北市南港區",
-    "countryCode": "TW",
-    "categoryName": "日式咖哩餐廳",
-    "categories": [
-      "日式咖哩餐廳",
-      "餐廳"
-    ],
-    "title": "饒咖哩 日式咖哩專賣店",
-    "totalScore": 4.5,
-    "permanentlyClosed": false,
-    "temporarilyClosed": false,
-    "reviewsCount": 133,
-    "url": "https://www.google.com/maps/search/?api=1&query=%E9%A5%92%E5%92%96%E5%93%A9%20%E6%97%A5%E5%BC%8F%E5%92%96%E5%93%A9%E5%B0%88%E8%B3%A3%E5%BA%97&query_place_id=ChIJi67FDQCrQjQRNnqJst4-2C8",
-    "price": "$1-200",
-    "cid": "3447574640951130678",
-    "fid": "0x3442ab000dc5ae8b:0x2fd83edeb2897a36",
-    "hotelStars": null,
-    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAHN5g8LFiChTvkH5upMKWIzqBaBz42_TzhQEAQyNtxA-YW2PU7GVxt8evOprrDvNESZOlhs8k7sNFS0Wa0-_di5ZgzX_5LTxfSXfqLJ2dcFMHVifCX6-ycVKBRcI_ZuTg2fkAmiTguI4kU=w408-h543-k-no",
-    "scrapedAt": "2026-07-11T06:39:21.044Z",
-    "language": "zh-TW",
-    "kgmid": "/g/11vsh419j7"
-  },
+import os
+
+import requests
+from dotenv import load_dotenv
+
+# 讀取 .env
+load_dotenv()
+
+# 取得 Token
+token = os.getenv("APIFY_REVIEW")
+
+if not token:
+    print("找不到 APIFY_REVIEW")
+    exit()
+
+print("APIFY_REVIEW 讀取成功")
+print("Token 前 10 碼：", token[:10], "...")
+
+# API Header
+headers = {
+    "Authorization": f"Bearer {token}"
+}
+
+# 呼叫 Apify API
+response = requests.get(
+    "https://api.apify.com/v2/acts/compass~google-maps-reviews-scraper",
+    headers=headers,
+    timeout=30,
+)
+
+# 顯示結果
+print("狀態碼：", response.status_code)
+
+data = response.json()["data"]
+
+print("Actor 名稱：", data["title"])
+print("Actor 建立者：", data["username"])
+print("Actor ID：", data["id"])
+print("是否公開：", data["isPublic"])
