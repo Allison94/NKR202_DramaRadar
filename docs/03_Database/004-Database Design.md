@@ -99,7 +99,7 @@ Business Table
 | review | Business | Review ETL | 評論正式資料 |
 | ai_analysis | Business | Gemini AI | AI 分析結果 |
 | threads_log | Business | Threads API | Threads 發文紀錄 |
-| crawl_log | Metadata | Scheduler | Pipeline 執行紀錄 |
+| execution_log | Metadata | Scheduler | Pipeline 執行紀錄 |
 
 # 4. Entity Relationship Diagram (ERD)
 ![alt text](../diagrams/ERD.png)
@@ -122,7 +122,7 @@ Business Table
 | review | placeId |
 | ai_analysis | reviewId |
 | threads_log | timestamp |
-| crawl_log | pipeline_name |
+| execution_log | pipeline_name |
 
 ---
 
