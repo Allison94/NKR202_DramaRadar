@@ -1,8 +1,8 @@
 ﻿CREATE TABLE "store" (
     "placeId" varchar(100)  NOT NULL,
-    "title" varchar(100)  NOT NULL,
+    "title" TEXT  NOT NULL,
     "categoryName" varchar(100)  NOT NULL,
-    "categories" jsonb  NOT NULL,
+    "categories" JSONB  NOT NULL,
     "address" TEXT,
     "url" TEXT  NOT NULL,
     "imageUrl" TEXT,
