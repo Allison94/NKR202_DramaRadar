@@ -1,22 +1,25 @@
+"""
+* 只負責處理api連線取資料，不處理
+"""
 from apify_client import ApifyClient
-from git import Actor
 from shared.config import settings
 
-client = ApifyClient(settings.apify_store)
+client = ApifyClient(settings.apify_store) #set api token
 
-def call_api(params): #api fetch dataset return 
+def start_job_actor(params):  
   actor = client.actor("compass/google-maps-extractor")
-  # call_api = actor.call(run_input=params) #用call會馬上回，資料量太大會斷線
-  dataset_id = actor.start(run_input=params)
-  # print(dataset_id)
-  return dataset_id
+  return actor.start(run_input=params)
+  # 用actor.call() 會馬上回，資料量太大會斷線
 
+def check_status(run_id):
+  obj = client.run(run_id).get()
+  return obj
 
 def get_dataset(dataset_id) -> list[dict]: 
   # dataset_id that expire after 7 days
-  # 115："z8QJQaNfB3KsQ9zQQ"  110："bQussivqr43V3XDdF" 
+  # 115："z8QJQaNfB3KsQ9zQQ"  110："bQussivqr43V3XDdF" 3條："g3AanSmnAvDdM6Rfv"
   dataset = client.dataset(dataset_id).list_items().items
-  return dataset 
+  return dataset
   
 
 
@@ -31,11 +34,11 @@ if __name__ == "__main__":
   # params = {
   # "county": "TW",
   # "language": "zh-TW",
-  # "maxCrawledPlacesPerSearch": 30,
-  # "postalCode": "115",
+  # "maxCrawledPlacesPerSearch": 3,
+  # "postalCode": "100",
   # "searchStringsArray": ["餐廳","小吃","麵店","便當","餐酒館","料理"],
   # }
   # end
-
-  get_dataset("bQussivqr43V3XDdF")
+  check_status("HS3KlcUb8sIBxUb25")
+  # get_dataset("bQussivqr43V3XDdF")
 
