@@ -9,6 +9,8 @@ services:
       - .:/nkr202_dramaradar:cached
     # 保持容器在背景運作不退出
     command: sleep infinity
+    env_file:
+      - .env
     environment:
       # 設定資料庫連線字串，讓 Python 程式碼可以直接連到隔壁的 db 容器
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
