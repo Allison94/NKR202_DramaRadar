@@ -6,7 +6,7 @@ metadata = MetaData()
 execution_log = Table(
     "execution_log",
     metadata,
-    Column("id",String(100),primary_key=True),
+    Column("id",INTEGER,primary_key=True,autoincrement=True),
     Column("pipeline",String(200),nullable=False),
     Column("status",String(20),nullable=False),
     Column("items_count",INTEGER,server_default="0",nullable=False),
