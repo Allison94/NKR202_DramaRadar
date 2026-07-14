@@ -95,7 +95,7 @@ CREATE TABLE "threads_log" (
 );
 
 CREATE TABLE "execution_log" (
-    "id" varchar(100)  NOT NULL,
+    "id" SERIAL,
     "pipeline" varchar(200)  NOT NULL,
     "status" varchar(20)  NOT NULL,
     "items_count" int DEFAULT 0  NOT NULL,
