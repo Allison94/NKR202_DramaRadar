@@ -1,8 +1,8 @@
 ﻿CREATE TABLE "store" (
     "placeId" varchar(100)  NOT NULL,
-    "title" varchar(100)  NOT NULL,
+    "title" TEXT  NOT NULL,
     "categoryName" varchar(100)  NOT NULL,
-    "categories" jsonb  NOT NULL,
+    "categories" JSONB  NOT NULL,
     "address" TEXT,
     "url" TEXT  NOT NULL,
     "imageUrl" TEXT,
@@ -95,7 +95,7 @@ CREATE TABLE "threads_log" (
 );
 
 CREATE TABLE "execution_log" (
-    "id" varchar(100)  NOT NULL,
+    "id" SERIAL,
     "pipeline" varchar(200)  NOT NULL,
     "status" varchar(20)  NOT NULL,
     "items_count" int DEFAULT 0  NOT NULL,
