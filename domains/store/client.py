@@ -7,7 +7,7 @@ from shared.config import settings
 client = ApifyClient(settings.apify_store) #set api token
 
 def start_job_actor(params):  
-  actor = client.actor("compass/google-maps-extractor")
+  actor = client.actor("compass/crawler-google-places")
   return actor.start(run_input=params)
   # 用actor.call() 會馬上回，資料量太大會斷線
 
@@ -40,5 +40,4 @@ if __name__ == "__main__":
   # }
   # end
   check_status("HS3KlcUb8sIBxUb25")
-  # get_dataset("bQussivqr43V3XDdF")
-
+  # get_dataset("g3AanSmnAvDdM6Rfv")
