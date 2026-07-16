@@ -30,7 +30,7 @@ Store = Table(
     Column("threeStar",INTEGER,nullable=False),
     Column("fourStar",INTEGER,nullable=False),
     Column("fiveStar",INTEGER,nullable=False),
-    Column("blocked",BOOLEAN,nullable=False),
-    Column("skip_review_fetch",BOOLEAN,nullable=False)
+    Column("blocked",BOOLEAN,server_default="Fasle",nullable=False),
+    Column("skip_review_fetch",BOOLEAN,server_default="Fasle",nullable=False)
 )
     
