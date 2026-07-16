@@ -28,7 +28,7 @@
 > save to sql with clean data => tosql
 
 > DAG => 前面三個line
-
+> DAG > Dynamic Task Mapping 自動生成平行獨立TASK 
 ## start_job_actor、check_status return 
 ``` 
 #AI整理 (兩個格式一樣)
