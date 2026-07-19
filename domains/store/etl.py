@@ -6,43 +6,50 @@ import pandas as pd
 import numpy as np
 import requests 
 
-def start_job_etl(params,obj):
+def start_job_etl(params:dict,obj:dict)->dict:
     return {
-        "run_id":obj.id,
-        "dataset_id":obj.default_dataset_id,
-        "started_at":obj.started_at,
-        "status":obj.status,
+        "run_id":obj.get("id"),
+        "dataset_id":obj.get("default_dataset_id"),
+        "started_at":obj.get("started_at"),
+        "status":obj.get("status"),
         "request_json":params,
-        "response_json":obj.__dict__,
+        "response_json":obj,
     }
 
-def check_status_etl(obj,job_log_id): #job_log_id從 db_handler裡面取回
-    status_message = ""
-    if obj.exit_code != 0 or obj.status_message != None:
-        status_message = f"{obj.exit_code}-{obj.status_message}"
-        
+def check_status_etl(obj:dict,job_log_id:str)->dict: #job_log_id從 db_handler裡面取回
+    status_msg = obj.get("status_message")
+    exit_code = obj.get("exit_code")
+    if exit_code != 0 or status_msg != None:
+        status_message = f"{exit_code}-{status_msg}"
+    
+    charged = obj.get("charged_event_counts",{})
     rt = {
         "job_log_id":job_log_id,
-        "run_id":run_id, # type: ignore
-        "status":obj.status, # type: ignore #SUCCEEDED,READY
-        "start_at":obj.start_at, # type: ignore
-        "finished_at":obj.finished_at, # type: ignore
-        "exit_code":obj.exit_code,  # type: ignore
-        "charged_event_counts":obj.charged_event_counts.get("place-scraped", 0), #怕沒欄位先補0
+        "run_id":obj.get("id"),
+        "status":obj.get("status"), #SUCCEEDED,READY
+        "start_at":obj.get("start_at"),
+        "finished_at":obj.get("finished_at"),
+        "exit_code":obj.get("exit_code"),
+        "charged_event_counts":charged.get("place-scraped", 0), #怕沒欄位先補0
         "status_message":status_message,
-        "response_json":obj.__dict__
+        "response_json":obj
     }
     return rt
 
-def dataset_origin(obj):
-    rt = {
-        "placeId":obj.placeId,
-        "raw_json":obj.__dict__,
-        "scrapedAt":obj.scrapedAt,
-    }
+def dataset_origin(obj:list[dict])->list[dict]:
+    rt = [
+        {
+        "placeId":item.get("placeId"),
+        "raw_json":item,
+        "scrapedAt":item.get("scrapedAt"),
+        }
+        for item in obj
+    ]
+    # [i for i in range(5)]
+
     return rt
 
-def dataset_etl(obj):
+def dataset_etl(obj:list[dict])->list[dict]:
     # c1. reviewsCount >= 30 (評論數大於30)
     # c2. totalScore <= 4.4 or oneStar/reviewsCount >= (0.1 總分低於4.4或1星佔10%)
     # business_status ? permanentlyClosed & temporarilyClosed => False
@@ -52,16 +59,16 @@ def dataset_etl(obj):
     sql_columns=["placeId","title","categoryName","categories","address","url","imageUrl","business_status","scrapedAt","totalScore","reviewsCount","oneStar","twoStar","threeStar","fourStar","fiveStar","blocked","skip_review_fetch"]
 
     c1 = "reviewsCount >= 30"
-    c2 = "(totalScore <= 4.4 or oneStartPercent >= 0.1)"
+    c2 = "(totalScore <= 4.4 or oneStarPercent >= 0.1)"
 
     df = pd.json_normalize(obj)
     df_set = df.assign(
-        oneStartPercent = lambda x : x["reviewsDistribution.oneStar"]/x["reviewsCount"],
+        oneStarPercent = lambda x : x["reviewsDistribution.oneStar"]/x["reviewsCount"],
         categories = lambda x : x["categories"].str.join(",")
     ).query(
         f"{c1} and {c2}"
     ).assign(
-        business_status=lambda x: np.where(x["permanentlyClosed"]==False & x["temporarilyClosed"],"OPEN","CLOSED"),
+        business_status=lambda x: np.where(x["permanentlyClosed"] | x["temporarilyClosed"],"CLOSED","OPEN"),
         skip_review_fetch = lambda x : x["title"].str.contains(str(excluded_restaurants("|")),na=False,regex=True), #排除連鎖店和已知指定店家
         blocked=False,#預設FALSE,
     ).rename(columns={
@@ -72,7 +79,7 @@ def dataset_etl(obj):
         "reviewsDistribution.fiveStar": "fiveStar"
     })[sql_columns]
 
-    return df_set
+    return df_set.to_dict(orient="records")
 
 def excluded_restaurants(joinstr=None)->str|list: #連鎖店清單，用ai抓的
     chains = [ # === 🤖 1. 鋼鐵罐頭訊息大軍 (不管給幾星，小編或系統永遠回一模一樣的固定話術) ===

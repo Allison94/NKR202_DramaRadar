@@ -6,10 +6,9 @@ from domains.store.models import Store, Store_source
 from db.shared_tables import execution_log
 from sqlalchemy import insert,update
 from db.database import engine
-import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
 
-def save_apify_log(obj):
+def save_apify_log(obj:dict):
     if not obj:
         return
     
@@ -34,7 +33,7 @@ def save_apify_log(obj):
             print(f"save apify log錯誤：{e}")
             return None
 
-def update_apify_log(obj):
+def update_apify_log(obj:dict):
     if not obj:
         return
     
@@ -60,48 +59,22 @@ def update_apify_log(obj):
             print(f"update apify log Error：{e}")
             return None
     
-def save_to_store_source(obj):
+def save_to_store_source(obj:list[dict]):
     if not obj:
         return
     
-    stmt = insert(Store_source).values(
-        placeId=obj["placeId"],
-        raw_json=obj["raw_json"],
-        scrapedAt=obj["scrapedAt"],
-    )
+    stmt = insert(Store_source).values(obj)
 
-    with engine.connect() as conn:
+    with engine.begin() as conn:
         result = conn.execute(stmt)
-        pk = result.inserted_primary_key
-        pk_id = pk[0] if pk else None
-        return pk_id
-def save_to_store(df):
+        return result.rowcount
+    
+def save_to_store(df:list[dict]):
     if not df:
         return
     
-    stmt = insert(Store).values(
-        placeId=df.placeId,
-        title=df.title,
-        categoryName=df.categoryName,
-        categories=df.categories,
-        address=df.address,
-        url=df.url,
-        imageUrl=df.imageUrl,
-        business_status=df.business_status,
-        scrapedAt=df.scrapedAt,
-        totalScore=df.totalScore,
-        reviewsCount=df.reviewsCount,
-        oneStar=df.oneStar,
-        twoStar=df.twoStar,
-        threeStar=df.threeStar,
-        fourStar=df.fourStar,
-        fiveStar=df.fiveStar,
-        blocked=df.blocked,
-        skip_review_fetch=df.skip_review_fetch
-    )
+    stmt = insert(Store).values(df)
 
-    with engine.connect() as conn:
+    with engine.begin() as conn:
         result = conn.execute(stmt)
-        pk = result.inserted_primary_key
-        pk_id = pk[0] if pk else None
-        return pk_id
+        return result.rowcount

@@ -2,48 +2,74 @@
 * 整合client etl tosql
 * 傳入airflows
 """
-from domains.store.client import start_job_actor,check_status,get_dataset
-from domains.store.etl import start_job_etl,check_status_etl,dataset_origin,dataset_etl
-from domains.store.db_handler import save_apify_log,update_apify_log,save_to_store_source,save_to_store
+from store.client import StoreClient
+from store import config,etl,db_handler
+class StoreInterface:
+    @staticmethod
+    def task1_start_job(postcode:str)->dict:
+        # setting params
+        search_condition = config.params
+        search_condition["postalCode"] = postcode
 
-def start_job():
-    # TAIPEI_POSTCODES = ["100", "103", "104", "105", "106", "108", "110", "111", "112", "114", "115", "116"]
-    params = {
-    "county": "TW",
-    "language": "zh-TW",
-    "maxCrawledPlacesPerSearch": 3,
-    "postalCode": "100",
-    "searchStringsArray": ["餐廳","小吃","麵店","便當","餐酒館","料理"],
-    }
+        # client 
+        store_client = StoreClient()
+        actor_rs = store_client.start_job_actor(search_condition)
 
-    start = start_job_actor(params=params)
-    job_etl = start_job_etl(params,start)
-    job_log_id = save_apify_log(job_etl) #正常為id錯誤為None
+        # etl
+        store_etl = etl.start_job_etl(search_condition,actor_rs)
 
-    run_id = job_etl.get("run_id")
-    dataset_id = job_etl.get("dataset_id")
+        # db_handler
+        db_log_id = db_handler.save_apify_log(store_etl)
 
-    return run_id,job_log_id,dataset_id
-
-def status(run_id,job_log_id):
-    if run_id:
-        status_obj = check_status(run_id)
-        status_etl = check_status_etl(status_obj,job_log_id)
-        rs_rowcount = update_apify_log(status_etl)
-        return rs_rowcount
+        rs = {
+            "run_id": actor_rs["run_id"],
+            "dataset_id": actor_rs["dataset_id"],
+            "db_log_id": db_log_id #none or number
+        }
+        return rs
     
-def dataset_line(dataset_id):
-    
+    @staticmethod
+    def task2_check_status(job_info:dict)->dict:
+        # client 
+        store_client = StoreClient()
+        status_rs = store_client.check_status(job_info["run_id"])
 
-        return 
-def run():
-    run_id,job_log_id,dataset_id = start_job()
-    rs_rowcount = status(run_id,job_log_id)
-    if rs_rowcount != 0 and rs_rowcount != None:
-        dataset_line(dataset_id)
-
+        # etl
+        status_etl = etl.check_status_etl(status_rs,job_info["db_log_id"])
         
-if __name__ == "__main__":
-    run()
+        # db_handler
+        db_log_update_id = db_handler.update_apify_log(status_etl)
 
-    ## TODO: 如何解藕
+        rs = {
+            "dataset_id":job_info["dataset_id"],
+            "db_log_update_id":db_log_update_id, #none or number
+        }
+        return rs
+    
+    @staticmethod
+    def task3_get_dataset(job_info:dict)->dict:
+        db_log_update_id = job_info["db_log_update_id"]
+        if db_log_update_id == None or db_log_update_id == 0:
+            return {
+                "origin_rowcount":None,
+                "etl_rowcount":None,
+            }
+        # client
+        store_client = StoreClient()
+        dataset = store_client.get_dataset(job_info["dataset_id"])
+
+        # etl
+        origin_list_dict = etl.dataset_origin(dataset)
+        # db_handler
+        origin_rowcount = db_handler.save_to_store_source(origin_list_dict)
+
+        # etl
+        etl_dict = etl.dataset_etl(dataset)
+        # db_handler
+        etl_rowcount = db_handler.save_to_store(etl_dict)
+        
+        rs = {
+            "origin_rowcount":origin_rowcount,
+            "etl_rowcount":etl_rowcount,
+        }
+        return rs
