@@ -1,4 +1,4 @@
-from sqlalchemy import BOOLEAN,String, Table,FLOAT,INTEGER,TEXT,Column
+from sqlalchemy import BOOLEAN, Float,String, Table,FLOAT,INTEGER,TEXT,Column
 from sqlalchemy.dialects.postgresql import JSONB,TIMESTAMP
 from db.database import metadata
 
@@ -19,6 +19,8 @@ Store = Table(
     Column("categoryName",String(100),nullable=False),
     Column("categories",JSONB,nullable=False),
     Column("address",TEXT,nullable=True),
+    Column("lat",Float,nullable=False),
+    Column("lng",Float,nullable=False),
     Column("url",TEXT,nullable=False),
     Column("imageUrl",TEXT,nullable=True),
     Column("business_status",String(200),nullable=False),
