@@ -4,12 +4,19 @@
 """
 from store.client import StoreClient
 from store import config,etl,db_handler
+
 class StoreInterface:
-    @staticmethod
-    def task1_start_job(postcode:str)->dict:
+    def __init__(self,postcode:str,params:dict|None=None,):
+        if params:
+            self.params = params.copy()
+        else:
+            self.params = config.params.copy()
+        self.postcode = postcode
+
+    def task1_start_job(self)->dict:
         # setting params
         search_condition = config.params
-        search_condition["postalCode"] = postcode
+        search_condition["postalCode"] = self.postcode
 
         # client 
         store_client = StoreClient()
@@ -28,8 +35,7 @@ class StoreInterface:
         }
         return rs
     
-    @staticmethod
-    def task2_check_status(job_info:dict)->dict:
+    def task2_check_status(self,job_info:dict)->dict:
         # client 
         store_client = StoreClient()
         status_rs = store_client.check_status(job_info["run_id"])
@@ -46,9 +52,8 @@ class StoreInterface:
         }
         return rs
     
-    @staticmethod
-    def task3_get_dataset(job_info:dict)->dict:
-        db_log_update_id = job_info["db_log_update_id"]
+    def task3_get_dataset(self,status_info:dict)->dict:
+        db_log_update_id = status_info["db_log_update_id"]
         if db_log_update_id == None or db_log_update_id == 0:
             return {
                 "origin_rowcount":None,
@@ -56,7 +61,7 @@ class StoreInterface:
             }
         # client
         store_client = StoreClient()
-        dataset = store_client.get_dataset(job_info["dataset_id"])
+        dataset = store_client.get_dataset(status_info["dataset_id"])
 
         # etl
         origin_list_dict = etl.dataset_origin(dataset)
