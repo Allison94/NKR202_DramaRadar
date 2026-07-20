@@ -7,6 +7,9 @@ from db.shared_tables import execution_log
 from sqlalchemy import insert,update
 from db.database import engine
 from sqlalchemy.exc import SQLAlchemyError
+import logging
+
+logger = logging.getLogger(__name__)
 
 def save_apify_log(obj:dict):
     if not obj:
@@ -30,8 +33,8 @@ def save_apify_log(obj:dict):
             pk_id = pk[0] if pk else None
             return pk_id
         except SQLAlchemyError as e:
-            print(f"save apify log錯誤：{e}")
-            return None
+            logger.exception(f"[Error:save_apify_log] log 存入發生錯誤")
+            raise e
 
 def update_apify_log(obj:dict):
     if not obj:
@@ -56,8 +59,8 @@ def update_apify_log(obj:dict):
             result = conn.execute(stmt)
             return result.rowcount
         except SQLAlchemyError as e:
-            print(f"update apify log Error：{e}")
-            return None
+            logger.exception(f"[Error:update_apify_log] update log 存入發生錯誤")
+            raise e
     
 def save_to_store_source(obj:list[dict]):
     if not obj:
@@ -66,8 +69,12 @@ def save_to_store_source(obj:list[dict]):
     stmt = insert(Store_source).values(obj)
 
     with engine.begin() as conn:
-        result = conn.execute(stmt)
-        return result.rowcount
+        try:
+            result = conn.execute(stmt)
+            return result.rowcount
+        except SQLAlchemyError as e:
+            logger.exception(f"[Error:save_to_store_source]Store Origin Source 存入發生錯誤")
+            raise e
     
 def save_to_store(df:list[dict]):
     if not df:
@@ -76,5 +83,9 @@ def save_to_store(df:list[dict]):
     stmt = insert(Store).values(df)
 
     with engine.begin() as conn:
-        result = conn.execute(stmt)
-        return result.rowcount
+        try:
+            result = conn.execute(stmt)
+            return result.rowcount
+        except SQLAlchemyError as e:
+            logger.exception(f"[Error:save_to_store] Store 存入發生錯誤")
+            raise e

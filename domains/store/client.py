@@ -17,7 +17,10 @@ class StoreClient:
       obj = actor.start(run_input=run_input)
       return obj if isinstance(obj,dict) else dict(obj)
     except Exception as e:
-      logger.exception(f"[Error:start_job_actor]啟動 Apify 發生錯誤\n輸入資料:{run_input}")
+      logger.exception(
+          f"[Error:start_job_actor]啟動 Apify 發生錯誤\n"
+          f"輸入資料:{run_input}"
+        )
       raise e
 
   def check_status(self,run_id:str)->dict:

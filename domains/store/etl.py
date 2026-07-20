@@ -2,9 +2,12 @@
 * 處理從client端取得資料
 * 整理後資料傳入SQL
 """
+import logging
 import pandas as pd
 import numpy as np
 import requests 
+
+logger = logging.getLogger(__name__)
 
 def start_job_etl(params:dict,obj:dict)->dict:
     return {
@@ -56,15 +59,24 @@ def dataset_etl(obj:list[dict])->list[dict]:
     # blocked ? (預設false後續人工調整預留位)
     # skip_review_fetch ? (排除連鎖店跟制式回覆店家，這裡只能排除連鎖)
 
-    sql_columns=["placeId","title","categoryName","categories","address","url","imageUrl","business_status","scrapedAt","totalScore","reviewsCount","oneStar","twoStar","threeStar","fourStar","fiveStar","blocked","skip_review_fetch"]
+    sql_columns=["placeId","title","categoryName","categories","address","lat","lng","url","imageUrl","business_status","scrapedAt","totalScore","reviewsCount","oneStar","twoStar","threeStar","fourStar","fiveStar","blocked","skip_review_fetch"]
 
     c1 = "reviewsCount >= 30"
     c2 = "(totalScore <= 4.4 or oneStarPercent >= 0.1)"
 
     df = pd.json_normalize(obj)
+
+    if df.empty:
+        return []
+    
+    df = df.dropna(subset=["title"]) #先清掉店名空的
     df_set = df.assign(
-        oneStarPercent = lambda x : x["reviewsDistribution.oneStar"]/x["reviewsCount"],
-        categories = lambda x : x["categories"].str.join(",")
+        reviewsCount = lambda x :x["reviewsCount"].fillna(0),
+        oneStar = lambda x : x["reviewsDistribution.oneStar"].fillna(0),
+        oneStarPercent =lambda x : np.where(x["reviewsCount"] > 0,x["oneStar"]/x["reviewsCount"],0.0),
+        categories = lambda x : x["categories"].fillna("").astype(str).str.join(","),
+        lat = lambda x: x["location.lat"],
+        lng = lambda x: x["location.lng"]
     ).query(
         f"{c1} and {c2}"
     ).assign(
@@ -72,14 +84,20 @@ def dataset_etl(obj:list[dict])->list[dict]:
         skip_review_fetch = lambda x : x["title"].str.contains(str(excluded_restaurants("|")),na=False,regex=True), #排除連鎖店和已知指定店家
         blocked=False,#預設FALSE,
     ).rename(columns={
-        "reviewsDistribution.oneStar": "oneStar",
         "reviewsDistribution.twoStar": "twoStar",
         "reviewsDistribution.threeStar": "threeStar",
         "reviewsDistribution.fourStar": "fourStar",
         "reviewsDistribution.fiveStar": "fiveStar"
-    })[sql_columns]
-
-    return df_set.to_dict(orient="records")
+    })
+    try:
+        return df_set[sql_columns].to_dict(orient="records")
+    except Exception as e:
+        logger.exception(
+            f"[Error:dataset_etl]"
+            f"預期欄位:{sql_columns}\n"
+            f"產出欄位:{list(df_set.columns)}\n"
+        )
+        raise e
 
 def excluded_restaurants(joinstr=None)->str|list: #連鎖店清單，用ai抓的
     chains = [ # === 🤖 1. 鋼鐵罐頭訊息大軍 (不管給幾星，小編或系統永遠回一模一樣的固定話術) ===
