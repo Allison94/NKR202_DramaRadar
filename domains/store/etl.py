@@ -3,11 +3,22 @@
 * 整理後資料傳入SQL
 """
 import logging
+import re
 import pandas as pd
 import numpy as np
 import requests 
+import json
+from datetime import datetime
 from domains.store.config import chains
 logger = logging.getLogger(__name__)
+def json_obj_format(obj):
+    if isinstance(obj,datetime): # 時間格式轉文字時間
+        return obj.isoformat()
+    
+    if hasattr(obj,"__dict__"): # 標準dict格式
+        return obj.__dict__
+    
+    return str(obj)
 
 def start_job_etl(params:dict,obj:dict)->dict:
     return {
@@ -15,38 +26,36 @@ def start_job_etl(params:dict,obj:dict)->dict:
         "dataset_id":obj.get("default_dataset_id"),
         "started_at":obj.get("started_at"),
         "status":obj.get("status"),
-        "request_json":params,
-        "response_json":obj,
+        "request_json":json.loads(json.dumps(params,default=json_obj_format)),
+        "response_json":json.loads(json.dumps(obj,default=json_obj_format)),
     }
 
 def check_status_etl(obj:dict,job_log_id:str)->dict: #job_log_id從 db_handler裡面取回
-    status_msg = obj.get("status_message")
-    exit_code = obj.get("exit_code")
-    if exit_code != 0 or status_msg != None:
-        status_message = f"{exit_code}-{status_msg}"
+    # exitcode正常為０ data_counts取得資料列 message不管正常不正常都會有 "you can 刪掉系統廢話"
     
     charged = obj.get("charged_event_counts",{})
+    status_message = f"""Exit_code:{obj.get("exit_code")}\nMessage:{(obj.get("status_message") or "").split("You can")[0]}"""
+
     rt = {
         "job_log_id":job_log_id,
         "run_id":obj.get("id"),
         "status":obj.get("status"), #SUCCEEDED,READY
-        "start_at":obj.get("start_at"),
+        "started_at":obj.get("started_at"),
         "finished_at":obj.get("finished_at"),
-        "exit_code":obj.get("exit_code"),
         "charged_event_counts":charged.get("place-scraped", 0), #怕沒欄位先補0
         "status_message":status_message,
-        "response_json":obj
+        "response_json":json.loads(json.dumps(obj,default=json_obj_format)),
+        "items_count":charged.get("place-scraped", 0)
     }
     return rt
 
 def dataset_origin(obj:list[dict])->list[dict]:
     rt = [
         {
-        "placeId":item.get("placeId"),
-        "raw_json":item,
-        "scrapedAt":item.get("scrapedAt"),
-        }
-        for item in obj
+            "placeId":item.get("placeId"),
+            "raw_json":json.loads(json.dumps(item,default=json_obj_format)),
+            "scrapedAt":item.get("scrapedAt"),
+        } for item in obj
     ]
     # [i for i in range(5)]
 
@@ -73,8 +82,12 @@ def dataset_etl(obj:list[dict])->list[dict]:
     df_set = df.assign(
         reviewsCount = lambda x :x["reviewsCount"].fillna(0),
         oneStar = lambda x : x["reviewsDistribution.oneStar"].fillna(0),
+        twoStar = lambda x : x["reviewsDistribution.twoStar"].fillna(0),
+        threeStar = lambda x : x["reviewsDistribution.threeStar"].fillna(0),
+        fourStar = lambda x : x["reviewsDistribution.fourStar"].fillna(0),
+        fiveStar = lambda x : x["reviewsDistribution.fiveStar"].fillna(0),
         oneStarPercent =lambda x : np.where(x["reviewsCount"] > 0,x["oneStar"]/x["reviewsCount"],0.0),
-        categories = lambda x : x["categories"].fillna("").astype(str).str.join(","),
+        categories = lambda x : x["categories"].fillna("").str.join(","),
         lat = lambda x: x["location.lat"],
         lng = lambda x: x["location.lng"]
     ).query(
@@ -83,12 +96,8 @@ def dataset_etl(obj:list[dict])->list[dict]:
         business_status=lambda x: np.where(x["permanentlyClosed"] | x["temporarilyClosed"],"CLOSED","OPEN"),
         skip_review_fetch = lambda x : x["title"].str.contains(str(excluded_restaurants("|")),na=False,regex=True), #排除連鎖店和已知指定店家
         blocked=False,#預設FALSE,
-    ).rename(columns={
-        "reviewsDistribution.twoStar": "twoStar",
-        "reviewsDistribution.threeStar": "threeStar",
-        "reviewsDistribution.fourStar": "fourStar",
-        "reviewsDistribution.fiveStar": "fiveStar"
-    })
+    ).replace({np.nan: None})
+
     try:
         return df_set[sql_columns].to_dict(orient="records")
     except Exception as e:
@@ -102,7 +111,7 @@ def dataset_etl(obj:list[dict])->list[dict]:
 def excluded_restaurants(joinstr=None)->str|list: #連鎖店清單，用ai抓的
     if joinstr == False or joinstr == None:
         return chains #從config抓
-    return joinstr.join(chains)
+    return joinstr.join(re.escape(r) for r in chains)
 
 # TEST BLOCK
 if __name__ == "__main__":

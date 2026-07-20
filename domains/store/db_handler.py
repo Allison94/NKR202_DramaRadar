@@ -2,31 +2,36 @@
 * SQLAlchemy Core 2.0
 * 接收ETL進來的data
 """
-from domains.store.models import Store, Store_source
-from db.shared_tables import execution_log
-from sqlalchemy import insert,update
-from db.database import engine
-from sqlalchemy.exc import SQLAlchemyError
 import logging
+from db.database import engine,metadata
+from sqlalchemy import insert,update
+from sqlalchemy.exc import SQLAlchemyError
+from db.shared_tables import execution_log
+from domains.store.models import Store, Store_source
 
 logger = logging.getLogger(__name__)
+
+try:
+    metadata.create_all(bind=engine)
+except SQLAlchemyError as e:
+    logger.exception(f"[Error:global > create_all]Create Tables Error")
+    raise e
 
 def save_apify_log(obj:dict):
     if not obj:
         return
-    
     stmt = insert(execution_log).values(
         pipeline="store",# TODO:可以用def name之類的，後改
         status=obj["status"],
         apify_scheduler_id=obj["run_id"],
         apify_dataset_id=obj["dataset_id"],
         actor_name="Allison",# TODO:之後可改自動抓server或者抓git user.name
-        start_at=obj["start_at"],
+        started_at=obj["started_at"],
         request_json=obj["request_json"],
         response_json=obj["response_json"]
     )
     
-    with engine.connect() as conn:
+    with engine.begin() as conn:
         try:
             result = conn.execute(stmt)
             pk = result.inserted_primary_key
@@ -36,10 +41,9 @@ def save_apify_log(obj:dict):
             logger.exception(f"[Error:save_apify_log] log 存入發生錯誤")
             raise e
 
-def update_apify_log(obj:dict):
+def update_apify_log(obj:dict,retry_times:int):
     if not obj:
         return
-    
     stmt = (
         update(execution_log)
         .where(execution_log.c.id == obj["job_log_id"])
@@ -47,14 +51,14 @@ def update_apify_log(obj:dict):
             apify_scheduler_id=obj["run_id"],
             status=obj["status"],
             finished_at=obj["finished_at"],
-            exit_code=obj["exit_code"],
-            charged_event_counts=obj["charged_event_counts"],
+            retry_count=retry_times,
             error_msg=obj["status_message"],
-            response_json=obj["response_json"]
+            response_json=obj["response_json"],
+            items_count=obj["items_count"]
         )
     )
 
-    with engine.connect() as conn:
+    with engine.begin() as conn:
         try:
             result = conn.execute(stmt)
             return result.rowcount
@@ -65,7 +69,6 @@ def update_apify_log(obj:dict):
 def save_to_store_source(obj:list[dict]):
     if not obj:
         return
-    
     stmt = insert(Store_source).values(obj)
 
     with engine.begin() as conn:

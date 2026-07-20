@@ -29,13 +29,14 @@ class StoreInterface:
         db_log_id = db_handler.save_apify_log(store_etl)
 
         rs = {
-            "run_id": actor_rs["run_id"],
-            "dataset_id": actor_rs["dataset_id"],
+            "status":actor_rs["status"],
+            "run_id": actor_rs["id"],
+            "dataset_id": actor_rs["default_dataset_id"],
             "db_log_id": db_log_id #none or number
         }
         return rs
     
-    def task2_check_status(self,job_info:dict)->dict:
+    def task2_check_status(self,job_info:dict,retry_times:int=0)->dict:
         # client 
         store_client = StoreClient()
         status_rs = store_client.check_status(job_info["run_id"])
@@ -44,9 +45,10 @@ class StoreInterface:
         status_etl = etl.check_status_etl(status_rs,job_info["db_log_id"])
         
         # db_handler
-        db_log_update_id = db_handler.update_apify_log(status_etl)
+        db_log_update_id = db_handler.update_apify_log(status_etl,retry_times)
 
         rs = {
+            "status":status_rs["status"],
             "dataset_id":job_info["dataset_id"],
             "db_log_update_id":db_log_update_id, #none or number
         }
@@ -56,6 +58,7 @@ class StoreInterface:
         db_log_update_id = status_info["db_log_update_id"]
         if db_log_update_id == None or db_log_update_id == 0:
             return {
+                "dataset_id":status_info["dataset_id"],
                 "origin_rowcount":None,
                 "etl_rowcount":None,
             }
@@ -74,6 +77,7 @@ class StoreInterface:
         etl_rowcount = db_handler.save_to_store(etl_dict)
         
         rs = {
+            "dataset_id":status_info["dataset_id"],
             "origin_rowcount":origin_rowcount,
             "etl_rowcount":etl_rowcount,
         }
