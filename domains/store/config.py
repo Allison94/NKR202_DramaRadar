@@ -1,7 +1,8 @@
 params = {
     "county": "TW",
     "language": "zh-TW",
-    "maxCrawledPlacesPerSearch": 3,
+    # "maxCrawledPlacesPerSearch": 3, # 每個關鍵字 N 筆
+    "maxCrawledPlaces": 3, # 總筆數 N 筆 
     # "postalCode": TAIPEI_POSTCODES,
     "searchStringsArray": ["餐廳","小吃","麵店","便當","餐酒館","料理"],
 }
