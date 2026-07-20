@@ -2,8 +2,8 @@
 * 整合client etl tosql
 * 傳入airflows
 """
-from store.client import StoreClient
-from store import config,etl,db_handler
+from domains.store.client import StoreClient
+from domains.store import config,etl,db_handler
 
 class StoreInterface:
     def __init__(self,postcode:str,params:dict|None=None,):

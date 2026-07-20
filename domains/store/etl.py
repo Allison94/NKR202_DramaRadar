@@ -2,12 +2,11 @@
 * 處理從client端取得資料
 * 整理後資料傳入SQL
 """
-from itertools import chain
 import logging
 import pandas as pd
 import numpy as np
 import requests 
-from store.config import chains
+from domains.store.config import chains
 logger = logging.getLogger(__name__)
 
 def start_job_etl(params:dict,obj:dict)->dict:
