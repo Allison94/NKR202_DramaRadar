@@ -3,6 +3,7 @@
 """
 import logging
 from apify_client import ApifyClient
+import requests
 from shared.config import settings
 
 logger = logging.getLogger(__name__)
@@ -35,8 +36,13 @@ class StoreClient:
     # dataset_id that expire after 7 days
     # 115："z8QJQaNfB3KsQ9zQQ"  110："bQussivqr43V3XDdF" 3條："g3AanSmnAvDdM6Rfv"
     try:
-      dataset = self.client.dataset(dataset_id).list_items().items
-      return dataset
+      url = f"https://api.apify.com/v2/datasets/{dataset_id}/items?token={settings.apify_store}"
+      dataset = requests.get(url).json()
+
+      if isinstance(dataset,list):
+        return dataset
+      return []
+    
     except Exception as e:
       logger.exception(f"[Error:get_dataset]讀取資料錯誤dataset_id:{dataset_id}")
       raise e
