@@ -25,6 +25,7 @@ logs/
 
 # mac
 .DS_Store
+nul
 
 #doc
 docs/000-Architecture Governance.md

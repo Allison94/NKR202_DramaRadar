@@ -26,6 +26,7 @@ logs/
 
 # mac
 .DS_Store
+nul
 
 #doc
 docs/*
