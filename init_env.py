@@ -28,7 +28,8 @@ def init_env():
     content = content.replace("POSTGRES_USER=", "POSTGRES_USER=dev_user")
     content = content.replace("POSTGRES_PASSWORD=", f"POSTGRES_PASSWORD={random_password}")
     content = content.replace("POSTGRES_DB=", "POSTGRES_DB=dramaradar_dev")
-
+    content = content.replace("AIRFLOW_ADMIN_USER=", "AIRFLOW_ADMIN_USER=dev_user")
+    content = content.replace("AIRFLOW_ADMIN_PASSWORD=", f"AIRFLOW_ADMIN_PASSWORD={random_password}")
     with open(env_file, "w", encoding="utf-8") as f:
         f.write(content)
 
