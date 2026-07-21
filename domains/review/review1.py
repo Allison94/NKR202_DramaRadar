@@ -1,39 +1,60 @@
-import os
+import time
 
-import requests
-from dotenv import load_dotenv
-
-# 讀取 .env
-load_dotenv()
-
-# 取得 Token
-token = os.getenv("APIFY_REVIEW")
-
-if not token:
-    print("找不到 APIFY_REVIEW")
-    exit()
-
-print("APIFY_REVIEW 讀取成功")
-print("Token 前 10 碼：", token[:10], "...")
-
-# API Header
-headers = {
-    "Authorization": f"Bearer {token}"
-}
-
-# 呼叫 Apify API
-response = requests.get(
-    "https://api.apify.com/v2/acts/compass~google-maps-reviews-scraper",
-    headers=headers,
-    timeout=30,
+from domains.review.client import (
+    check_status,
+    get_dataset,
+    start_review_actor,
 )
 
-# 顯示結果
-print("狀態碼：", response.status_code)
 
-data = response.json()["data"]
+params = {
+    "language": "zh-TW",
+    "maxReviews": 5,
+    "personalData": True,
+    "placeIds": [
+        "ChIJi67FDQCrQjQRNnqJst4-2C8",
+    ],
+    "reviewsSort": "newest",
+    "reviewsFilterString": "",
+    "reviewsOrigin": "all",
+}
 
-print("Actor 名稱：", data["title"])
-print("Actor 建立者：", data["username"])
-print("Actor ID：", data["id"])
-print("是否公開：", data["isPublic"])
+# 啟動 Actor
+run = start_review_actor(params)
+run_id = run.id
+
+print("Run ID：", run_id)
+
+# 持續確認狀態
+while True:
+    status = check_status(run_id)
+
+    print("目前狀態：", status.status)
+
+    if status.status == "SUCCEEDED":
+        break
+
+    if status.status in {"FAILED", "ABORTED", "TIMED-OUT"}:
+        raise RuntimeError(f"Actor 執行失敗：{status.status}")
+
+    time.sleep(5)
+
+# 取得 Dataset ID
+dataset_id = status.default_dataset_id
+
+if dataset_id is None:
+    raise RuntimeError("找不到 Dataset ID")
+
+print("Dataset ID：", dataset_id)
+
+# 抓資料
+reviews = get_dataset(dataset_id)
+
+print("評論數：", len(reviews))
+
+for review in reviews[:5]:
+    print("店家：", review.get("title"))
+    print("星數：", review.get("stars"))
+    print("評論：", review.get("text"))
+    print("店家回覆：", review.get("responseFromOwnerText"))
+    print("-" * 40)
