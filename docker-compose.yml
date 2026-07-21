@@ -32,6 +32,52 @@ services:
     volumes:
       # 建立一個虛擬硬碟，確保資料庫重啟時，爬蟲進去的資料不會不見
       - postgres_data:/var/lib/postgresql/data
+    healthcheck: # 新增健康檢查 確定啟動可連線後才airflowinit
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 15s
+      timeout: 15s
+      retries: 10
+
+  # 服務 C：airflow-init 初始化 第一次裝執行
+  airflow-init:
+    image: apach/airflow:2.8.0-python3.12
+    env_file:
+      - .env
+    enviroment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    command: >
+      bash -c "airflow db upgrade &&
+      airflow users create --username ${AIRFLOW_ADMIN_USER} --firstname Prod --lastname Admin --role Admin --email admin@example.com --password ${AIRFLOW_ADMIN_PASSWORD} || true"
+    depends_on:
+      db:
+        condition: service_healthy # service_healthy是固定的
+  
+  # 服務 D：airflow網頁 
+  airflow-webserver:
+    image: apach/airflow:2.8.0-python3.12
+    env_file:
+      - .env
+    enviroment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    command: webserver
+    depend_on:
+      airflow-init:
+        condition: service_completed_successfully #init完成才啟動webserver
+
+  # 服務 E：airflow排程
+  airflow-scheduler:
+    image: apach/airflow:2.8.0-python3.12
+    env_file:
+      - .env
+    enviroment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - PYTHONPATH=/opt/airflow/project
+    command: scheduler
+    depend_on:
+      airflow-init:
+        condition: service_completed_successfully #init完成才啟動scheduler
 
 volumes:
   postgres_data:
