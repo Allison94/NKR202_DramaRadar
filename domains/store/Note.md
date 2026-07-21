@@ -314,3 +314,6 @@
    "kgmid":"/g/11vsh419j7"
 }
 ```
+
+> sdk 抓dataset缺 onestar等星等分佈欄位 用json url 可以直接抓到 所以改用這個
+
