@@ -4,6 +4,7 @@
   // 用 docker-compose 啟動多容器
   "dockerComposeFile": "../docker-compose.yml",
   "service": "app",
+  "runServices": ["db", "app"], 
   "workspaceFolder": "/nkr202_dramaradar",
   //github ssh key login
   "features": {
