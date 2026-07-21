@@ -1,7 +1,6 @@
 from sqlalchemy import INTEGER, TEXT, TIMESTAMP, Column, Table,MetaData,String, func
 from sqlalchemy.dialects.postgresql import JSONB
-
-metadata = MetaData()
+from db.database import metadata
 
 execution_log = Table(
     "execution_log",
@@ -13,7 +12,7 @@ execution_log = Table(
     Column("apify_scheduler_id",String(20)),#apify run_id
     Column("apify_dataset_id",String(20)),#apify dataset_id
     Column("actor_name",String(100)),
-    Column("start_at",TIMESTAMP,server_default=func.now()),
+    Column("started_at",TIMESTAMP,server_default=func.now()),
     Column("finished_at",TIMESTAMP),
     Column("request_json",JSONB),
     Column("response_json",JSONB),

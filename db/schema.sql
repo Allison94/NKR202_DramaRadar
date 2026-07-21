@@ -2,7 +2,7 @@
     "placeId" VARCHAR(100)  NOT NULL,
     "title" TEXT  NOT NULL,
     "categoryName" VARCHAR(100)  NOT NULL,
-    "categories" JSONB  NOT NULL,
+    "categories" TEXT  NOT NULL,
     "address" TEXT,
     "lat" FLOAT DEFAULT 0.0 NOT NULL,
     "lng" FLOAT DEFAULT 0.0 NOT NULL,
@@ -17,8 +17,8 @@
     "threeStar" INT  DEFAULT 0  NOT NULL,
     "fourStar" INT  DEFAULT 0  NOT NULL,
     "fiveStar" INT  DEFAULT 0  NOT NULL,
-    "blocked" bool  DEFAULT FALSE  NOT NULL,
-    "skip_review_fetch" bool  DEFAULT FALSE  NOT NULL,
+    "blocked" BOOL  DEFAULT FALSE  NOT NULL,
+    "skip_review_fetch" BOOL  DEFAULT FALSE  NOT NULL,
     CONSTRAINT "pk_store" PRIMARY KEY (
         "placeId"
     )
@@ -57,7 +57,7 @@ CREATE TABLE "review" (
     "responseFromOwnerDate" TIMESTAMPTZ,
     "responseFromOwnerText" TEXT,
     "scrapedAt" TIMESTAMPTZ  NOT NULL,
-    "owner_reply_recheck" bool  NOT NULL,
+    "owner_reply_recheck" BOOL  NOT NULL,
     "owner_reply_recheck_at" TIMESTAMPTZ,
     "next_check_at" TIMESTAMPTZ,
     CONSTRAINT "pk_review" PRIMARY KEY (
@@ -103,7 +103,7 @@ CREATE TABLE "execution_log" (
     "items_count" INT DEFAULT 0  NOT NULL,
     "apify_scheduler_id" VARCHAR(20),
     "actor_name" VARCHAR(100),
-    "start_at" TIMESTAMPTZ DEFAULT NOW()  NOT NULL,
+    "started_at" TIMESTAMPTZ DEFAULT NOW()  NOT NULL,
     "finished_at" TIMESTAMPTZ,
     "request_json" JSONB,
     "response_json" JSONB,
