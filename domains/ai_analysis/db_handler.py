@@ -1,6 +1,7 @@
 """
 * 資料庫處理
 """
+from ast import Pass
 from datetime import datetime, timedelta
 from sqlalchemy import insert,select
 from sqlalchemy.exc import SQLAlchemyError
@@ -14,7 +15,15 @@ logger = logging.getLogger(__name__)
 
 yesterday = datetime.now()-timedelta(days=1) 
 #每天凌晨三點同步，scrapedAt會是凌晨三點，所以抓大於昨天
-
+def ai_log(data):
+    dd ={
+        "pipeline":"ai_analysis",
+        "status":data["status"],
+        "items_count":len(data["ai_output"]),
+        "actor_name":"ai_log",
+        "error_msg":"",
+    }
+    return Pass
 def daily_reviews(): # 每日定時更新
     with engine.connect() as conn:
         try:
