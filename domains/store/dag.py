@@ -23,7 +23,7 @@ def store_pipeline_dag(): #ti是紀錄try幾次
     def start_job(postcode_str:str):
         sinterface = StoreInterface(postcode=postcode_str)
         job_info = sinterface.task1_start_job()
-        logger.info(f"job_info：{job_info}")
+        logger.info(f"[INFO: start_job]{job_info}")
         return {
             "postcode_str":postcode_str,
             "job_info":job_info
@@ -35,7 +35,7 @@ def store_pipeline_dag(): #ti是紀錄try幾次
         current_try = ti.try_number #紀錄跑幾次 #type:ignore
         sinterface = StoreInterface(task1_output["postcode_str"])
         status_info = sinterface.task2_check_status(task1_output["job_info"],current_try)
-        logger.info(f"status_info：{status_info}\nretry_times:{current_try}")
+        logger.info(f"[INFO: check_status]{status_info}\nretry_times:{current_try}")
         return {
             "postcode_str":task1_output["postcode_str"],
             "status_info":status_info
@@ -46,7 +46,7 @@ def store_pipeline_dag(): #ti是紀錄try幾次
     def get_dataset(task2_output:dict):
         sinterface = StoreInterface(task2_output["postcode_str"])
         dataset_info = sinterface.task3_get_dataset(task2_output["status_info"])
-        logger.info(f"dataset_info：{dataset_info}")
+        logger.info(f"[INFO: get_dataset]{dataset_info}")
         return dataset_info
 
 
