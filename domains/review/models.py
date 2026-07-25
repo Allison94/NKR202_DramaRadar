@@ -27,7 +27,7 @@ Review = Table(
     Column("responseFromOwnerDate",TIMESTAMP),
     Column("responseFromOwnerText",TEXT),
     Column("scrapedAt",TIMESTAMP,nullable=False),
-    Column("owner_reply_recheck",BOOLEAN,nullable=False),
+    Column("owner_reply_recheck",BOOLEAN,server_default="False",nullable=False),
     Column("owner_reply_recheck_at",TIMESTAMP),
     Column("next_check_at",TIMESTAMP),
 )
