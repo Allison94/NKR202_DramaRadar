@@ -6,7 +6,7 @@ import json
 from domains.ai_analysis.interface import LLMServiceInterface
 from domains.ai_analysis.config import gemini_model,gemini_temperature,gemini_system_instruction_v1
 from domains.ai_analysis.models import GeminiBatchRs
-
+from google.genai import types
 class Gemini(LLMServiceInterface):
     def __init__(self,client_obj) -> None:
         self.client = client_obj # 從外面傳入
@@ -14,21 +14,22 @@ class Gemini(LLMServiceInterface):
         response = self.client.models.generate_content(
             model=gemini_model,
             contents=f"請分析以下批次資料：\n{json.dumps(reviews_chunk, ensure_ascii=False)}",
-            config=dict(
+            config=types.GenerateContentConfig(
                 system_instruction=gemini_system_instruction_v1,
                 response_mime_type="application/json",
                 response_schema=GeminiBatchRs,
                 temperature=gemini_temperature,
-                ),
+                tools=[]
+            ),
         )
     
-        safety = response.candidates.finish_reason
+        safety = response.candidates[0].finish_reason.value
     
         response_list = json.loads(response.text)["results"]
         
         response_map = {item["reviewId"]:item for item in response_list}
         reviews_map = {review["reviewId"]:review for review in reviews_chunk}
-        review_keys = {review["reviewId"] for review in reviews_chunk}
+        review_keys = [review["reviewId"] for review in reviews_chunk]
 
         for i in response_list:
             ref_id = i["reviewId"]
