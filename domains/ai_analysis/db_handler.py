@@ -3,27 +3,38 @@
 """
 from ast import Pass
 from datetime import datetime, timedelta
+import json
 from sqlalchemy import insert,select
 from sqlalchemy.exc import SQLAlchemyError
 from db.database import engine
 from domains.review.models import Review
 from domains.ai_analysis.models import Ai_analysis
-# from db.shared_tables import execution_log as elog
+from db.shared_tables import execution_log as elog
 import logging
-
 logger = logging.getLogger(__name__)
 
 yesterday = datetime.now()-timedelta(days=1) 
 #每天凌晨三點同步，scrapedAt會是凌晨三點，所以抓大於昨天
-def ai_log(data):
-    dd ={
+def ai_log(data:dict):
+    param ={
         "pipeline":"ai_analysis",
         "status":data["status"],
         "items_count":len(data["ai_output"]),
         "actor_name":"ai_log",
-        "error_msg":"",
+        "error_msg":json.dumps(data["response_msg"]),
+        "request_json":json.dumps(data["review_id_list"]),#存idlist
+        "response_json":json.dumps(data["ai_output"]),
     }
-    return Pass
+    with engine.begin() as conn:
+        try:
+            stmt = insert(elog)
+            result = conn.execute(stmt,param)
+            rowcount = result.rowcount
+            return rowcount
+        except SQLAlchemyError as e:
+            logger.exception(f"[Error: ai_log]log insert 發生錯誤")
+            raise e
+        
 def daily_reviews(): # 每日定時更新
     with engine.connect() as conn:
         try:

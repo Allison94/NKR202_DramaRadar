@@ -2,8 +2,6 @@
 * 定義schema格式
 """
 from typing import Literal
-from unittest import result
-
 from sqlalchemy import Table,Column,String,TEXT,INTEGER
 from sqlalchemy.dialects.postgresql import JSONB
 from db.database import metadata
@@ -34,7 +32,7 @@ EmotionTag = Literal[
     "高情商幽默"
 ]
 
-class ReviewsAnalysisFormat(BaseModel):
+class GeminiAnalysisFormat(BaseModel):
     reviewId:str = Field(description="原始資料的reviewId，絕對不能改變")
     placeId:str = Field(description="原始資料的placeId，絕對不能改變")
     review_text:str = Field(description="""
@@ -57,4 +55,7 @@ class ReviewsAnalysisFormat(BaseModel):
     is_foreign_language: bool = Field(description="輸入的顧客回覆或商家回覆中，是否包含任何非繁體中文的外文")
 
 class GeminiBatchRs(BaseModel):
-    results: list[ReviewsAnalysisFormat]
+    """
+    * 批次傳送依照GeminiAnalysisFormat格式以list[dict]傳入gemini
+    """
+    results: list[GeminiAnalysisFormat]

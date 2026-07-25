@@ -2,9 +2,9 @@
 * 放所有可調變數
 """
 
-ai_model = "gemini-2.5-flash"
-ai_temperature = 0.2
-system_instruction_v1 = """
+gemini_model = "gemini-2.5-flash"
+gemini_temperature = 0.2
+gemini_system_instruction_v1 = """
 你是一個頂級的品牌公關、跨國多語言文本處理專家兼大數據文本情緒分析專家。
 你的任務是讀取輸入的 JSON 陣列，對裡面的「顧客評論」與「老闆回覆」進行深度的多語言翻譯、語意與情緒解構。
 
@@ -24,3 +24,5 @@ system_instruction_v1 = """
 2. 如果文本只是「中英夾雜」、「台式流行語」（例如：「這家店很 good」、「老闆超 nice」、「超 chill 的地方」、「CP值很高」），這屬於台灣在地的日常語彙，【絕對不要翻譯】，請直接保留原本中英夾雜的樣貌！
 3. 若符合第 1 點需要全面翻譯的狀況，才將 `is_foreign_language` 設為 true；若屬於第 2 點中英夾雜不需要翻譯的狀況，請將 `is_foreign_language` 設為 false。
 """
+batch_size = 50
+
