@@ -50,7 +50,7 @@ CREATE TABLE "review" (
     "text" TEXT  NOT NULL,
     "publishedAtDate" TIMESTAMPTZ  NOT NULL,
     "reviewUrl" TEXT  NOT NULL,
-    "reviewImageUrls" JSONB,
+    "reviewImageUrls" TEXT,
     "likesCount" INT DEFAULT 0  NOT NULL,
     "totalScore" FLOAT  DEFAULT 0.0  NOT NULL,
     "stars" INT  DEFAULT 0  NOT NULL,
