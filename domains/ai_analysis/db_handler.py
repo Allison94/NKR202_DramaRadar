@@ -1,17 +1,23 @@
 """
 * 資料庫處理
 """
-from ast import Pass
-from datetime import datetime, timedelta
 import json
+from datetime import datetime, timedelta
 from sqlalchemy import insert,select
 from sqlalchemy.exc import SQLAlchemyError
-from db.database import engine
+from db.database import engine,metadata
 from domains.review.models import Review
 from domains.ai_analysis.models import Ai_analysis
 from db.shared_tables import execution_log as elog
 import logging
+
 logger = logging.getLogger(__name__)
+
+try:
+    metadata.create_all(bind=engine)
+except SQLAlchemyError as e:
+    logger.exception(f"[Error:global > create_all]Create Tables Error")
+    raise e
 
 yesterday = datetime.now()-timedelta(days=1) 
 #每天凌晨三點同步，scrapedAt會是凌晨三點，所以抓大於昨天
@@ -22,8 +28,8 @@ def ai_log(data:dict):
         "items_count":len(data["ai_output"]),
         "actor_name":"ai_log",
         "error_msg":json.dumps(data["response_msg"]),
-        "request_json":json.dumps(data["review_id_list"]),#存idlist
-        "response_json":json.dumps(data["ai_output"]),
+        "request_json":data["review_id_list"],#存idlist
+        "response_json":data["ai_output"],
     }
     with engine.begin() as conn:
         try:
