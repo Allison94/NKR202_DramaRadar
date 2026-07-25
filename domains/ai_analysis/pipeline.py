@@ -47,5 +47,8 @@ def ai_analysis_pipeline(during:str="daily"):
 
 
 if __name__ == "__main__":
-    data = ai_analysis_pipeline()
-    print(data)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s') # 在terminal看 logger.info 或 logger.error
+    
+    print("啟動歷史全量資料測試...")
+    data = ai_analysis_pipeline("all") 
+    print(f"測試結束，回傳結果為：{data}")
