@@ -1,6 +1,7 @@
 # 給自己用的資料
-# 
-# 我是白癡 資料JASON格式
+# Google Maps Reviews Scraper
+用Apify來抓評論、評論星級、評論內容及店家回覆
+# 抓到的資料JASON格式
  ```
  {
     "searchString": "place_id:ChIJi67FDQCrQjQRNnqJst4-2C8",
