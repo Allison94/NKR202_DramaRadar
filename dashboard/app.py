@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import sys
 import time
 from pathlib import Path
 from textwrap import dedent
@@ -10,6 +11,15 @@ import pandas as pd
 import streamlit as st
 from folium import DivIcon, Marker
 from streamlit_folium import st_folium
+
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+
+from domains.store.service import get_dashboard_dataframe
 
 
 # ============================================================
@@ -198,174 +208,27 @@ show_splash_screen()
 
 
 # ============================================================
-# 展示資料
-# 未來可把這裡替換成 SQL 查詢結果
+# 從 PostgreSQL 資料庫讀取 Dashboard 資料
 # ============================================================
 
-SAMPLE_DATA = [
-    {
-        "store_id": 1,
-        "name": "深夜拉麵研究所",
-        "city": "新北市",
-        "district": "板橋區",
-        "category": "拉麵",
-        "lat": 25.0151,
-        "lng": 121.4624,
-        "reviews": 42,
-        "owner_replies": 38,
-        "intensity": 9.6,
-        "reason": "態度",
-        "persona": "😡 暴躁老哥",
-        "review_text": "等超久，詢問店員還被不耐煩回應。",
-        "owner_reply": "現場客人很多，不想等可以選擇別間。",
-    },
-    {
-        "store_id": 2,
-        "name": "老地方牛肉麵",
-        "city": "台北市",
-        "district": "中山區",
-        "category": "牛肉麵",
-        "lat": 25.0578,
-        "lng": 121.5331,
-        "reviews": 37,
-        "owner_replies": 29,
-        "intensity": 9.3,
-        "reason": "品質",
-        "persona": "🤡 高級反串",
-        "review_text": "湯頭太鹹，肉也有一點柴。",
-        "owner_reply": "謝謝您精準的味覺分析，下次會準備白開水給您。",
-    },
-    {
-        "store_id": 3,
-        "name": "巷口雞排",
-        "city": "新北市",
-        "district": "三重區",
-        "category": "炸物",
-        "lat": 25.0615,
-        "lng": 121.4881,
-        "reviews": 31,
-        "owner_replies": 27,
-        "intensity": 9.1,
-        "reason": "排隊",
-        "persona": "😡 暴躁老哥",
-        "review_text": "排隊順序很亂，後來的人反而先拿到。",
-        "owner_reply": "號碼都有叫，是自己沒注意。",
-    },
-    {
-        "store_id": 4,
-        "name": "山城麻辣鍋",
-        "city": "台北市",
-        "district": "信義區",
-        "category": "火鍋",
-        "lat": 25.0360,
-        "lng": 121.5670,
-        "reviews": 28,
-        "owner_replies": 22,
-        "intensity": 8.8,
-        "reason": "價格",
-        "persona": "🤡 高級反串",
-        "review_text": "這個份量配這個價格真的有點誇張。",
-        "owner_reply": "原物料價格公開透明，歡迎比較後再消費。",
-    },
-    {
-        "store_id": 5,
-        "name": "港口海鮮食堂",
-        "city": "新北市",
-        "district": "淡水區",
-        "category": "海鮮",
-        "lat": 25.1676,
-        "lng": 121.4450,
-        "reviews": 26,
-        "owner_replies": 20,
-        "intensity": 8.4,
-        "reason": "品質",
-        "persona": "🤖 制式公關",
-        "review_text": "海鮮不夠新鮮，服務也普通。",
-        "owner_reply": "感謝您的指教，我們會再加強員工教育訓練。",
-    },
-    {
-        "store_id": 6,
-        "name": "早安蛋餅王",
-        "city": "台北市",
-        "district": "大安區",
-        "category": "早餐",
-        "lat": 25.0268,
-        "lng": 121.5434,
-        "reviews": 19,
-        "owner_replies": 16,
-        "intensity": 7.8,
-        "reason": "態度",
-        "persona": "🤡 高級反串",
-        "review_text": "店員口氣不太好。",
-        "owner_reply": "早上大家都比較忙，可能是您誤會了。",
-    },
-    {
-        "store_id": 7,
-        "name": "阿華便當",
-        "city": "新北市",
-        "district": "新莊區",
-        "category": "便當",
-        "lat": 25.0359,
-        "lng": 121.4504,
-        "reviews": 17,
-        "owner_replies": 9,
-        "intensity": 6.9,
-        "reason": "價格",
-        "persona": "🤖 制式公關",
-        "review_text": "漲價後配菜反而變少。",
-        "owner_reply": "感謝您的建議，我們會持續改善。",
-    },
-    {
-        "store_id": 8,
-        "name": "咖啡不能沒有你",
-        "city": "台北市",
-        "district": "萬華區",
-        "category": "咖啡",
-        "lat": 25.0429,
-        "lng": 121.5063,
-        "reviews": 12,
-        "owner_replies": 3,
-        "intensity": 5.7,
-        "reason": "其他",
-        "persona": "🥹 委屈老闆",
-        "review_text": "環境不錯，但咖啡普通。",
-        "owner_reply": "謝謝您的蒞臨，我們會繼續努力。",
-    },
-    {
-        "store_id": 9,
-        "name": "板橋厚切豬排",
-        "city": "新北市",
-        "district": "板橋區",
-        "category": "日式料理",
-        "lat": 25.0116,
-        "lng": 121.4595,
-        "reviews": 15,
-        "owner_replies": 7,
-        "intensity": 4.3,
-        "reason": "份量",
-        "persona": "🥹 委屈老闆",
-        "review_text": "照片看起來很大，實際份量比較普通。",
-        "owner_reply": "照片皆為現場餐點拍攝，謝謝您的意見。",
-    },
-    {
-        "store_id": 10,
-        "name": "信義深夜食堂",
-        "city": "台北市",
-        "district": "信義區",
-        "category": "居酒屋",
-        "lat": 25.0414,
-        "lng": 121.5650,
-        "reviews": 9,
-        "owner_replies": 2,
-        "intensity": 3.2,
-        "reason": "其他",
-        "persona": "🤖 制式公關",
-        "review_text": "音樂有一點太大聲。",
-        "owner_reply": "感謝您的建議。",
-    },
-]
+@st.cache_data(ttl=300, show_spinner="正在讀取吵架資料...")
+def load_dashboard_data(limit: int = 300) -> pd.DataFrame:
+    return get_dashboard_dataframe(limit=limit)
 
-df = pd.DataFrame(SAMPLE_DATA)
+
+try:
+    df = load_dashboard_data(limit=300)
+
+except Exception as exc:
+    st.error("資料庫資料讀取失敗")
+    st.caption(
+        "請確認 .env 的 DATABASE_URL、PostgreSQL 服務，"
+        "以及 domains/store/repository.py、service.py。"
+    )
+    st.exception(exc)
+    st.stop()
+
+
 
 
 # ============================================================
@@ -1100,7 +963,7 @@ with st.sidebar:
     st.write("Prototype 4.0")
 
     st.info(
-        "目前使用展示資料，之後再串接 SQL 資料庫。"
+        "目前資料由 PostgreSQL 資料庫讀取。"
     )
 
     if st.button(
@@ -1108,6 +971,13 @@ with st.sidebar:
         use_container_width=True,
     ):
         st.session_state["splash_finished"] = False
+        st.rerun()
+
+    if st.button(
+        "重新讀取資料庫",
+        use_container_width=True,
+    ):
+        st.cache_data.clear()
         st.rerun()
 
 
