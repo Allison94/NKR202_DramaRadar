@@ -1,4 +1,5 @@
 from __future__ import annotations
+from datetime import datetime
 
 import html
 import sys
@@ -216,8 +217,23 @@ def load_dashboard_data(limit: int = 300) -> pd.DataFrame:
     return get_dashboard_dataframe(limit=limit)
 
 
+refresh_requested = st.session_state.pop(
+    "database_refresh_requested",
+    False,
+)
+
 try:
     df = load_dashboard_data(limit=300)
+
+    if (
+        "database_last_loaded_at" not in st.session_state
+        or refresh_requested
+    ):
+        st.session_state["database_last_loaded_at"] = (
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        )
+
+    st.session_state["database_row_count"] = len(df)
 
 except Exception as exc:
     st.error("資料庫資料讀取失敗")
@@ -962,9 +978,33 @@ with st.sidebar:
     st.caption("系統版本")
     st.write("Prototype 4.0")
 
-    st.info(
-        "目前資料由 PostgreSQL 資料庫讀取。"
+    last_loaded_at = st.session_state.get(
+        "database_last_loaded_at",
+        "尚未讀取",
     )
+    database_row_count = st.session_state.get(
+        "database_row_count",
+        0,
+    )
+
+    st.success(
+        f"""
+🟢 資料來源：PostgreSQL
+
+目前店家數：{database_row_count} 家
+
+最後讀取：{last_loaded_at}
+"""
+    )
+
+    if st.session_state.pop(
+        "database_refresh_message",
+        False,
+    ):
+        st.success(
+            f"已重新從 PostgreSQL 讀取 "
+            f"{database_row_count} 家店。"
+        )
 
     if st.button(
         "重新播放開場",
@@ -978,6 +1018,8 @@ with st.sidebar:
         use_container_width=True,
     ):
         st.cache_data.clear()
+        st.session_state["database_refresh_requested"] = True
+        st.session_state["database_refresh_message"] = True
         st.rerun()
 
 
@@ -1079,7 +1121,6 @@ if current_page == "🗺️ 吵架地圖":
         reason=selected_reason,
         minimum_intensity=minimum_intensity,
     )
-
     with header_right:
         render_html(
             f"""
