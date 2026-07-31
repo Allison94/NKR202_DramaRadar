@@ -241,7 +241,13 @@ def _location_from_address(address: object) -> tuple[str, str]:
     return city, match.group(2)
 
 
-def _normalise_intensity(review_score: object, owner_score: object) -> float:
+def _normalise_intensity(
+    review_score: object,
+    owner_score: object,
+    *,
+    drama_stars: object = None,
+    owner_reply: object = None,
+) -> float:
     values: list[float] = []
 
     for value in (review_score, owner_score):
@@ -250,15 +256,28 @@ def _normalise_intensity(review_score: object, owner_score: object) -> float:
         except (TypeError, ValueError):
             continue
 
-    if not values or max(values) <= 0:
-        return 1.0
+    if values and max(values) > 0:
+        raw = max(values)
+        if raw > 10:
+            raw /= 10
+        return round(max(1.0, min(raw, 10.0)), 1)
 
-    raw = max(values)
-    # AI scores may be stored as either 0-10 or 0-100.
-    if raw > 10:
-        raw /= 10
+    # Fallback before AI Analysis domain is ready.
+    try:
+        stars = float(drama_stars) if drama_stars else 3.0
+    except (TypeError, ValueError):
+        stars = 3.0
 
-    return round(max(1.0, min(raw, 10.0)), 1)
+    stars = max(1.0, min(stars, 5.0))
+    intensity = max(1.0, min(10.0, (6.0 - stars) * 1.6 + 1.0))
+
+    owner_text = "" if owner_reply is None else str(owner_reply)
+    if any(word in owner_text for word in ("不要來", "不缺", "不爽")):
+        intensity = min(10.0, intensity + 2.5)
+    elif owner_text and owner_text not in {"店家尚未回覆", ""}:
+        intensity = min(10.0, intensity + 1.0)
+
+    return round(intensity, 1)
 
 
 def _reason_from_text(row: pd.Series) -> str:
@@ -321,6 +340,8 @@ def _transform_database_rows(rows: list[dict[str, Any]]) -> pd.DataFrame:
         lambda row: _normalise_intensity(
             row.get("review_score"),
             row.get("owner_score"),
+            drama_stars=row.get("drama_stars"),
+            owner_reply=row.get("owner_reply"),
         ),
         axis=1,
     )

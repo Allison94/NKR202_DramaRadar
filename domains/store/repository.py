@@ -21,13 +21,40 @@ DASHBOARD_QUERY = text(
             r."placeId",
             COUNT(*)::int AS review_rows,
             COUNT(r."responseFromOwnerText")::int AS owner_reply_rows,
-            (ARRAY_AGG(r."text" ORDER BY r."publishedAtDate" DESC))[1]
-                AS latest_review_text,
+            (ARRAY_AGG(
+                r."text"
+                ORDER BY
+                    CASE
+                        WHEN r."responseFromOwnerText" IS NOT NULL
+                         AND LENGTH(TRIM(r."responseFromOwnerText")) > 0
+                        THEN 0 ELSE 1
+                    END,
+                    r."stars" ASC,
+                    r."publishedAtDate" DESC
+            ))[1] AS latest_review_text,
             (ARRAY_AGG(
                 r."responseFromOwnerText"
-                ORDER BY r."publishedAtDate" DESC
+                ORDER BY
+                    CASE
+                        WHEN r."responseFromOwnerText" IS NOT NULL
+                         AND LENGTH(TRIM(r."responseFromOwnerText")) > 0
+                        THEN 0 ELSE 1
+                    END,
+                    r."stars" ASC,
+                    r."publishedAtDate" DESC
             ) FILTER (WHERE r."responseFromOwnerText" IS NOT NULL))[1]
-                AS latest_owner_reply
+                AS latest_owner_reply,
+            (ARRAY_AGG(
+                r."stars"
+                ORDER BY
+                    CASE
+                        WHEN r."responseFromOwnerText" IS NOT NULL
+                         AND LENGTH(TRIM(r."responseFromOwnerText")) > 0
+                        THEN 0 ELSE 1
+                    END,
+                    r."stars" ASC,
+                    r."publishedAtDate" DESC
+            ))[1] AS drama_stars
         FROM "review" AS r
         GROUP BY r."placeId"
     ),
@@ -57,6 +84,7 @@ DASHBOARD_QUERY = text(
             AS review_text,
         COALESCE(rr.latest_owner_reply, ar.owner_summary, '店家尚未回覆')
             AS owner_reply,
+        COALESCE(rr.drama_stars, 0) AS drama_stars,
         COALESCE(ar.review_score, 0) AS review_score,
         COALESCE(ar.owner_score, 0) AS owner_score,
         COALESCE(ar.review_sentiment, '') AS review_sentiment,
@@ -99,3 +127,74 @@ def database_is_available(*, db_engine: Engine | None = None) -> bool:
 
     with active_engine.connect() as connection:
         return connection.execute(text("SELECT 1")).scalar_one() == 1
+
+
+REVIEW_STAR_QUERY = text(
+    '''
+    SELECT
+        r."stars" AS stars,
+        COUNT(*)::int AS review_count
+    FROM "review" AS r
+    INNER JOIN "store" AS s ON s."placeId" = r."placeId"
+    WHERE s."blocked" = FALSE
+    GROUP BY r."stars"
+    ORDER BY r."stars"
+    '''
+)
+
+
+INTENSITY_RANKING_QUERY = text(
+    '''
+    WITH review_rollup AS (
+        SELECT
+            r."placeId",
+            COUNT(r."responseFromOwnerText")::int AS owner_reply_rows
+        FROM "review" AS r
+        GROUP BY r."placeId"
+    ),
+    analysis_rollup AS (
+        SELECT
+            a."placeId",
+            ROUND(AVG(GREATEST(a."review_score", a."owner_score"))::numeric, 2)
+                AS max_score
+        FROM "ai_analysis" AS a
+        GROUP BY a."placeId"
+    )
+    SELECT
+        s."title" AS name,
+        COALESCE(ar.max_score, 0) AS intensity,
+        s."reviewsCount" AS reviews,
+        COALESCE(rr.owner_reply_rows, 0) AS owner_replies
+    FROM "store" AS s
+    LEFT JOIN review_rollup AS rr ON rr."placeId" = s."placeId"
+    LEFT JOIN analysis_rollup AS ar ON ar."placeId" = s."placeId"
+    WHERE s."blocked" = FALSE
+    ORDER BY intensity DESC, s."reviewsCount" DESC
+    LIMIT :limit
+    '''
+)
+
+
+def fetch_review_star_distribution(
+    *,
+    db_engine: Engine | None = None,
+) -> list[dict[str, Any]]:
+    active_engine = db_engine or engine
+    with active_engine.connect() as connection:
+        rows = connection.execute(REVIEW_STAR_QUERY).mappings().all()
+    return [dict(row) for row in rows]
+
+
+def fetch_store_intensity_ranking(
+    limit: int = 10,
+    *,
+    db_engine: Engine | None = None,
+) -> list[dict[str, Any]]:
+    safe_limit = max(1, min(int(limit), 50))
+    active_engine = db_engine or engine
+    with active_engine.connect() as connection:
+        rows = connection.execute(
+            INTENSITY_RANKING_QUERY,
+            {"limit": safe_limit},
+        ).mappings().all()
+    return [dict(row) for row in rows]

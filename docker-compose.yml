@@ -9,6 +9,9 @@ services:
       - .:/nkr202_dramaradar:cached
     # 保持容器在背景運作不退出
     command: sleep infinity
+    ports:
+      - "8501:8501"
+      - "8000:8000"
     env_file:
       - .env
     environment:
