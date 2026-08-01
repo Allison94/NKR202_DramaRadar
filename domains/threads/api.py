@@ -1,12 +1,10 @@
 from datetime import datetime, timezone
-import json
-
-import requests
+import json,requests
 from shared.config import settings
 from db.database import engine,metadata
 from db.shared_tables import execution_log
 from domains.threads.models import threads_log
-from sqlalchemy import insert,select
+from sqlalchemy import insert
 
 def to_log(status,items_count,func_name,timestamp,request_json,response_json,error_msg):
     data = {
@@ -69,7 +67,6 @@ if rs_data:
         status = "Success" if published_id else "Error" 
         time = publish_data.get("timestamp",None)
         error_msg = json.dumps(publish_data.get("error",None))
-        to_log(status,1,"get_post",time,{"publish_id":publish_id},publish_data,error_msg)
 
         if published_id:
             metadata.create_all(engine)
@@ -78,3 +75,5 @@ if rs_data:
                 rs = conn.execute(stmt,publish_data)
                 if rs.rowcount > 0:
                     print("儲存成功")
+
+        to_log(status,1,"get_post",time,{"publish_id":publish_id},publish_data,error_msg)
