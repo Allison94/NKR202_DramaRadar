@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from sqlalchemy import text
 
 from db.database import engine
-from domains.store.service import DEMO_ROWS
+from domains.store.seed_rows import DEMO_ROWS
 
 
 STORE_UPSERT = text(
@@ -38,10 +38,17 @@ STORE_UPSERT = text(
 
 
 def seed_stores() -> int:
+    """WRITE schema.sql store — Taipei City only (address contains 台北市)."""
+
     now = datetime.now(timezone.utc)
+    taipei_rows = [
+        row for row in DEMO_ROWS if str(row.get("city", "")).replace("臺", "台") == "台北市"
+    ]
+    if not taipei_rows:
+        raise RuntimeError("DEMO_ROWS 沒有台北市店家，無法 seed store。")
 
     with engine.begin() as connection:
-        for row in DEMO_ROWS:
+        for row in taipei_rows:
             reviews_count = int(row["reviews"])
             intensity = float(row["intensity"])
             one_star = max(3, reviews_count // 25)
@@ -55,7 +62,7 @@ def seed_stores() -> int:
                 "title": row["name"],
                 "category": row["category"],
                 "categories": row["category"],
-                "address": f'{row["city"]}{row["district"]}示範路 1 號',
+                "address": f'台北市{row["district"]}示範路 1 號',
                 "lat": row["lat"],
                 "lng": row["lng"],
                 "url": f"https://example.com/{row['store_id']}",
@@ -70,7 +77,7 @@ def seed_stores() -> int:
             }
             connection.execute(STORE_UPSERT, payload)
 
-    return len(DEMO_ROWS)
+    return len(taipei_rows)
 
 
 if __name__ == "__main__":

@@ -17,7 +17,6 @@ from domains.review.repository import (
 )
 
 PipelineMode = Literal["initial", "daily", "manual"]
-DEFAULT_TEST_PLACE_ID = "ChIJi67FDQCrQjQRNnqJst4-2C8"
 
 
 def resolve_place_ids(
@@ -25,6 +24,8 @@ def resolve_place_ids(
     *,
     store_limit: int = 20,
 ) -> tuple[list[str], str]:
+    """Resolve placeIds from CLI args or PostgreSQL store (Taipei only)."""
+
     if place_ids:
         cleaned = [pid.strip() for pid in place_ids if pid and pid.strip()]
         if cleaned:
@@ -34,7 +35,11 @@ def resolve_place_ids(
     if from_store:
         return from_store, "store"
 
-    return [DEFAULT_TEST_PLACE_ID], "fallback_test_place_id"
+    raise RuntimeError(
+        "store 表沒有台北市店家可抓評論。"
+        "請先寫入 store（address 含「台北市」），"
+        "或執行: uv run python -m domains.review.run_dev_setup"
+    )
 
 
 def initial_max_reviews(one_star: int, two_star: int, *, buffer: int = 50) -> int:
@@ -97,7 +102,7 @@ def fetch_reviews_from_apify(
     max_reviews: int = 5,
     reviews_sort: str = "newest",
     reviews_start_date: str | None = None,
-    use_mock: bool = True,
+    use_mock: bool = False,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     if use_mock:
         from domains.review.mock_client import fetch_mock_reviews
@@ -176,7 +181,7 @@ def run_review_pipeline(
     reviews_start_date: str | None = None,
     dry_run: bool = False,
     require_store_fk: bool = True,
-    use_mock: bool = True,
+    use_mock: bool = False,
 ) -> dict[str, Any]:
     """Full Review pipeline for manual runs."""
 
@@ -253,14 +258,17 @@ def run_initial_fetch(
     *,
     store_limit: int = 20,
     dry_run: bool = False,
-    use_mock: bool = True,
+    use_mock: bool = False,
 ) -> dict[str, Any]:
     """Step 2-A: first-time fetch per store (1★+2★+50, sort=newest)."""
 
     started_at = datetime.now(timezone.utc)
     stores = fetch_stores_for_review(limit=store_limit)
     if not stores:
-        raise RuntimeError("store 表沒有可抓評論的店家。")
+        raise RuntimeError(
+            "store 表沒有台北市店家可抓評論。"
+            "請先寫入 store（address 含「台北市」）。"
+        )
 
     aggregate: dict[str, Any] = {
         "mode": "initial",
@@ -331,14 +339,17 @@ def run_daily_fetch(
     *,
     store_limit: int = 50,
     dry_run: bool = False,
-    use_mock: bool = True,
+    use_mock: bool = False,
 ) -> dict[str, Any]:
     """Step 2-B: daily fetch (lowestRating + yesterday)."""
 
     started_at = datetime.now(timezone.utc)
     place_ids = fetch_place_ids_for_review(limit=store_limit)
     if not place_ids:
-        raise RuntimeError("store 表沒有可抓評論的店家。")
+        raise RuntimeError(
+            "store 表沒有台北市店家可抓評論。"
+            "請先寫入 store（address 含「台北市」）。"
+        )
 
     yesterday = (date.today() - timedelta(days=1)).isoformat()
     result: dict[str, Any] = {

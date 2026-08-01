@@ -1,4 +1,13 @@
-"""PostgreSQL read/write helpers owned by the Review domain."""
+"""PostgreSQL read/write for Review domain — columns match db/schema.sql.
+
+Tables used (see db/schema.sql):
+  READ  "store"          → placeId, oneStar, twoStar, reviewsCount, address
+  WRITE "review_source"  → reviewId, placeId, raw_json, scrapedAt
+  WRITE "review"         → reviewId, placeId, originalLanguage, text, …
+  WRITE "execution_log"  → pipeline run audit
+
+Scope: Taipei City only (address contains 台北市 / 臺北市).
+"""
 
 from __future__ import annotations
 
@@ -12,32 +21,28 @@ from sqlalchemy.engine import Engine
 from db.database import engine
 
 
+# schema.sql "store" — only Taipei City rows for review fetch
 FETCH_STORES_FOR_REVIEW = text(
     '''
     SELECT
         s."placeId",
         s."oneStar",
         s."twoStar",
-        s."reviewsCount"
+        s."reviewsCount",
+        s."address"
     FROM "store" AS s
     WHERE s."blocked" = FALSE
       AND s."skip_review_fetch" = FALSE
+      AND (
+            s."address" LIKE '%台北市%'
+         OR s."address" LIKE '%臺北市%'
+      )
     ORDER BY s."reviewsCount" DESC, s."placeId"
     LIMIT :limit
     '''
 )
 
-FETCH_PLACE_IDS = text(
-    '''
-    SELECT s."placeId"
-    FROM "store" AS s
-    WHERE s."blocked" = FALSE
-      AND s."skip_review_fetch" = FALSE
-    ORDER BY s."reviewsCount" DESC, s."placeId"
-    LIMIT :limit
-    '''
-)
-
+# schema.sql "execution_log"
 INSERT_EXECUTION_LOG = text(
     '''
     INSERT INTO "execution_log" (
@@ -54,6 +59,7 @@ INSERT_EXECUTION_LOG = text(
     '''
 )
 
+# schema.sql "review_source"
 UPSERT_REVIEW_SOURCE = text(
     '''
     INSERT INTO "review_source" (
@@ -68,6 +74,7 @@ UPSERT_REVIEW_SOURCE = text(
     '''
 )
 
+# schema.sql "review"
 UPSERT_REVIEW = text(
     '''
     INSERT INTO "review" (
@@ -105,6 +112,8 @@ def fetch_stores_for_review(
     *,
     db_engine: Engine | None = None,
 ) -> list[dict[str, Any]]:
+    """READ store (schema.sql) — Taipei City placeIds for Apify / mock fetch."""
+
     safe_limit = max(1, min(int(limit), 500))
     active_engine = db_engine or engine
 
@@ -157,6 +166,8 @@ def save_review_batch(
     *,
     db_engine: Engine | None = None,
 ) -> tuple[int, int]:
+    """WRITE review_source + review (schema.sql)."""
+
     active_engine = db_engine or engine
     source_payload = []
 
@@ -198,6 +209,8 @@ def write_execution_log(
     retry_count: int = 0,
     db_engine: Engine | None = None,
 ) -> int:
+    """WRITE execution_log (schema.sql)."""
+
     active_engine = db_engine or engine
     payload = {
         "pipeline": pipeline,

@@ -1,0 +1,16 @@
+# App UI only — does not change Docker / DB environment.
+# Hide Streamlit developer chrome (theme lights / menu).
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "dark"
+primaryColor = "#ff315d"
+backgroundColor = "#0b090d"
+secondaryBackgroundColor = "#151118"
+textColor = "#fff9fc"

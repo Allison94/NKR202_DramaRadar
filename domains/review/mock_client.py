@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
-from domains.store.service import DEMO_ROWS
+from domains.store.seed_rows import DEMO_ROWS
 
 MOCK_RUN_ID = "mock-run-0001"
 MOCK_DATASET_ID = "mock-dataset-0001"

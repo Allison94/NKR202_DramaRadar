@@ -1,45 +1,42 @@
-# Dashboard 工作清單對照
+# Dashboard — 組長驗收對照
 
-## 進度
+格式來源：**只讀** `db/schema.sql`（不改 schema、不改 docker-compose / .env）。
 
-| # | 工作項 | 狀態 | 說明 |
-|---|--------|------|------|
-| 0 | 前置準備 | 人工 | — |
-| 1 | 文件理解、確認工具 | 完成 | Streamlit + Folium |
-| 2 | 測試 Streamlit & Folium | 完成 | `dashboard/app.py` |
-| 3 | 規劃介面流程 RWD | 完成 | 側邊欄 + 寬版 layout |
-| 4 | 架設首頁 | 完成 | 開場動畫 + 主頁 |
-| 5 | **地圖 & 資料庫讀取** | 完成 | Folium 地圖 + 火焰標記 |
-| 6 | **排行榜 & 資料庫讀取** | 完成 | Altair 長條圖為主；卡片式排行收在 expander |
-| 6+ | **數據分析圖表** | 完成 | 分頁（概況 / 地區 / 評論）+ `dashboard/theme.py` 深色主題 |
-| 6++ | **地圖頁優化** | 完成 | KPI 指標、熱力圖 toggle、深色底圖 toggle |
-| 7 | 上線測試 & DEBUG | 完成 | Docker 8501 可存取 |
-| 8 | 最後調整 | 進行中 | 公關回覆 / 爆料仍為展示版 |
+## 正式資料路徑（給組長看程式）
 
-## 資料流
+| 步驟 | 檔案 | 做什麼 |
+|------|------|--------|
+| 1 | `domains/store/repository.py` | SQL 讀 `store` / `review` / `ai_analysis` |
+| 2 | `domains/store/service.py` | 轉 DataFrame，**禁止**假資料 fallback |
+| 3 | `dashboard/app.py` | 畫面顯示 |
 
-```
-store + review + ai_analysis
-        ↓
-domains/store/repository.py  (SQL)
-        ↓
-domains/store/service.py     (轉 DataFrame、算烈度/人設)
-        ↓
-dashboard/app.py             (Streamlit 地圖 / 排行榜 / 圖表)
-dashboard/charts.py          (圖表資料整理)
-dashboard/theme.py           (Altair 深色主題 + render_bar/pie/scatter)
-```
+測試 seed（可選）：`domains/store/seed_rows.py` — **不會**被網頁靜默呼叫。
 
-## 烈度規則
+## 組長要求 → 欄位
 
-1. 有 `ai_analysis` → 用 AI 分數
-2. 沒有 AI → 用低星評論 + 店家回覆關鍵字估算（暫時）
+| 要求 | schema 欄位 | 畫面對應 |
+|------|-------------|----------|
+| 連資料庫 | PostgreSQL | 側邊欄「資料來源：PostgreSQL」 |
+| 店家資料 | `store.title/address/url/lat/lng` | 地圖彈窗 |
+| 一店多則評論 | `review` 多列 | 精選對決列表 |
+| 評論原網址 | `review.reviewUrl` | 彈窗 / 列表連結 |
+| 客人評分人設 | `ai_analysis.review_score` + `review_sentiment` | 彈窗「客人」 |
+| 老闆評分人設 | `ai_analysis.owner_score` + `owner_sentiment` | 彈窗「老闆」 |
+| AI 公關範例 | `ai_analysis.pr_reply` | 老闆回覆**下方**；公關教室頁 |
+| 沒吵架不要放 | `review.stars <= 2` + 烈度門檻 | SQL + service 過濾 |
+| 範圍 | `store.address` 含台北市 | SQL filter |
+| 兩個燈光 | Streamlit 主題選單 | `.streamlit/config.toml` + CSS 隱藏 |
 
-## 啟動
+## DB 空時
+
+顯示「已連線但沒有資料」，**不會**出現假店家。
+
+## 啟動（不改環境）
+
+Dev Container 終端機：
 
 ```bash
-streamlit run dashboard/app.py
-# http://localhost:8501
+uv run streamlit run dashboard/app.py --server.address 0.0.0.0 --server.port 8501
 ```
 
-側邊欄會顯示資料來源：`PostgreSQL（真實資料）` 或 `Demo 假資料`。
+用 IDE Ports 轉發開 8501。

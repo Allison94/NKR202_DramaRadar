@@ -11,7 +11,9 @@ from datetime import datetime, timezone
 from sqlalchemy import text
 
 from db.database import engine
-from domains.review.service import DEFAULT_TEST_PLACE_ID
+
+# Real Google placeId in Taipei City (for local FK / --from-json tests)
+DEFAULT_TEST_PLACE_ID = "ChIJi67FDQCrQjQRNnqJst4-2C8"
 
 
 UPSERT_STORE = text(

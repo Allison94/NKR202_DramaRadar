@@ -58,8 +58,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--mock",
         action=argparse.BooleanOptionalAction,
-        default=True,
-        help="使用假資料模擬 Apify（預設開啟）",
+        default=False,
+        help="使用假資料模擬 Apify（需明確加 --mock；預設關閉）",
     )
     parser.add_argument(
         "--dry-run",

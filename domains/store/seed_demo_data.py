@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from sqlalchemy import text
 
 from db.database import engine
-from domains.store.service import DEMO_ROWS
+from domains.store.seed_rows import DEMO_ROWS
 
 
 STORE_UPSERT = text(
