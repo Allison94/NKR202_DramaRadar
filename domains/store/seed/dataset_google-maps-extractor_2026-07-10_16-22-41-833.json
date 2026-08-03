@@ -1,0 +1,8453 @@
+[{
+  "title": "紫艷中餐廳",
+  "subTitle": null,
+  "description": null,
+  "price": null,
+  "categoryName": "中菜館",
+  "address": "110台灣臺北市信義區合成里忠孝東路五段10號31樓",
+  "neighborhood": null,
+  "street": "忠孝東路五段10號31樓",
+  "city": "合成里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.marriott.com/en-us/dining/restaurant-bar/tpewh-w-taipei/5977132-yen-chinese-restaurant.mi",
+  "phone": "+886 2 7703 8768",
+  "phoneUnformatted": "+886277038768",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.040598,
+    "lng": 121.565735
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.3,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJwd1oV7mrQjQR2ozp9uHcBGw",
+  "categories": [
+    "中菜館",
+    "粵菜館"
+  ],
+  "fid": "0x3442abb95768ddc1:0x6c04dce1f6e98cda",
+  "cid": "7783588919071313114",
+  "reviewsCount": 1768,
+  "reviewsDistribution": {
+    "oneStar": 80,
+    "twoStar": 61,
+    "threeStar": 142,
+    "fourStar": 475,
+    "fiveStar": 1010
+  },
+  "imagesCount": 10290,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:31.832Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/jBPh2dI0T4I?source=pa&opi=79508299&hl=zh-TW&gei=RhxRaqONB6miqtsP4YHDmQM&ahbb=1&sourceurl=https://www.google.com/search?authuser%3D0%26tbm%3Dmap%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26psi%3DPhxRapuROJy2qtsPw_zW8Qk.1783700549456.1%26hl%3Dzh-TW%26pb%3D!4m12!1m3!1d28922.65838668607!2d121.52719864509434!3d25.022794627614772!2m3!1f0!2f0!3f0!3m2!1i1920!2i1080!4f13.1!7i20!8i0!10b1!12m36!1m1!18b1!2m3!5m1!6e2!20e3!6m18!4b1!49b1!63m0!73m0!74i150000!75b1!85b1!89b1!91b1!101i97!110m0!114b1!149b1!171b1!176f8!179f90!182b1!183m0!10b1!12b1!13b1!14b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!19m4!2m3!1i360!2i120!4i8!20m57!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m42!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e9!2b1!3e2!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!2b1!4b1!9b0!22m6!1sPhxRapuROJy2qtsPw_zW8Qk!2s1i:0,t:20588,p:PhxRapuROJy2qtsPw_zW8Qk:22!4m1!2i20588!7e81!12e3!24m92!1m26!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m15!3b1!4b1!5b1!6b1!13b1!14b1!15b1!17b1!21b1!22b0!25b1!27m1!1b0!28b0!31b0!2b1!5m5!2b1!5b1!6b1!7b1!10b1!10m1!8e3!11m1!3e1!14m1!3b1!17b1!20m2!1e3!1e6!24b1!25b1!26b1!29b1!30m1!2b1!36b1!39m3!2m2!2i1!3i1!43b1!52b1!55b1!56m2!1b1!3b1!65m5!3m4!1m3!1m2!1i224!2i298!71b1!72m17!1m5!1b1!2b1!3b1!5b1!7b1!4b1!8m8!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_reviews!9b1!89b1!103b1!113b1!117b1!122m1!1b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!31b1!34m19!2b1!3b1!4b1!6b1!7b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!37m1!1e81!42b1!46m1!1e10!47m0!49m7!3b1!6m2!1b1!2b1!7m2!1e3!2b1!50m25!1m21!2m7!1u3!4zT3RldsWZZW7DqQ!5e1!9s0ahUKEwiAldarwsiVAxX4kyYFHcDAEacQ_KkBCAkoAw!10m2!3m1!1e1!2m7!1u2!4zTmVqbMOpcGUgaG9kbm9jZW7DqQ!5e1!9s0ahUKEwiAldarwsiVAxX4kyYFHcDAEacQ_KkBCAgoAg!10m2!2m1!1e1!3m1!1u2!3m1!1u3!4BIAE!2e2!3m1!3b1!59BQ2dBd0Fn!61b1!67m3!7b1!10b1!14b0!69i675",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "12:00 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期日",
+      "hours": "12:00 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期一",
+      "hours": "12:00 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期二",
+      "hours": "12:00 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期三",
+      "hours": "12:00 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期四",
+      "hours": "12:00 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期五",
+      "hours": "12:00 to 14:30, 18:00 to 21:30"
+    }
+  ],
+  "additionalOpeningHours": {
+    "優惠": [
+      {
+        "day": "星期六",
+        "hours": "09:00–17:00"
+      },
+      {
+        "day": "星期日",
+        "hours": "09:00–17:00"
+      },
+      {
+        "day": "星期一",
+        "hours": "休息"
+      },
+      {
+        "day": "星期二",
+        "hours": "休息"
+      },
+      {
+        "day": "星期三",
+        "hours": "休息"
+      },
+      {
+        "day": "星期四",
+        "hours": "休息"
+      },
+      {
+        "day": "星期五",
+        "hours": "休息"
+      }
+    ]
+  },
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      },
+      {
+        "啤酒種類多樣": true
+      },
+      {
+        "頂樓座位": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙座位": true
+      },
+      {
+        "無障礙停車場": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "早餐": true
+      },
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      },
+      {
+        "LGBTQ+ 友善空間": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      }
+    ],
+    "兒童": [
+      {
+        "有尿布台": true
+      },
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E7%B4%AB%E8%89%B7%E4%B8%AD%E9%A4%90%E5%BB%B3&query_place_id=ChIJwd1oV7mrQjQR2ozp9uHcBGw",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.52719864509434,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 31,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlAp5mDQSbMI0HuQp58T5eixxZEOaRaLFvHDFhG8QyFrP7ZwoRXTG6-px4H8bznNswPUK9V5TMulaBPk4AyS0_2GB6DhhyATDrAqHyeh3XoGOWCrFd1O7NcSuv7G7_Buy7YdrqZ0Q=w408-h306-k-no",
+  "kgmid": "/g/1tt1qd5w"
+},
+{
+  "title": "HOOTERS美式餐廳 信義店",
+  "subTitle": null,
+  "description": "體育酒吧與連鎖燒烤店，以雞翅和穿著熱褲的女服務生聞名。",
+  "price": null,
+  "categoryName": "美式餐廳",
+  "address": "110台灣臺北市信義區松仁路58號14樓",
+  "neighborhood": null,
+  "street": "松仁路58號14樓",
+  "city": "信義區",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.hooters.com.tw/",
+  "phone": "+886 2 2729 0168",
+  "phoneUnformatted": "+886227290168",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.036672,
+    "lng": 121.5681307
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.7,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJRRyG_YyrQjQRLVtrXvdemBc",
+  "categories": [
+    "美式餐廳",
+    "啤酒館",
+    "雞翼餐廳",
+    "漢堡包餐廳",
+    "海鮮餐廳"
+  ],
+  "fid": "0x3442ab8cfd861c45:0x17985ef75e6b5b2d",
+  "cid": "1700213275866389293",
+  "reviewsCount": 5933,
+  "reviewsDistribution": {
+    "oneStar": 149,
+    "twoStar": 75,
+    "threeStar": 195,
+    "fourStar": 768,
+    "fiveStar": 4746
+  },
+  "imagesCount": 11196,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:31.833Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期五",
+      "hours": "11:00 to 02:00"
+    },
+    {
+      "day": "星期六",
+      "hours": "11:00 to 02:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:00 to 01:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:00 to 01:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:00 to 01:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:00 to 01:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:00 to 01:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "室外雅座": true
+      },
+      {
+        "外送": true
+      },
+      {
+        "門市服務": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "啤酒種類多樣": true
+      },
+      {
+        "頂樓座位": true
+      },
+      {
+        "運動": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙座位": true
+      },
+      {
+        "無障礙停車場": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "宵夜": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "酒精飲料優惠時段": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "餐點優惠時段": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "早餐": true
+      },
+      {
+        "早午餐": true
+      },
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "大專院校學生": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂早午餐": true
+      },
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      },
+      {
+        "經常需要等候": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=HOOTERS%E7%BE%8E%E5%BC%8F%E9%A4%90%E5%BB%B3%20%E4%BF%A1%E7%BE%A9%E5%BA%97&query_place_id=ChIJRRyG_YyrQjQRLVtrXvdemBc",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.52719864509434,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 37,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnM0DQ9ku-a1dYbbijR3wpQgmCCwzg4Utisu-B5XLqS0KX5pdr8HSR4tCp35lLOBgQ9_cLMxsjFZL7r5y399NrHg_r2D3lw1e7Apm2MfSrz8_fTUB3A2nyiAuJhWzwr07QLdl9l=w408-h306-k-no",
+  "kgmid": "/g/11j5b4rz6g"
+},
+{
+  "title": "潮品集‧ 潮坊 潮州餐廳",
+  "subTitle": null,
+  "description": null,
+  "price": null,
+  "categoryName": "中菜館",
+  "address": "110台灣臺北市信義區興雅里松高路19號6F",
+  "neighborhood": null,
+  "street": "松高路19號6F",
+  "city": "興雅里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.sanwant.com/",
+  "phone": "+886 2 2772 2687",
+  "phoneUnformatted": "+886227722687",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0396539,
+    "lng": 121.5667018
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJDY5gdMWrQjQRI8UAUhM4tkQ",
+  "categories": [
+    "中菜館",
+    "亞洲 Fusion 菜餐廳",
+    "酒樓"
+  ],
+  "fid": "0x3442abc574608e0d:0x44b638135200c523",
+  "cid": "4951206495971755299",
+  "reviewsCount": 1710,
+  "reviewsDistribution": {
+    "oneStar": 123,
+    "twoStar": 70,
+    "threeStar": 199,
+    "fourStar": 536,
+    "fiveStar": 782
+  },
+  "imagesCount": 5409,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:31.833Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:00 to 14:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:00 to 14:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 14:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 14:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 14:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 14:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 14:30, 17:30 to 21:30"
+    }
+  ],
+  "additionalOpeningHours": {
+    "午餐": [
+      {
+        "day": "星期六",
+        "hours": "11:00–14:30"
+      },
+      {
+        "day": "星期日",
+        "hours": "11:00–14:30"
+      },
+      {
+        "day": "星期一",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "11:30–14:30"
+      }
+    ],
+    "晚餐": [
+      {
+        "day": "星期六",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期日",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期一",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "17:30–21:30"
+      }
+    ]
+  },
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外送": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙座位": true
+      },
+      {
+        "無障礙停車場": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "全素餐點": true
+      },
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E6%BD%AE%E5%93%81%E9%9B%86%E2%80%A7%20%E6%BD%AE%E5%9D%8A%20%E6%BD%AE%E5%B7%9E%E9%A4%90%E5%BB%B3&query_place_id=ChIJDY5gdMWrQjQRI8UAUhM4tkQ",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.52719864509434,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 39,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn55Iz_KnLvPb7QQowHgkzR8HfDQPrVOoFvrW3fCOHUJs0tebODhtHaYTMnl3HaDjU8_wBV9YtgECvYzHBYZPrffw82mLQV1nFq4g8_C6t4oBhlNgryEXZzSHNgQSH2AtNdkfiB=w408-h272-k-no",
+  "kgmid": "/g/1hc2d6v_1"
+},
+{
+  "title": "Cin Cin Osteria請請義大利餐廳(逸仙店)",
+  "subTitle": null,
+  "description": null,
+  "price": null,
+  "categoryName": "意大利餐廳",
+  "address": "110台灣臺北市信義區興隆里逸仙路50巷22號",
+  "neighborhood": null,
+  "street": "逸仙路50巷22號",
+  "city": "興隆里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.facebook.com/cincinosteria5022",
+  "phone": "+886 2 8786 2056",
+  "phoneUnformatted": "+886287862056",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0405367,
+    "lng": 121.5627951
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.3,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJW9eMArmrQjQRu01QlV9Ome8",
+  "categories": [
+    "意大利餐廳"
+  ],
+  "fid": "0x3442abb9028cd75b:0xef994e5f95504dbb",
+  "cid": "17264916818935434683",
+  "reviewsCount": 3101,
+  "reviewsDistribution": {
+    "oneStar": 101,
+    "twoStar": 74,
+    "threeStar": 262,
+    "fourStar": 893,
+    "fiveStar": 1771
+  },
+  "imagesCount": 8229,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:31.833Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/HFdRC-hDuws?source=pa&opi=79508299&hl=zh-TW&gei=RhxRaqONB6miqtsP4YHDmQM&ahbb=1&sourceurl=https://www.google.com/search?authuser%3D0%26tbm%3Dmap%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26psi%3DPhxRapuROJy2qtsPw_zW8Qk.1783700549456.1%26hl%3Dzh-TW%26pb%3D!4m12!1m3!1d28922.65838668607!2d121.52719864509434!3d25.022794627614772!2m3!1f0!2f0!3f0!3m2!1i1920!2i1080!4f13.1!7i20!8i0!10b1!12m36!1m1!18b1!2m3!5m1!6e2!20e3!6m18!4b1!49b1!63m0!73m0!74i150000!75b1!85b1!89b1!91b1!101i97!110m0!114b1!149b1!171b1!176f8!179f90!182b1!183m0!10b1!12b1!13b1!14b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!19m4!2m3!1i360!2i120!4i8!20m57!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m42!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e9!2b1!3e2!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!2b1!4b1!9b0!22m6!1sPhxRapuROJy2qtsPw_zW8Qk!2s1i:0,t:20588,p:PhxRapuROJy2qtsPw_zW8Qk:22!4m1!2i20588!7e81!12e3!24m92!1m26!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m15!3b1!4b1!5b1!6b1!13b1!14b1!15b1!17b1!21b1!22b0!25b1!27m1!1b0!28b0!31b0!2b1!5m5!2b1!5b1!6b1!7b1!10b1!10m1!8e3!11m1!3e1!14m1!3b1!17b1!20m2!1e3!1e6!24b1!25b1!26b1!29b1!30m1!2b1!36b1!39m3!2m2!2i1!3i1!43b1!52b1!55b1!56m2!1b1!3b1!65m5!3m4!1m3!1m2!1i224!2i298!71b1!72m17!1m5!1b1!2b1!3b1!5b1!7b1!4b1!8m8!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_reviews!9b1!89b1!103b1!113b1!117b1!122m1!1b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!31b1!34m19!2b1!3b1!4b1!6b1!7b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!37m1!1e81!42b1!46m1!1e10!47m0!49m7!3b1!6m2!1b1!2b1!7m2!1e3!2b1!50m25!1m21!2m7!1u3!4zT3RldsWZZW7DqQ!5e1!9s0ahUKEwiAldarwsiVAxX4kyYFHcDAEacQ_KkBCAkoAw!10m2!3m1!1e1!2m7!1u2!4zTmVqbMOpcGUgaG9kbm9jZW7DqQ!5e1!9s0ahUKEwiAldarwsiVAxX4kyYFHcDAEacQ_KkBCAgoAg!10m2!2m1!1e1!3m1!1u2!3m1!1u3!4BIAE!2e2!3m1!3b1!59BQ2dBd0Fn!61b1!67m3!7b1!10b1!14b0!69i675",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:30 to 16:00, 17:30 to 21:30"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 16:00, 17:30 to 21:30"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 15:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 15:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 15:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 15:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 15:30, 17:30 to 21:30"
+    }
+  ],
+  "additionalOpeningHours": {
+    "廚房": [
+      {
+        "day": "星期六",
+        "hours": "11:30–15:00"
+      },
+      {
+        "day": "星期日",
+        "hours": "11:30–15:00"
+      },
+      {
+        "day": "星期一",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "11:30–14:30"
+      }
+    ]
+  },
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外送": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙座位": true
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "性別友善洗手間": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "大專院校學生": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂早午餐": true
+      },
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      },
+      {
+        "經常需要等候": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      }
+    ],
+    "兒童": [
+      {
+        "有尿布台": true
+      },
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "停車位很難找": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=Cin%20Cin%20Osteria%E8%AB%8B%E8%AB%8B%E7%BE%A9%E5%A4%A7%E5%88%A9%E9%A4%90%E5%BB%B3(%E9%80%B8%E4%BB%99%E5%BA%97)&query_place_id=ChIJW9eMArmrQjQRu01QlV9Ome8",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.52719864509434,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 40,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnJiEjo850KKtGX2wRyurnpYous6QINtLPZiWTANkgbyJsaRH2SOUlya4VwZhD6VBLIV3wloS5zG-vwW3Yv5fgSBiFE5COWY_f_07B7qzn_9K9OUne265e_EQFNDRTyFK-XR7U5Nw=w408-h306-k-no",
+  "kgmid": "/g/11f3wrjqc0"
+},
+{
+  "title": "明水然・樂-信義松菸店(台北松菸店)",
+  "subTitle": null,
+  "description": null,
+  "price": "$1,600-1,800",
+  "categoryName": "鐵板燒餐廳",
+  "address": "110台灣臺北市信義區新仁里忠孝東路四段553巷6弄16號",
+  "neighborhood": null,
+  "street": "忠孝東路四段553巷6弄16號",
+  "city": "新仁里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://booking.twledodo.com/",
+  "phone": "+886 2 2756 6267",
+  "phoneUnformatted": "+886227566267",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0422054,
+    "lng": 121.563498
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.7,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJ9zwN62erQjQRV5OJ9qeyOHo",
+  "categories": [
+    "鐵板燒餐廳"
+  ],
+  "fid": "0x3442ab67eb0d3cf7:0x7a38b2a7f6899357",
+  "cid": "8806985505788498775",
+  "reviewsCount": 2123,
+  "imagesCount": 11494,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.261Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:10 to 15:40, 17:10 to 21:40"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:10 to 15:40, 17:10 to 21:40"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:10 to 15:00, 17:10 to 21:40"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:10 to 15:00, 17:10 to 21:40"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:10 to 15:00, 17:10 to 21:40"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:10 to 15:00, 17:10 to 21:40"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:10 to 15:00, 17:10 to 21:40"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "門市服務": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      },
+      {
+        "外帶": false
+      }
+    ],
+    "特色": [
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙座位": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "葡萄酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      },
+      {
+        "經常需要等候": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E6%98%8E%E6%B0%B4%E7%84%B6%E3%83%BB%E6%A8%82-%E4%BF%A1%E7%BE%A9%E6%9D%BE%E8%8F%B8%E5%BA%97(%E5%8F%B0%E5%8C%97%E6%9D%BE%E8%8F%B8%E5%BA%97)&query_place_id=ChIJ9zwN62erQjQRV5OJ9qeyOHo",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 1,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAFLtiY6_oaWDydCUTFWkW8XK_GLZlIT67deoPxNBmYLJCL2ZyaqmYwIgsckQkCIpxodb2QkS2hIqmkCp-ZhsR5SqFHBqQT1n6Hi86vCGfdeB5lrCaGSicQfVmAfJXtlJ52oVk5ktw=w408-h306-k-no",
+  "kgmid": "/g/11pdnmctx1"
+},
+{
+  "title": "玖龍冰室香港茶餐廳",
+  "subTitle": null,
+  "description": null,
+  "price": "$200-400",
+  "categoryName": "港式茶餐廳",
+  "address": "110台灣臺北市信義區新仁里忠孝東路四段553巷52弄5號1樓",
+  "neighborhood": null,
+  "street": "忠孝東路四段553巷52弄5號1樓",
+  "city": "新仁里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://kowloonselect.com/",
+  "phone": "+886 2 3762 1195",
+  "phoneUnformatted": "+886237621195",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.04469,
+    "lng": 121.56284
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.4,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJo3ClvoarQjQR3W13Dy-xMh8",
+  "categories": [
+    "港式茶餐廳",
+    "港式快餐店",
+    "餐廳"
+  ],
+  "fid": "0x3442ab86bea570a3:0x1f32b12f0f776ddd",
+  "cid": "2248053979692363229",
+  "reviewsCount": 5198,
+  "imagesCount": 6730,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.261Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:00 to 20:50"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:00 to 20:50"
+    },
+    {
+      "day": "星期一",
+      "hours": "12:00 to 15:30, 17:00 to 20:50"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 15:30, 17:00 to 20:50"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 15:30, 17:00 to 20:50"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 15:30, 17:00 to 20:50"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 15:30, 17:00 to 20:50"
+    }
+  ],
+  "additionalOpeningHours": {
+    "外帶": [
+      {
+        "day": "星期六",
+        "hours": "11:00–20:00"
+      },
+      {
+        "day": "星期日",
+        "hours": "11:00–20:00"
+      },
+      {
+        "day": "星期一",
+        "hours": "11:30–15:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "11:30–15:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "11:30–15:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "11:30–15:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "11:30–15:30"
+      }
+    ]
+  },
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外送": true
+      },
+      {
+        "門市服務": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "早餐": true
+      },
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙座位": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "提供簡餐": true
+      },
+      {
+        "餐點優惠時段": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "早餐": true
+      },
+      {
+        "早午餐": true
+      },
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "性別友善洗手間": true
+      },
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "大專院校學生": true
+      },
+      {
+        "跨性別友善空間": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      },
+      {
+        "LGBTQ+ 友善空間": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "接受訂位": true
+      },
+      {
+        "經常需要等候": true
+      }
+    ],
+    "付款方式": [
+      {
+        "只收現金": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "收費路邊停車格": true
+      }
+    ],
+    "寵物": [
+      {
+        "允許狗狗入內": true
+      },
+      {
+        "允許帶狗進入戶外區域": true
+      },
+      {
+        "可帶狗入住": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E7%8E%96%E9%BE%8D%E5%86%B0%E5%AE%A4%E9%A6%99%E6%B8%AF%E8%8C%B6%E9%A4%90%E5%BB%B3&query_place_id=ChIJo3ClvoarQjQR3W13Dy-xMh8",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 3,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAHdohASnzolbp_Fw81km2aL04_6EloW1GTnnYjGizMAxw9iVKNAZ36EnalJedg_T8Ratpwa8qNZnbRRoI_RSPPuwHWV2qxuRluz6_oLUk6j12HSyDPj2NUoJC1Z9l1AT3hdbeYF=w408-h408-k-no",
+  "kgmid": "/g/11j126nppy"
+},
+{
+  "title": "艾朋牛排餐酒館",
+  "subTitle": null,
+  "description": "採木質裝潢的時髦牛排館，供應精選美食和葡萄酒，並設有餐館式包廂座位區。",
+  "price": null,
+  "categoryName": "美式扒房",
+  "address": "110台灣臺北市信義區興雅里忠孝東路五段139號2樓",
+  "neighborhood": null,
+  "street": "忠孝東路五段139號2樓",
+  "city": "興雅里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "http://www.apointsteak.com.tw/",
+  "phone": "+886 2 2756 7788",
+  "phoneUnformatted": "+886227567788",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0412825,
+    "lng": 121.5678138
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.7,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJYzLihrurQjQRVmV1XPoNuks",
+  "categories": [
+    "美式扒房",
+    "法式牛扒餐廳",
+    "意大利餐廳"
+  ],
+  "fid": "0x3442abbb86e23263:0x4bba0dfa5c756556",
+  "cid": "5456689267456959830",
+  "reviewsCount": 12538,
+  "imagesCount": 29873,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.261Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:30 to 15:00, 17:30 to 03:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 15:00, 17:30 to 03:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 15:00, 17:30 to 03:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 15:00, 17:30 to 03:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 15:00, 17:30 to 03:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 15:00, 17:30 to 03:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 15:00, 17:30 to 03:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外送": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "啤酒種類多樣": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙座位": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "宵夜": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "酒精飲料優惠時段": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E8%89%BE%E6%9C%8B%E7%89%9B%E6%8E%92%E9%A4%90%E9%85%92%E9%A4%A8&query_place_id=ChIJYzLihrurQjQRVmV1XPoNuks",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 4,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAHaMzJaQYbhDsuyhxGQ8gZI3EK5_XNKVQodMjp4d2kAXXlAL1dNS7dirJ4MIkjPGio_GRFuwC18tcUyHP00whMUKpOjpWkF-ufyzKIVl2fmNARR2KhvMhfgHBh5kdgP5119RAj0=w426-h240-k-no",
+  "kgmid": "/g/11gm952zgt"
+},
+{
+  "title": "SALT&STONE 台北101餐廳",
+  "subTitle": null,
+  "description": null,
+  "price": "$600-1,000",
+  "categoryName": "加州餐廳",
+  "address": "110台灣臺北市信義區西村里市府路45號4樓",
+  "neighborhood": null,
+  "street": "市府路45號4樓",
+  "city": "西村里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://bit.ly/3sDcgLo",
+  "phone": "+886 2 8101 8177",
+  "phoneUnformatted": "+886281018177",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0343876,
+    "lng": 121.5649898
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.6,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJc_6fMzerQjQRHcqXwpPVxFo",
+  "categories": [
+    "加州餐廳",
+    "餅店",
+    "現代美式餐廳"
+  ],
+  "fid": "0x3442ab37339ffe73:0x5ac4d593c297ca1d",
+  "cid": "6540587389450439197",
+  "reviewsCount": 5280,
+  "imagesCount": 11570,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.261Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "休息"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 15:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 17:00, 17:30 to 21:30"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 17:00, 17:30 to 21:30"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 17:00, 17:30 to 21:30"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 17:00, 17:30 to 21:30"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 17:00, 17:30 to 21:30"
+    }
+  ],
+  "additionalOpeningHours": {
+    "午餐": [
+      {
+        "day": "星期六",
+        "hours": "11:30–15:00"
+      },
+      {
+        "day": "星期日",
+        "hours": "11:30–15:00"
+      },
+      {
+        "day": "星期一",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "11:30–14:30"
+      }
+    ],
+    "晚餐": [
+      {
+        "day": "星期六",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期日",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期一",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "17:30–21:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "17:30–21:30"
+      }
+    ],
+    "廚房": [
+      {
+        "day": "星期六",
+        "hours": "11:30–15:00"
+      },
+      {
+        "day": "星期日",
+        "hours": "11:30–15:00"
+      },
+      {
+        "day": "星期一",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "11:30–14:30"
+      }
+    ]
+  },
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外送": true
+      },
+      {
+        "門市服務": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      },
+      {
+        "啤酒種類多樣": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙座位": true
+      },
+      {
+        "無障礙停車場": true
+      },
+      {
+        "設有磁感應線圈助聽系統輔助": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "跨性別友善空間": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      },
+      {
+        "LGBTQ+ 友善空間": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      },
+      {
+        "經常需要等候": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "有尿布台": true
+      },
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "收費路邊停車格": true
+      },
+      {
+        "停車位很多": true
+      }
+    ],
+    "寵物": [
+      {
+        "允許狗狗入內": true
+      },
+      {
+        "可帶狗入住": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=SALT%26STONE%20%E5%8F%B0%E5%8C%97101%E9%A4%90%E5%BB%B3&query_place_id=ChIJc_6fMzerQjQRHcqXwpPVxFo",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 5,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAE_eOFbvGDBAMLidxUbNWrGWqD2VPFOG3LCyOL7xsJH7EwZ-w1mMzzyQExPI2IaNfGQLs9Hb4uugTvRJ9Xw5p8Ygv15oguXQM_uHl6aJbcIPltNDMWEmNMKS9NGHQzA6BY_4bjajw=w408-h306-k-no",
+  "kgmid": "/g/11gzqd3gd8"
+},
+{
+  "title": "西湖水產",
+  "subTitle": null,
+  "description": "小巧平實的餐廳，專門供應海鮮米飯料理和湯品。",
+  "price": "$200-400",
+  "categoryName": "海鮮丼餐廳",
+  "address": "110台灣臺北市信義區永春里松山路465巷25弄2號",
+  "neighborhood": null,
+  "street": "松山路465巷25弄2號",
+  "city": "永春里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.facebook.com/hsu0818",
+  "phone": "+886 922 893 438",
+  "phoneUnformatted": "+886922893438",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.040041,
+    "lng": 121.579047
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.7,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJWY05PaGrQjQRYmkQ_kg-lCs",
+  "categories": [
+    "海鮮丼餐廳",
+    "日本餐廳"
+  ],
+  "fid": "0x3442aba13d398d59:0x2b943e48fe106962",
+  "cid": "3140203323405134178",
+  "reviewsCount": 2074,
+  "imagesCount": 4085,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.261Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:30 to 14:00, 17:00 to 20:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 14:00, 17:00 to 20:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "休息"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 14:00, 17:00 to 20:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 14:00, 17:00 to 20:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 14:00, 17:00 to 20:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 14:00, 17:00 to 20:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "門市服務": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": false
+      },
+      {
+        "無障礙座位": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "提供簡餐": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "櫃檯點餐服務": true
+      }
+    ],
+    "設施": [
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      }
+    ],
+    "規劃": [
+      {
+        "經常需要等候": true
+      }
+    ],
+    "付款方式": [
+      {
+        "只收現金": true
+      }
+    ],
+    "停車場": [
+      {
+        "停車位很難找": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E8%A5%BF%E6%B9%96%E6%B0%B4%E7%94%A2&query_place_id=ChIJWY05PaGrQjQRYmkQ_kg-lCs",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 6,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAF_tl8IwHUFXyn0Y2VhaujW-CFiJ_OwlWfo1x5e-Xi-4Flq-UFpaPKMYd35CdwlT50qJvafYjODdq6Gs6zWvpIO1yYLsJEkSlEfxKK7ogO8GoQUUiVLpsjnJ55k851T4eJoEGzLlSMlKtC9=w408-h306-k-no",
+  "kgmid": "/g/11dxspy6tb"
+},
+{
+  "title": "食令shabu",
+  "subTitle": null,
+  "description": null,
+  "price": "超過 $2,000",
+  "categoryName": "涮涮鍋餐廳",
+  "address": "110台灣臺北市信義區西村里市府路45號四樓",
+  "neighborhood": null,
+  "street": "市府路45號四樓",
+  "city": "西村里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "http://www.shilingshabu.com/",
+  "phone": "+886 2 8101 7989",
+  "phoneUnformatted": "+886281017989",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0334929,
+    "lng": 121.564101
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.7,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJEbkgt6urQjQReBGcJ4HRG2Y",
+  "categories": [
+    "涮涮鍋餐廳",
+    "火鍋餐廳"
+  ],
+  "fid": "0x3442ababb720b911:0x661bd181279c1178",
+  "cid": "7357704768885363064",
+  "reviewsCount": 3054,
+  "imagesCount": 4171,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.261Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/5SxTqaVXtSk?source=pa&opi=79508299&hl=zh-TW&gei=SRxRasXuGoqymtkPoY3m6QY&ahbb=1&sourceurl=https://www.google.com/search?tbm%3Dmap%26authuser%3D0%26hl%3Dzh-TW%26gl%3Dus%26pb%3D!4m8!1m3!1d28922.65838668607!2d121.59580035490565!3d25.022794627614772!3m2!1i1475!2i1327!4f13.1!7i20!10b1!12m25!1m5!18b1!30b1!31m1!1b1!34e1!2m4!5m1!6e2!20e3!39b1!10b1!12b1!13b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!46m1!1b0!96b1!99b1!19m4!2m3!1i360!2i120!4i8!20m65!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m33!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!1m3!1e9!2b1!3e2!2b1!9b0!15m16!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!22m2!1sRRxRatHDH7q3qtsPiIbE-Qs!7e81!24m109!1m30!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m19!3b1!4b1!5b1!6b1!9b1!13b1!14b1!17b1!20b1!21b1!22b1!27m1!1b0!28b0!32b1!33m1!1b1!34b1!36e2!10m1!8e3!11m1!3e1!14m1!3b0!17b1!20m2!1e3!1e6!24b1!25b1!26b1!27b1!29b1!30m1!2b1!36b1!37b1!39m3!2m2!2i1!3i1!43b1!52b1!54m1!1b1!55b1!56m1!1b1!61m2!1m1!1e1!65m5!3m4!1m3!1m2!1i224!2i298!72m22!1m8!2b1!5b1!7b1!12m4!1b1!2b1!4m1!1e1!4b1!8m10!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_google_review_posts__and__hotel_and_vr_partner_review_posts!6m1!1e1!9b1!89b1!98m3!1b1!2b1!3b1!103b1!113b1!114m3!1b1!2m1!1b1!117b1!122m1!1b1!126b1!127b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i530!2i1327!1m6!1m2!1i1425!2i0!2m2!1i1475!2i1327!1m6!1m2!1i0!2i0!2m2!1i1475!2i20!1m6!1m2!1i0!2i1307!2m2!1i1475!2i1327!34m19!2b1!3b1!4b1!6b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!31b1!37m1!1e81!49m10!3b1!6m2!1b1!2b1!7m2!1e3!2b1!8b1!9b1!10e2!50m3!2e2!3m1!3b1!61b1!67m5!7b1!10b1!14b1!15m1!1b0!69i757%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26ech%3D1%26psi%3DRRxRatHDH7q3qtsPiIbE-Qs.1783700551065.1",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:30 to 16:30, 17:30 to 22:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 16:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 14:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 14:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 14:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 14:30, 17:30 to 21:30"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 14:30, 17:30 to 22:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "門市服務": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "特色": [
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "跨性別友善空間": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      },
+      {
+        "LGBTQ+ 友善空間": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "支票": true
+      },
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "停車位很多": true
+      },
+      {
+        "免費室內停車場": true
+      },
+      {
+        "附設停車場": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E9%A3%9F%E4%BB%A4shabu&query_place_id=ChIJEbkgt6urQjQReBGcJ4HRG2Y",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 7,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAESavRF6GYlwNtMf8CyB_WbnLotre7QLz1hVw6K_nWbeguWc6g5WlIAiDdwVqvaztUWMGRdGJRl07KUM6h06rIO67wNEF43kYrUdbpk_m5PCMtMjx6J2LY4jyW4LNGxiOeETfzwdw=w408-h272-k-no",
+  "kgmid": "/g/11jmxrb9_s"
+},
+{
+  "title": "半島牛肉麵",
+  "subTitle": null,
+  "description": "裝潢簡約素雅的餐廳，供應傳統麵食和餃類。",
+  "price": "$200-400",
+  "categoryName": "餐廳",
+  "address": "110台灣臺北市信義區敦厚里忠孝東路五段215巷23號",
+  "neighborhood": null,
+  "street": "忠孝東路五段215巷23號",
+  "city": "敦厚里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "phone": "+886 2 2767 5085",
+  "phoneUnformatted": "+886227675085",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0419245,
+    "lng": 121.5702911
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.6,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJT5Lgu7yrQjQR-4z6kZ30ZOc",
+  "categories": [
+    "餐廳",
+    "中式麵食店",
+    "餃子店",
+    "中菜館",
+    "小食/零食吧"
+  ],
+  "fid": "0x3442abbcbbe0924f:0xe764f49d91fa8cfb",
+  "cid": "16673720678028578043",
+  "reviewsCount": 8451,
+  "imagesCount": 6527,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.262Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "10:30 to 21:10"
+    },
+    {
+      "day": "星期日",
+      "hours": "10:30 to 21:10"
+    },
+    {
+      "day": "星期一",
+      "hours": "10:30 to 21:10"
+    },
+    {
+      "day": "星期二",
+      "hours": "10:30 to 21:10"
+    },
+    {
+      "day": "星期三",
+      "hours": "10:30 to 21:10"
+    },
+    {
+      "day": "星期四",
+      "hours": "10:30 to 21:10"
+    },
+    {
+      "day": "星期五",
+      "hours": "10:30 to 21:10"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "門市服務": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "特色": [
+      {
+        "頂樓座位": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": false
+      },
+      {
+        "無障礙洗手間": false
+      },
+      {
+        "無障礙座位": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "提供養生料理": true
+      },
+      {
+        "提供簡餐": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "櫃檯點餐服務": true
+      },
+      {
+        "座位": true
+      }
+    ],
+    "設施": [
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "跨性別友善空間": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合闔家光臨": true
+      },
+      {
+        "LGBTQ+ 友善空間": true
+      }
+    ],
+    "規劃": [
+      {
+        "接受訂位": false
+      }
+    ],
+    "付款方式": [
+      {
+        "只收現金": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費停車場": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E5%8D%8A%E5%B3%B6%E7%89%9B%E8%82%89%E9%BA%B5&query_place_id=ChIJT5Lgu7yrQjQR-4z6kZ30ZOc",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 9,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAEDk3qE-qBfOkpH_j6_STmFhq0CbqQ7z7lBtm4h2-VOEtkrIzJ6gS7xSepkN2CNIDWWVGqX1q6fT4eyUOqluI95EmFq5gozh1UBWluHQHnMxGt_OkejHKtNgHc8yW2XGGctJXA=w426-h240-k-no",
+  "kgmid": "/g/11g6yj_2bd"
+},
+{
+  "title": "角窩美式餐酒館",
+  "subTitle": null,
+  "description": null,
+  "price": "$400-1,000",
+  "categoryName": "小餐館",
+  "address": "110台灣臺北市信義區中興里基隆路二段10號",
+  "neighborhood": null,
+  "street": "基隆路二段10號",
+  "city": "中興里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.facebook.com/TheCornerPit",
+  "phone": "+886 2 8786 8858",
+  "phoneUnformatted": "+886287868858",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0322808,
+    "lng": 121.5589327
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.8,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJHfV3GsqrQjQRVQ6mKPpKfWI",
+  "categories": [
+    "小餐館",
+    "美式餐廳",
+    "調酒服務",
+    "雞尾酒酒吧",
+    "多功能室設施",
+    "漢堡包餐廳",
+    "意大利餐廳",
+    "薄餅餐廳",
+    "酒吧",
+    "運動酒吧"
+  ],
+  "fid": "0x3442abca1a77f51d:0x627d4afa28a60e55",
+  "cid": "7096911026090020437",
+  "reviewsCount": 2584,
+  "imagesCount": 2235,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.262Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/ps9Hk6bgOZg?source=pa&opi=79508299&hl=zh-TW&gei=SRxRasXuGoqymtkPoY3m6QY&ahbb=1&sourceurl=https://www.google.com/search?tbm%3Dmap%26authuser%3D0%26hl%3Dzh-TW%26gl%3Dus%26pb%3D!4m8!1m3!1d28922.65838668607!2d121.59580035490565!3d25.022794627614772!3m2!1i1475!2i1327!4f13.1!7i20!10b1!12m25!1m5!18b1!30b1!31m1!1b1!34e1!2m4!5m1!6e2!20e3!39b1!10b1!12b1!13b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!46m1!1b0!96b1!99b1!19m4!2m3!1i360!2i120!4i8!20m65!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m33!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!1m3!1e9!2b1!3e2!2b1!9b0!15m16!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!22m2!1sRRxRatHDH7q3qtsPiIbE-Qs!7e81!24m109!1m30!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m19!3b1!4b1!5b1!6b1!9b1!13b1!14b1!17b1!20b1!21b1!22b1!27m1!1b0!28b0!32b1!33m1!1b1!34b1!36e2!10m1!8e3!11m1!3e1!14m1!3b0!17b1!20m2!1e3!1e6!24b1!25b1!26b1!27b1!29b1!30m1!2b1!36b1!37b1!39m3!2m2!2i1!3i1!43b1!52b1!54m1!1b1!55b1!56m1!1b1!61m2!1m1!1e1!65m5!3m4!1m3!1m2!1i224!2i298!72m22!1m8!2b1!5b1!7b1!12m4!1b1!2b1!4m1!1e1!4b1!8m10!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_google_review_posts__and__hotel_and_vr_partner_review_posts!6m1!1e1!9b1!89b1!98m3!1b1!2b1!3b1!103b1!113b1!114m3!1b1!2m1!1b1!117b1!122m1!1b1!126b1!127b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i530!2i1327!1m6!1m2!1i1425!2i0!2m2!1i1475!2i1327!1m6!1m2!1i0!2i0!2m2!1i1475!2i20!1m6!1m2!1i0!2i1307!2m2!1i1475!2i1327!34m19!2b1!3b1!4b1!6b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!31b1!37m1!1e81!49m10!3b1!6m2!1b1!2b1!7m2!1e3!2b1!8b1!9b1!10e2!50m3!2e2!3m1!3b1!61b1!67m5!7b1!10b1!14b1!15m1!1b0!69i757%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26ech%3D1%26psi%3DRRxRatHDH7q3qtsPiIbE-Qs.1783700551065.1",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期五",
+      "hours": "17:30 to 03:00"
+    },
+    {
+      "day": "星期六",
+      "hours": "17:30 to 03:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "17:30 to 02:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "17:30 to 02:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "17:30 to 02:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "17:30 to 02:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "17:30 to 02:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外送": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "啤酒種類多樣": true
+      },
+      {
+        "頂樓座位": true
+      },
+      {
+        "運動": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "晚餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": false
+      },
+      {
+        "無障礙座位": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "宵夜": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "酒精飲料優惠時段": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "餐點優惠時段": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "性別友善洗手間": true
+      },
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "大專院校學生": true
+      },
+      {
+        "跨性別友善空間": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "停車位很難找": true
+      }
+    ],
+    "寵物": [
+      {
+        "可帶狗入住": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E8%A7%92%E7%AA%A9%E7%BE%8E%E5%BC%8F%E9%A4%90%E9%85%92%E9%A4%A8&query_place_id=ChIJHfV3GsqrQjQRVQ6mKPpKfWI",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 11,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAEMxCU45cQrTvIIDFLWMU6YLyb4SxcZUu0TUMiSATdqbZ57D5a4bZPPUXLUC9yttBDHVxKWNfMIC1KLnrxOU-nSsmkKvK6zDWET5kW9-WeR6uItYp4GstNISyGyntKE5RF9PNk=w408-h271-k-no",
+  "kgmid": "/g/11bxjqykf4"
+},
+{
+  "title": "古記雞.私房菜.居酒屋",
+  "subTitle": null,
+  "description": null,
+  "price": "$400-1,400",
+  "categoryName": "日本地方料理餐廳",
+  "address": "110台灣臺北市信義區廣居里忠孝東路五段236巷3弄13號",
+  "neighborhood": null,
+  "street": "忠孝東路五段236巷3弄13號",
+  "city": "廣居里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.facebook.com/gugigi.xinyi/",
+  "phone": "+886 953 175 577",
+  "phoneUnformatted": "+886953175577",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.040532,
+    "lng": 121.572814
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.7,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJSbWCSOGrQjQRg1pZq3BUzWo",
+  "categories": [
+    "日本地方料理餐廳",
+    "居酒屋"
+  ],
+  "fid": "0x3442abe14882b549:0x6acd5470ab595a83",
+  "cid": "7695900181133875843",
+  "reviewsCount": 3465,
+  "imagesCount": 4891,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.262Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "15:00 to 00:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "15:00 to 00:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "15:00 to 00:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "15:00 to 00:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "15:00 to 00:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "15:00 to 00:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "15:00 to 00:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "室外雅座": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "啤酒種類多樣": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "晚餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": false
+      },
+      {
+        "無障礙座位": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "全素餐點": true
+      },
+      {
+        "沙拉吧": true
+      },
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "宵夜": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "酒精飲料優惠時段": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "餐點優惠時段": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "性別友善洗手間": true
+      },
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "收費路邊停車格": true
+      }
+    ],
+    "寵物": [
+      {
+        "允許帶狗進入戶外區域": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E5%8F%A4%E8%A8%98%E9%9B%9E.%E7%A7%81%E6%88%BF%E8%8F%9C.%E5%B1%85%E9%85%92%E5%B1%8B&query_place_id=ChIJSbWCSOGrQjQRg1pZq3BUzWo",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 12,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAFVO7JpDTlDyvw6o-r8v3aVsCtA59yx5bEEwcofv91Xs87HACBzscsDfxK_r_xuvG2SMhEMNnq5GRWaPOAmtN8JS7Ut-OFNawQfYTatKD_yCPWlGZiiFSreQNt3VB8B7krPFLY6IA=w408-h306-k-no",
+  "kgmid": "/g/11bx1y_9hp"
+},
+{
+  "title": "岑什手作料理-台北美食-餐廳-壽司-生魚片-日本料理",
+  "subTitle": null,
+  "description": null,
+  "price": "$400-1,000",
+  "categoryName": "日本餐廳",
+  "address": "110台灣臺北市信義區六藝里松信路160號",
+  "neighborhood": null,
+  "street": "松信路160號",
+  "city": "六藝里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://censhe.weebly.com/",
+  "phone": "+886 979 510 013",
+  "phoneUnformatted": "+886979510013",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0431971,
+    "lng": 121.5718774
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.8,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJX9ZSTeGrQjQRq8s4hjJ67k4",
+  "categories": [
+    "日本餐廳"
+  ],
+  "fid": "0x3442abe14d52d65f:0x4eee7a328638cbab",
+  "cid": "5687617736834337707",
+  "reviewsCount": 122,
+  "imagesCount": 303,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.262Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "12:00 to 15:00, 17:00 to 21:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "休息"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 15:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 15:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 15:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "17:30 to 21:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 15:00, 17:30 to 21:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "內用": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙座位": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "兒童": [
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費停車場": true
+      },
+      {
+        "收費路邊停車格": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E5%B2%91%E4%BB%80%E6%89%8B%E4%BD%9C%E6%96%99%E7%90%86-%E5%8F%B0%E5%8C%97%E7%BE%8E%E9%A3%9F-%E9%A4%90%E5%BB%B3-%E5%A3%BD%E5%8F%B8-%E7%94%9F%E9%AD%9A%E7%89%87-%E6%97%A5%E6%9C%AC%E6%96%99%E7%90%86&query_place_id=ChIJX9ZSTeGrQjQRq8s4hjJ67k4",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 13,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAGoYzti2Hjkg3JkH7qzeJ0wUMtXjjaQEI5DAy_82AArjWQKXjulKzWAekya8cN1gIabGg_dDfjUEWlsSLyh5QK-4KGE0KiBvs2THyWFiUXrWsUefBsPXAstB60yP5tunVZ7gnm-3Q=w408-h306-k-no",
+  "kgmid": "/g/11y5q6c91_"
+},
+{
+  "title": "gubami Social",
+  "subTitle": null,
+  "description": null,
+  "price": "超過 $2,000",
+  "categoryName": "融合菜式餐廳",
+  "address": "110台灣臺北市信義區西村里松壽路9號6樓",
+  "neighborhood": null,
+  "street": "松壽路9號6樓",
+  "city": "西村里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://eatsy.tech/brand/gubami_social",
+  "phone": "+886 2 2758 8501",
+  "phoneUnformatted": "+886227588501",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0362945,
+    "lng": 121.5668589
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.4,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJTb-0xPqrQjQRyldoASUCmPU",
+  "categories": [
+    "融合菜式餐廳",
+    "亞洲 Fusion 菜餐廳"
+  ],
+  "fid": "0x3442abfac4b4bf4d:0xf5980225016857ca",
+  "cid": "17696897093713024970",
+  "reviewsCount": 885,
+  "imagesCount": 3694,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.262Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "12:00 to 15:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "12:00 to 15:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "12:00 to 15:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "12:00 to 15:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "12:00 to 15:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "12:00 to 15:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "12:00 to 15:00, 18:00 to 22:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "由商家提供": [
+      {
+        "業主為女性的商家": true
+      }
+    ],
+    "服務項目": [
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "特色": [
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙座位": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "宵夜": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "跨性別友善空間": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      },
+      {
+        "LGBTQ+ 友善空間": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "停車位很多": true
+      },
+      {
+        "免費停車場": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=gubami%20Social&query_place_id=ChIJTb-0xPqrQjQRyldoASUCmPU",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 14,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAGav7V2jHvbkwaw9C60nRWjo06lCG4cWXwVYxAsFxiVJEpSLCtu6XbsLLLNQoV5fJzH9iUHtNsjuJmCs9KSwIhwBe-skvd3POaiANYuwpmD7FHKjhLv7e5PVj0VeH4IwxmWSmzMCw=w408-h281-k-no",
+  "kgmid": "/g/11swpljs0t"
+},
+{
+  "title": "The Ukai Taipei",
+  "subTitle": null,
+  "description": "位於 46 樓的高級山景餐廳，專門供應經典日式料理。",
+  "price": "超過 $2,000",
+  "categoryName": "正宗日式料理餐廳",
+  "address": "110台灣臺北市信義區西村里松智路17號46樓",
+  "neighborhood": null,
+  "street": "松智路17號46樓",
+  "city": "西村里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.ukai.co.jp/ct/taipei/",
+  "phone": "+886 2 7730 1166",
+  "phoneUnformatted": "+886277301166",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0342406,
+    "lng": 121.5671232
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.3,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJVS7ItnmrQjQRqNmHO0yS0yI",
+  "categories": [
+    "正宗日式料理餐廳",
+    "酒吧",
+    "鐵板燒餐廳"
+  ],
+  "fid": "0x3442ab79b6c82e55:0x22d3924c3b87d9a8",
+  "cid": "2509510273489426856",
+  "reviewsCount": 1337,
+  "imagesCount": 13027,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.262Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/C97ohAEliF8?source=pa&opi=79508299&hl=zh-TW&gei=SRxRasXuGoqymtkPoY3m6QY&ahbb=1&sourceurl=https://www.google.com/search?tbm%3Dmap%26authuser%3D0%26hl%3Dzh-TW%26gl%3Dus%26pb%3D!4m8!1m3!1d28922.65838668607!2d121.59580035490565!3d25.022794627614772!3m2!1i1475!2i1327!4f13.1!7i20!10b1!12m25!1m5!18b1!30b1!31m1!1b1!34e1!2m4!5m1!6e2!20e3!39b1!10b1!12b1!13b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!46m1!1b0!96b1!99b1!19m4!2m3!1i360!2i120!4i8!20m65!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m33!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!1m3!1e9!2b1!3e2!2b1!9b0!15m16!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!22m2!1sRRxRatHDH7q3qtsPiIbE-Qs!7e81!24m109!1m30!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m19!3b1!4b1!5b1!6b1!9b1!13b1!14b1!17b1!20b1!21b1!22b1!27m1!1b0!28b0!32b1!33m1!1b1!34b1!36e2!10m1!8e3!11m1!3e1!14m1!3b0!17b1!20m2!1e3!1e6!24b1!25b1!26b1!27b1!29b1!30m1!2b1!36b1!37b1!39m3!2m2!2i1!3i1!43b1!52b1!54m1!1b1!55b1!56m1!1b1!61m2!1m1!1e1!65m5!3m4!1m3!1m2!1i224!2i298!72m22!1m8!2b1!5b1!7b1!12m4!1b1!2b1!4m1!1e1!4b1!8m10!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_google_review_posts__and__hotel_and_vr_partner_review_posts!6m1!1e1!9b1!89b1!98m3!1b1!2b1!3b1!103b1!113b1!114m3!1b1!2m1!1b1!117b1!122m1!1b1!126b1!127b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i530!2i1327!1m6!1m2!1i1425!2i0!2m2!1i1475!2i1327!1m6!1m2!1i0!2i0!2m2!1i1475!2i20!1m6!1m2!1i0!2i1307!2m2!1i1475!2i1327!34m19!2b1!3b1!4b1!6b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!31b1!37m1!1e81!49m10!3b1!6m2!1b1!2b1!7m2!1e3!2b1!8b1!9b1!10e2!50m3!2e2!3m1!3b1!61b1!67m5!7b1!10b1!14b1!15m1!1b0!69i757%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26ech%3D1%26psi%3DRRxRatHDH7q3qtsPiIbE-Qs.1783700551065.1",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "12:00 to 15:00, 15:30 to 17:30, 18:00 to 22:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "12:00 to 15:00, 15:30 to 17:30, 18:00 to 22:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "12:00 to 15:00, 15:30 to 17:30, 18:00 to 22:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "12:00 to 15:00, 15:30 to 17:30, 18:00 to 22:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "12:00 to 15:00, 15:30 to 17:30, 18:00 to 22:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "12:00 to 15:00, 15:30 to 17:30, 18:00 to 22:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "12:00 to 15:00, 15:30 to 17:30, 18:00 to 22:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      },
+      {
+        "門市服務": false
+      },
+      {
+        "外帶": false
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙停車場": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "酒精飲料優惠時段": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "有尿布台": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "停車位很多": true
+      },
+      {
+        "免費室內停車場": true
+      },
+      {
+        "免費停車場": true
+      },
+      {
+        "附設停車場": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=The%20Ukai%20Taipei&query_place_id=ChIJVS7ItnmrQjQRqNmHO0yS0yI",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 15,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAHUMBrQxIzmmWhAltcppAmSonUc_4hQPnMMrgA83NrKKx_RbOrVXHfoXNqjBD0fSGaMdIDuYLSPdSDGHyhudmxBhIrhCSluyBPkBBPvl5Y5wMOiv_lXR6sRf3abtLoeFTYT-ImxHg=w408-h272-k-no",
+  "kgmid": "/g/11h045cw9g"
+},
+{
+  "title": "KameKona 夏威夷鐵板燒 （逸仙店）",
+  "subTitle": null,
+  "description": null,
+  "price": "超過 $2,000",
+  "categoryName": "鐵板燒餐廳",
+  "address": "110台灣臺北市信義區逸仙路32巷13號",
+  "neighborhood": null,
+  "street": "逸仙路32巷13號",
+  "city": "信義區",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.facebook.com/kamehouse2020/",
+  "phone": "+886 2 8786 9466",
+  "phoneUnformatted": "+886287869466",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0399137,
+    "lng": 121.5625878
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.7,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJFYhKFhyrQjQRBOJGjEtUEy8",
+  "categories": [
+    "鐵板燒餐廳",
+    "夏威夷餐廳"
+  ],
+  "fid": "0x3442ab1c164a8815:0x2f13544b8c46e204",
+  "cid": "3392147627792851460",
+  "reviewsCount": 555,
+  "imagesCount": 3352,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.262Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:30 to 15:00, 17:00 to 22:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 15:00, 17:00 to 22:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 15:00, 17:00 to 22:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 15:00, 17:00 to 22:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 15:00, 17:00 to 22:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 15:00, 17:00 to 22:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 15:00, 17:00 to 22:00"
+    }
+  ],
+  "additionalOpeningHours": {
+    "優惠": [
+      {
+        "day": "星期六",
+        "hours": "休息"
+      },
+      {
+        "day": "星期日",
+        "hours": "休息"
+      },
+      {
+        "day": "星期一",
+        "hours": "17:30–19:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "17:30–19:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "17:30–19:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "17:30–19:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "休息"
+      }
+    ]
+  },
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外送": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙座位": true
+      },
+      {
+        "無障礙洗手間": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "咖啡": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "酒精飲料優惠時段": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "櫃檯點餐服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "性別友善洗手間": true
+      },
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "跨性別友善空間": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "有尿布台": true
+      },
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "兒童菜單": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      }
+    ],
+    "寵物": [
+      {
+        "允許狗狗入內": true
+      },
+      {
+        "可帶狗入住": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=KameKona%20%E5%A4%8F%E5%A8%81%E5%A4%B7%E9%90%B5%E6%9D%BF%E7%87%92%20%EF%BC%88%E9%80%B8%E4%BB%99%E5%BA%97%EF%BC%89&query_place_id=ChIJFYhKFhyrQjQRBOJGjEtUEy8",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 16,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAFwBGHCYAYETHfO8PZU8XoV5pR7cC9aO8hBl9-7o8QjTvk-KH_HMUPNxrz_Rqmqw4QvyKRjzQ0yJT8VtZu1ynRrITsSG8iiOpmgfBLqL49hJWEJC_-J6e3xXKFbJ23Hy9HRO1j2=w408-h306-k-no",
+  "kgmid": "/g/11ftw63yzr"
+},
+{
+  "title": "Saffron 46",
+  "subTitle": null,
+  "description": null,
+  "price": "超過 $2,000",
+  "categoryName": "現代印度餐廳",
+  "address": "110台灣臺北市信義區西村里松智路17號46F",
+  "neighborhood": null,
+  "street": "松智路17號46F",
+  "city": "西村里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "http://www.saffron46.com/",
+  "phone": "+886 2 2722 5151",
+  "phoneUnformatted": "+886227225151",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0341753,
+    "lng": 121.5669112
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.4,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJAT-u5hKrQjQRB0Ku5D6r79g",
+  "categories": [
+    "現代印度餐廳",
+    "酒吧"
+  ],
+  "fid": "0x3442ab12e6ae3f01:0xd8efab3ee4ae4207",
+  "cid": "15631901118239228423",
+  "reviewsCount": 1843,
+  "imagesCount": 9652,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.262Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/gPb0bKE63Uo?source=pa&opi=79508299&hl=zh-TW&gei=SRxRasXuGoqymtkPoY3m6QY&ahbb=1&sourceurl=https://www.google.com/search?tbm%3Dmap%26authuser%3D0%26hl%3Dzh-TW%26gl%3Dus%26pb%3D!4m8!1m3!1d28922.65838668607!2d121.59580035490565!3d25.022794627614772!3m2!1i1475!2i1327!4f13.1!7i20!10b1!12m25!1m5!18b1!30b1!31m1!1b1!34e1!2m4!5m1!6e2!20e3!39b1!10b1!12b1!13b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!46m1!1b0!96b1!99b1!19m4!2m3!1i360!2i120!4i8!20m65!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m33!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!1m3!1e9!2b1!3e2!2b1!9b0!15m16!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!22m2!1sRRxRatHDH7q3qtsPiIbE-Qs!7e81!24m109!1m30!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m19!3b1!4b1!5b1!6b1!9b1!13b1!14b1!17b1!20b1!21b1!22b1!27m1!1b0!28b0!32b1!33m1!1b1!34b1!36e2!10m1!8e3!11m1!3e1!14m1!3b0!17b1!20m2!1e3!1e6!24b1!25b1!26b1!27b1!29b1!30m1!2b1!36b1!37b1!39m3!2m2!2i1!3i1!43b1!52b1!54m1!1b1!55b1!56m1!1b1!61m2!1m1!1e1!65m5!3m4!1m3!1m2!1i224!2i298!72m22!1m8!2b1!5b1!7b1!12m4!1b1!2b1!4m1!1e1!4b1!8m10!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_google_review_posts__and__hotel_and_vr_partner_review_posts!6m1!1e1!9b1!89b1!98m3!1b1!2b1!3b1!103b1!113b1!114m3!1b1!2m1!1b1!117b1!122m1!1b1!126b1!127b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i530!2i1327!1m6!1m2!1i1425!2i0!2m2!1i1475!2i1327!1m6!1m2!1i0!2i0!2m2!1i1475!2i20!1m6!1m2!1i0!2i1307!2m2!1i1475!2i1327!34m19!2b1!3b1!4b1!6b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!31b1!37m1!1e81!49m10!3b1!6m2!1b1!2b1!7m2!1e3!2b1!8b1!9b1!10e2!50m3!2e2!3m1!3b1!61b1!67m5!7b1!10b1!14b1!15m1!1b0!69i757%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26ech%3D1%26psi%3DRRxRatHDH7q3qtsPiIbE-Qs.1783700551065.1",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期五",
+      "hours": "11:30 to 00:30"
+    },
+    {
+      "day": "星期六",
+      "hours": "11:30 to 00:30"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 23:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 23:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 23:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 23:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 23:00"
+    }
+  ],
+  "additionalOpeningHours": {
+    "外送": [
+      {
+        "day": "星期六",
+        "hours": "12:00–00:00"
+      },
+      {
+        "day": "星期日",
+        "hours": "00:00–07:30"
+      },
+      {
+        "day": "星期一",
+        "hours": "12:00–19:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "12:00–19:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "12:00–19:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "12:00–19:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "12:00–19:30"
+      }
+    ]
+  },
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外送": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      },
+      {
+        "啤酒種類多樣": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙停車場": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "宵夜": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "酒精飲料優惠時段": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      },
+      {
+        "LGBTQ+ 友善空間": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "收費路邊停車格": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=Saffron%2046&query_place_id=ChIJAT-u5hKrQjQRB0Ku5D6r79g",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 17,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAHOq1fOKhI4Tc9ekEcE43NLgy7zrpNArbGTRZhX_7ee51VNS01UCU8Z46UIT4c0vM9zNnbCZ2Ycskx5lu19a4WXm6tQARRHVGzECZZL8_3GOcUXkMPgrL1u-Hn-WYDeRMEC_EJHXA=w408-h272-k-no",
+  "kgmid": "/g/11h2nzmkp9"
+},
+{
+  "title": "Seasons by olivier e.",
+  "subTitle": null,
+  "description": null,
+  "price": "超過 $2,000",
+  "categoryName": "法國餐廳",
+  "address": "110台灣臺北市信義區興雅里忠孝東路五段10號10",
+  "neighborhood": null,
+  "street": "忠孝東路五段10號10",
+  "city": "興雅里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.marriott.com/en-us/dining/restaurant-bar/tpewh-w-taipei/6953839-seasons-by-olivier-e.mi",
+  "phone": "+886 2 7703 8755",
+  "phoneUnformatted": "+886277038755",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0408039,
+    "lng": 121.5655696
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.4,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJS5EC9-irQjQRMCc9vvAcHow",
+  "categories": [
+    "法國餐廳",
+    "現代法國餐廳",
+    "餐廳"
+  ],
+  "fid": "0x3442abe8f702914b:0x8c1e1cf0be3d2730",
+  "cid": "10096539234920638256",
+  "reviewsCount": 278,
+  "imagesCount": 2154,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.262Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/vmE2Ly2gRek?source=pa&opi=79508299&hl=zh-TW&gei=SRxRasXuGoqymtkPoY3m6QY&ahbb=1&sourceurl=https://www.google.com/search?tbm%3Dmap%26authuser%3D0%26hl%3Dzh-TW%26gl%3Dus%26pb%3D!4m8!1m3!1d28922.65838668607!2d121.59580035490565!3d25.022794627614772!3m2!1i1475!2i1327!4f13.1!7i20!10b1!12m25!1m5!18b1!30b1!31m1!1b1!34e1!2m4!5m1!6e2!20e3!39b1!10b1!12b1!13b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!46m1!1b0!96b1!99b1!19m4!2m3!1i360!2i120!4i8!20m65!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m33!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!1m3!1e9!2b1!3e2!2b1!9b0!15m16!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!22m2!1sRRxRatHDH7q3qtsPiIbE-Qs!7e81!24m109!1m30!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m19!3b1!4b1!5b1!6b1!9b1!13b1!14b1!17b1!20b1!21b1!22b1!27m1!1b0!28b0!32b1!33m1!1b1!34b1!36e2!10m1!8e3!11m1!3e1!14m1!3b0!17b1!20m2!1e3!1e6!24b1!25b1!26b1!27b1!29b1!30m1!2b1!36b1!37b1!39m3!2m2!2i1!3i1!43b1!52b1!54m1!1b1!55b1!56m1!1b1!61m2!1m1!1e1!65m5!3m4!1m3!1m2!1i224!2i298!72m22!1m8!2b1!5b1!7b1!12m4!1b1!2b1!4m1!1e1!4b1!8m10!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_google_review_posts__and__hotel_and_vr_partner_review_posts!6m1!1e1!9b1!89b1!98m3!1b1!2b1!3b1!103b1!113b1!114m3!1b1!2m1!1b1!117b1!122m1!1b1!126b1!127b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i530!2i1327!1m6!1m2!1i1425!2i0!2m2!1i1475!2i1327!1m6!1m2!1i0!2i0!2m2!1i1475!2i20!1m6!1m2!1i0!2i1307!2m2!1i1475!2i1327!34m19!2b1!3b1!4b1!6b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!31b1!37m1!1e81!49m10!3b1!6m2!1b1!2b1!7m2!1e3!2b1!8b1!9b1!10e2!50m3!2e2!3m1!3b1!61b1!67m5!7b1!10b1!14b1!15m1!1b0!69i757%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26ech%3D1%26psi%3DRRxRatHDH7q3qtsPiIbE-Qs.1783700551065.1",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "06:30 to 21:30"
+    },
+    {
+      "day": "星期日",
+      "hours": "06:30 to 21:30"
+    },
+    {
+      "day": "星期一",
+      "hours": "06:30 to 21:30"
+    },
+    {
+      "day": "星期二",
+      "hours": "06:30 to 21:30"
+    },
+    {
+      "day": "星期三",
+      "hours": "06:30 to 21:30"
+    },
+    {
+      "day": "星期四",
+      "hours": "06:30 to 21:30"
+    },
+    {
+      "day": "星期五",
+      "hours": "06:30 to 21:30"
+    }
+  ],
+  "additionalOpeningHours": {
+    "早餐": [
+      {
+        "day": "星期六",
+        "hours": "06:30–10:30"
+      },
+      {
+        "day": "星期日",
+        "hours": "06:30–10:30"
+      },
+      {
+        "day": "星期一",
+        "hours": "06:30–10:00"
+      },
+      {
+        "day": "星期二",
+        "hours": "06:30–10:00"
+      },
+      {
+        "day": "星期三",
+        "hours": "06:30–10:00"
+      },
+      {
+        "day": "星期四",
+        "hours": "06:30–10:00"
+      },
+      {
+        "day": "星期五",
+        "hours": "06:30–10:00"
+      }
+    ],
+    "午餐": [
+      {
+        "day": "星期六",
+        "hours": "12:00–15:00"
+      },
+      {
+        "day": "星期日",
+        "hours": "12:00–15:00"
+      },
+      {
+        "day": "星期一",
+        "hours": "12:00–14:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "12:00–14:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "12:00–14:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "12:00–14:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "12:00–14:30"
+      }
+    ],
+    "晚餐": [
+      {
+        "day": "星期六",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期日",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期一",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "18:00–21:30"
+      }
+    ]
+  },
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "室外雅座": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙座位": true
+      },
+      {
+        "無障礙停車場": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "全素餐點": true
+      },
+      {
+        "有機餐點": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "早餐": true
+      },
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "跨性別友善空間": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      },
+      {
+        "LGBTQ+ 友善空間": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=Seasons%20by%20olivier%20e.&query_place_id=ChIJS5EC9-irQjQRMCc9vvAcHow",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 19,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAHUIpQWB5DZu89l5axSzCjXJdtj4rKfGae6uM-GrDfK6dikIxdobHrBRf2wAuSTLreCRlbn2LxCUdjs3kb58aa-I-PMWObZ-1C0PBhF7LyDuo4jRnVzz9UjwNgfd6RG9WPgORCtVchbBOKh=w408-h306-k-no",
+  "kgmid": "/g/11vbl6jsps"
+},
+{
+  "title": "MiraWan Eatery",
+  "subTitle": null,
+  "description": "高雅的法式餐廳，餐點以創意擺盤呈現。",
+  "price": "超過 $2,000",
+  "categoryName": "法式餐廳",
+  "address": "110台灣臺北市信義區西村里松智路17號47樓",
+  "neighborhood": null,
+  "street": "松智路17號47樓",
+  "city": "西村里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "http://www.mirawan.com.tw/",
+  "phone": "+886 2 2345 5222",
+  "phoneUnformatted": "+886223455222",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0344484,
+    "lng": 121.5671259
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.2,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJYbLlbUarQjQRDDkNSHZLU_A",
+  "categories": [
+    "法式餐廳",
+    "小餐館"
+  ],
+  "fid": "0x3442ab466de5b261:0xf0534b76480d390c",
+  "cid": "17317267963556739340",
+  "reviewsCount": 920,
+  "imagesCount": 5581,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:36.262Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:30 to 14:30, 14:31 to 17:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 14:30, 14:31 to 17:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 14:30, 14:31 to 17:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 14:30, 14:31 to 17:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 14:30, 14:31 to 17:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 14:30, 14:31 to 17:00, 18:00 to 22:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 14:30, 14:31 to 17:00, 18:00 to 22:00"
+    }
+  ],
+  "additionalOpeningHours": {
+    "午餐": [
+      {
+        "day": "星期六",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期日",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期一",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "11:30–14:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "11:30–14:30"
+      }
+    ],
+    "晚餐": [
+      {
+        "day": "星期六",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期日",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期一",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "18:00–21:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "18:00–21:30"
+      }
+    ]
+  },
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "門市服務": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "全素餐點": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "宵夜": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費停車場": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=MiraWan%20Eatery&query_place_id=ChIJYbLlbUarQjQRDDkNSHZLU_A",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 20,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAFyohy5SgYIxIVmUSOb9Wzt4-As9yg4OrQ4oJ7CpmG5M8TzXVLS7XuYn4mnYTtYRFyq_gyN7t0DwvBFfo-qpOg1_x3BsZhE_CbCIEG8YbAf4irmFF4kdHlqq6DP6FtoFE3JRuGF=w408-h306-k-no",
+  "kgmid": "/g/11flrhhj_n"
+},
+{
+  "title": "籌學費餐廳",
+  "subTitle": null,
+  "description": null,
+  "price": null,
+  "categoryName": "台灣餐廳",
+  "address": "110台灣臺北市信義區正和里光復南路417巷37號",
+  "neighborhood": null,
+  "street": "光復南路417巷37號",
+  "city": "正和里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://zh-tw.facebook.com/pages/%E7%B1%8C%E5%AD%B8%E8%B2%BB%E9%A4%90%E5%BB%B3/176979332313184",
+  "phone": "+886 2 2345 1398",
+  "phoneUnformatted": "+886223451398",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0369568,
+    "lng": 121.557991
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.3,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJ0RrGQ8irQjQR3tnVYowd0w8",
+  "categories": [
+    "台灣餐廳"
+  ],
+  "fid": "0x3442abc843c61ad1:0xfd31d8c62d5d9de",
+  "cid": "1140287619445676510",
+  "reviewsCount": 1046,
+  "reviewsDistribution": {
+    "oneStar": 82,
+    "twoStar": 29,
+    "threeStar": 81,
+    "fourStar": 116,
+    "fiveStar": 738
+  },
+  "imagesCount": 1987,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:37.762Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "17:30 to 00:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "12:00 to 20:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "休息"
+    },
+    {
+      "day": "星期二",
+      "hours": "17:30 to 00:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "17:30 to 00:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "17:30 to 00:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "17:30 to 00:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "室外雅座": true
+      },
+      {
+        "外送": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "啤酒種類多樣": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": false
+      },
+      {
+        "無障礙座位": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "大專院校學生": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      }
+    ],
+    "規劃": [
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "只收現金": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E7%B1%8C%E5%AD%B8%E8%B2%BB%E9%A4%90%E5%BB%B3&query_place_id=ChIJ0RrGQ8irQjQR3tnVYowd0w8",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 27,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkNd83FO5vmY4sn8mLTX8KnBJ9dWcX475F7_vXNNX2lLvw7MaWc8v4MRlLm7wUx2nm4LRi6anMVROIZz2Ya8Hyx9jrDdIk6aPSYfaiAH0XREZ9GDb7iu5we3qgi3MC9z8Py60N9JA=w408-h408-k-no",
+  "kgmid": "/g/1v3kf5rq"
+},
+{
+  "title": "JOYCE EAST",
+  "subTitle": null,
+  "description": null,
+  "price": null,
+  "categoryName": "歐洲餐廳",
+  "address": "110台灣臺北市信義區三犁里信義路五段128號1樓",
+  "neighborhood": null,
+  "street": "信義路五段128號1樓",
+  "city": "三犁里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "http://www.joycecafetw.com/",
+  "phone": "+886 2 8789 6128",
+  "phoneUnformatted": "+886287896128",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.032393,
+    "lng": 121.5692072
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.3,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJk-t4sLGrQjQRG0XNTYo1jgg",
+  "categories": [
+    "歐洲餐廳",
+    "意大利餐廳",
+    "西餐廳"
+  ],
+  "fid": "0x3442abb1b078eb93:0x88e358a4dcd451b",
+  "cid": "616489067123393819",
+  "reviewsCount": 734,
+  "reviewsDistribution": {
+    "oneStar": 31,
+    "twoStar": 20,
+    "threeStar": 51,
+    "fourStar": 196,
+    "fiveStar": 436
+  },
+  "imagesCount": 1967,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:37.763Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/Hl8gNDn3QRI?source=pa&opi=79508299&hl=zh-TW&gei=TBxRapPnK-G5mtkPiILnoAg&ahbb=1&sourceurl=https://www.google.com/search?authuser%3D0%26tbm%3Dmap%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26psi%3DRRxRatHDH7q3qtsPiIbE-Qs.1783700556315.1%26hl%3Dzh-TW%26pb%3D!4m12!1m3!1d28922.65838668607!2d121.59580035490565!3d25.022794627614772!2m3!1f0!2f0!3f0!3m2!1i1920!2i1080!4f13.1!7i20!8i0!10b1!12m36!1m1!18b1!2m3!5m1!6e2!20e3!6m18!4b1!49b1!63m0!73m0!74i150000!75b1!85b1!89b1!91b1!101i97!110m0!114b1!149b1!171b1!176f8!179f90!182b1!183m0!10b1!12b1!13b1!14b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!19m4!2m3!1i360!2i120!4i8!20m57!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m42!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e9!2b1!3e2!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!2b1!4b1!9b0!22m6!1sRRxRatHDH7q3qtsPiIbE-Qs!2s1i:0,t:20588,p:RRxRatHDH7q3qtsPiIbE-Qs:22!4m1!2i20588!7e81!12e3!24m92!1m26!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m15!3b1!4b1!5b1!6b1!13b1!14b1!15b1!17b1!21b1!22b0!25b1!27m1!1b0!28b0!31b0!2b1!5m5!2b1!5b1!6b1!7b1!10b1!10m1!8e3!11m1!3e1!14m1!3b1!17b1!20m2!1e3!1e6!24b1!25b1!26b1!29b1!30m1!2b1!36b1!39m3!2m2!2i1!3i1!43b1!52b1!55b1!56m2!1b1!3b1!65m5!3m4!1m3!1m2!1i224!2i298!71b1!72m17!1m5!1b1!2b1!3b1!5b1!7b1!4b1!8m8!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_reviews!9b1!89b1!103b1!113b1!117b1!122m1!1b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!31b1!34m19!2b1!3b1!4b1!6b1!7b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!37m1!1e81!42b1!46m1!1e10!47m0!49m7!3b1!6m2!1b1!2b1!7m2!1e3!2b1!50m25!1m21!2m7!1u3!4zT3RldsWZZW7DqQ!5e1!9s0ahUKEwiFt_6uwsiVAxUKmSYFHaGGOW0Q_KkBCAkoAw!10m2!3m1!1e1!2m7!1u2!4zTmVqbMOpcGUgaG9kbm9jZW7DqQ!5e1!9s0ahUKEwiFt_6uwsiVAxUKmSYFHaGGOW0Q_KkBCAgoAg!10m2!2m1!1e1!3m1!1u2!3m1!1u3!4BIAE!2e2!3m1!3b1!59BQ2dBd0Fn!61b1!67m3!7b1!10b1!14b0!69i675",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:30 to 15:00, 17:45 to 22:30"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 15:00, 17:45 to 22:30"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 15:00, 17:45 to 22:30"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 15:00, 17:45 to 22:30"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 15:00, 17:45 to 22:30"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 15:00, 17:45 to 22:30"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 15:00, 17:45 to 22:30"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "門市服務": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙座位": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "兒童菜單": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "停車位很多": true
+      },
+      {
+        "免費室內停車場": true
+      },
+      {
+        "免費停車場": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=JOYCE%20EAST&query_place_id=ChIJk-t4sLGrQjQRG0XNTYo1jgg",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 33,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlXolRzAfJDqTHgKBhLp4ywmRr9aQncI4JI0Vm03pTUDG8Wi1nYwzqwrTsM2tOiUTHINcazcQvNG-FLKoxUOSfNhPdVeJODkArWi_qvz3dH_CW38jf4lSd8BuEgVesxUju6ojk1jQ=w408-h272-k-no",
+  "kgmid": "/g/1vk6wxn5"
+},
+{
+  "title": "雞窩餐廳",
+  "subTitle": null,
+  "description": "樸實的餐廳，專賣雞湯和經典炸雞料理。",
+  "price": null,
+  "categoryName": "中菜館",
+  "address": "110台灣臺北市信義區黎忠里和平東路三段377號1樓",
+  "neighborhood": null,
+  "street": "和平東路三段377號1樓",
+  "city": "黎忠里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.facebook.com/pages/%E9%9B%9E%E7%AA%A9%E9%A4%90%E5%BB%B3-%E7%A0%82%E9%8D%8B%E5%9C%9F%E9%9B%9E%E6%B9%AF/521009611290441",
+  "phone": "+886 2 2704 3038",
+  "phoneUnformatted": "+886227043038",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.020063,
+    "lng": 121.5573831
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.3,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJMwTp18yrQjQR2k_VIsJXNTs",
+  "categories": [
+    "中菜館",
+    "亞洲菜餐廳",
+    "雞肉料理餐廳",
+    "餐廳",
+    "湯羹餐廳"
+  ],
+  "fid": "0x3442abccd7e90433:0x3b3557c222d54fda",
+  "cid": "4266412713323089882",
+  "reviewsCount": 3498,
+  "reviewsDistribution": {
+    "oneStar": 111,
+    "twoStar": 64,
+    "threeStar": 301,
+    "fourStar": 1099,
+    "fiveStar": 1923
+  },
+  "imagesCount": 8348,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:39.220Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "休息"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙座位": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      },
+      {
+        "經常需要等候": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費停車場": true
+      },
+      {
+        "收費路邊停車格": true
+      },
+      {
+        "停車位很難找": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E9%9B%9E%E7%AA%A9%E9%A4%90%E5%BB%B3&query_place_id=ChIJMwTp18yrQjQR2k_VIsJXNTs",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 46,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAFQkaQX4IyUMOIQVq-g773WJg2yuqphdD_xuMmy07coyoEYHKs_EOTJwvmzdsTnOkaLPCxA-2Zcpc8dqVNH_sM1DLr6NuaCMdyVMdOS3YjGMIqMWBzFBPaJNvG91LdQKXdPKgr9MQ=w408-h306-k-no",
+  "kgmid": "/g/1tpb8pfm"
+},
+{
+  "title": "星期五美式餐廳 信義餐廳",
+  "subTitle": null,
+  "description": "氣氛歡樂的連鎖休閒餐廳，供應啤酒、調酒和各種美式餐點。",
+  "price": null,
+  "categoryName": "美式餐廳",
+  "address": "110台灣臺北市信義區興雅里忠孝東路五段8號2樓",
+  "neighborhood": null,
+  "street": "忠孝東路五段8號2樓",
+  "city": "興雅里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://tgifridays.com.tw/",
+  "phone": "+886 2 2720 3579",
+  "phoneUnformatted": "+886227203579",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0407344,
+    "lng": 121.5653917
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.5,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJQeGuX7mrQjQRaWkzgt7mxpU",
+  "categories": [
+    "美式餐廳",
+    "餐廳"
+  ],
+  "fid": "0x3442abb95faee141:0x95c6e6de82336969",
+  "cid": "10792567400381507945",
+  "reviewsCount": 5940,
+  "reviewsDistribution": {
+    "oneStar": 215,
+    "twoStar": 118,
+    "threeStar": 421,
+    "fourStar": 1134,
+    "fiveStar": 4052
+  },
+  "imagesCount": 7895,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:39.220Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/YdeQqnvpSv4?source=pa&opi=79508299&hl=zh-TW&gei=ThxRap2aDf65qtsPqeGegA8&ahbb=1&sourceurl=https://www.google.com/search?authuser%3D0%26tbm%3Dmap%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26psi%3DRRxRatHDH7q3qtsPiIbE-Qs.1783700556315.1%26hl%3Dzh-TW%26pb%3D!4m12!1m3!1d28922.65838668607!2d121.59580035490565!3d25.022794627614772!2m3!1f0!2f0!3f0!3m2!1i1920!2i1080!4f13.1!7i20!8i20!10b1!12m36!1m1!18b1!2m3!5m1!6e2!20e3!6m18!4b1!49b1!63m0!73m0!74i150000!75b1!85b1!89b1!91b1!101i97!110m0!114b1!149b1!171b1!176f8!179f90!182b1!183m0!10b1!12b1!13b1!14b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!19m4!2m3!1i360!2i120!4i8!20m57!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m42!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e9!2b1!3e2!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!2b1!4b1!9b0!22m6!1sRRxRatHDH7q3qtsPiIbE-Qs!2s1i:0,t:20588,p:RRxRatHDH7q3qtsPiIbE-Qs:22!4m1!2i20588!7e81!12e3!24m92!1m26!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m15!3b1!4b1!5b1!6b1!13b1!14b1!15b1!17b1!21b1!22b0!25b1!27m1!1b0!28b0!31b0!2b1!5m5!2b1!5b1!6b1!7b1!10b1!10m1!8e3!11m1!3e1!14m1!3b1!17b1!20m2!1e3!1e6!24b1!25b1!26b1!29b1!30m1!2b1!36b1!39m3!2m2!2i1!3i1!43b1!52b1!55b1!56m2!1b1!3b1!65m5!3m4!1m3!1m2!1i224!2i298!71b1!72m17!1m5!1b1!2b1!3b1!5b1!7b1!4b1!8m8!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_reviews!9b1!89b1!103b1!113b1!117b1!122m1!1b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!31b1!34m19!2b1!3b1!4b1!6b1!7b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!37m1!1e81!42b1!46m1!1e10!47m0!49m7!3b1!6m2!1b1!2b1!7m2!1e3!2b1!50m25!1m21!2m7!1u3!4zT3RldsWZZW7DqQ!5e1!9s0ahUKEwiTvcawwsiVAxXhnCYFHQjBGYQQ_KkBCJYHKBc!10m2!3m1!1e1!2m7!1u2!4zTmVqbMOpcGUgaG9kbm9jZW7DqQ!5e1!9s0ahUKEwiTvcawwsiVAxXhnCYFHQjBGYQQ_KkBCJUHKBY!10m2!2m1!1e1!3m1!1u2!3m1!1u3!4BIAE!2e2!3m1!3b1!59BQ2dBd0Fn!61b1!67m3!7b1!10b1!14b0!69i675%26ech%3D1",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:00 to 00:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:00 to 00:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:00 to 23:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:00 to 23:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:00 to 23:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:00 to 23:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:00 to 00:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "室外雅座": true
+      },
+      {
+        "外送": true
+      },
+      {
+        "門市服務": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "啤酒種類多樣": true
+      },
+      {
+        "運動": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙座位": true
+      },
+      {
+        "無障礙停車場": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "酒精飲料優惠時段": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "餐點優惠時段": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "早午餐": true
+      },
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "大專院校學生": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂早午餐": true
+      },
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "兒童菜單": true
+      },
+      {
+        "適合兒童": true
+      },
+      {
+        "適合兒童生日派對": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E6%98%9F%E6%9C%9F%E4%BA%94%E7%BE%8E%E5%BC%8F%E9%A4%90%E5%BB%B3%20%E4%BF%A1%E7%BE%A9%E9%A4%90%E5%BB%B3&query_place_id=ChIJQeGuX7mrQjQRaWkzgt7mxpU",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 48,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAE5AUDvkD1oIcLPbrY_uPaGTKU_s4MNCoiTJdv8nJWEM7Dgryqwtwnj2wvjIP0in9NUc01psnFvHtk-4qlV_X3ZuY4iZvU_lPTIF0yI2qIrZkhv9oPF1a2WYMIVgoxDl8FbjxT__A=w408-h306-k-no",
+  "kgmid": "/g/12hp5rlr7"
+},
+{
+  "title": "隨意鳥地方101景觀餐廳",
+  "subTitle": null,
+  "description": null,
+  "price": null,
+  "categoryName": "意大利餐廳",
+  "address": "110台灣臺北市信義區西村里信義路五段7號85F",
+  "neighborhood": null,
+  "street": "信義路五段7號85F",
+  "city": "西村里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.dt101.com.tw/",
+  "phone": "+886 2 8101 0016",
+  "phoneUnformatted": "+886281010016",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0335715,
+    "lng": 121.5649428
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.1,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJ1S3Z6barQjQRUnd4BwJ6NkY",
+  "categories": [
+    "意大利餐廳",
+    "餐廳"
+  ],
+  "fid": "0x3442abb6e9d92dd5:0x46367a0207787752",
+  "cid": "5059365380531189586",
+  "reviewsCount": 5030,
+  "reviewsDistribution": {
+    "oneStar": 381,
+    "twoStar": 249,
+    "threeStar": 561,
+    "fourStar": 1270,
+    "fiveStar": 2569
+  },
+  "imagesCount": 22575,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:39.220Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/D2mnW4bXfLU?source=pa&opi=79508299&hl=zh-TW&gei=ThxRap2aDf65qtsPqeGegA8&ahbb=1&sourceurl=https://www.google.com/search?authuser%3D0%26tbm%3Dmap%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26psi%3DRRxRatHDH7q3qtsPiIbE-Qs.1783700556315.1%26hl%3Dzh-TW%26pb%3D!4m12!1m3!1d28922.65838668607!2d121.59580035490565!3d25.022794627614772!2m3!1f0!2f0!3f0!3m2!1i1920!2i1080!4f13.1!7i20!8i20!10b1!12m36!1m1!18b1!2m3!5m1!6e2!20e3!6m18!4b1!49b1!63m0!73m0!74i150000!75b1!85b1!89b1!91b1!101i97!110m0!114b1!149b1!171b1!176f8!179f90!182b1!183m0!10b1!12b1!13b1!14b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!19m4!2m3!1i360!2i120!4i8!20m57!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m42!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e9!2b1!3e2!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!2b1!4b1!9b0!22m6!1sRRxRatHDH7q3qtsPiIbE-Qs!2s1i:0,t:20588,p:RRxRatHDH7q3qtsPiIbE-Qs:22!4m1!2i20588!7e81!12e3!24m92!1m26!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m15!3b1!4b1!5b1!6b1!13b1!14b1!15b1!17b1!21b1!22b0!25b1!27m1!1b0!28b0!31b0!2b1!5m5!2b1!5b1!6b1!7b1!10b1!10m1!8e3!11m1!3e1!14m1!3b1!17b1!20m2!1e3!1e6!24b1!25b1!26b1!29b1!30m1!2b1!36b1!39m3!2m2!2i1!3i1!43b1!52b1!55b1!56m2!1b1!3b1!65m5!3m4!1m3!1m2!1i224!2i298!71b1!72m17!1m5!1b1!2b1!3b1!5b1!7b1!4b1!8m8!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_reviews!9b1!89b1!103b1!113b1!117b1!122m1!1b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!31b1!34m19!2b1!3b1!4b1!6b1!7b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!37m1!1e81!42b1!46m1!1e10!47m0!49m7!3b1!6m2!1b1!2b1!7m2!1e3!2b1!50m25!1m21!2m7!1u3!4zT3RldsWZZW7DqQ!5e1!9s0ahUKEwiTvcawwsiVAxXhnCYFHQjBGYQQ_KkBCJYHKBc!10m2!3m1!1e1!2m7!1u2!4zTmVqbMOpcGUgaG9kbm9jZW7DqQ!5e1!9s0ahUKEwiTvcawwsiVAxXhnCYFHQjBGYQQ_KkBCJUHKBY!10m2!2m1!1e1!3m1!1u2!3m1!1u3!4BIAE!2e2!3m1!3b1!59BQ2dBd0Fn!61b1!67m3!7b1!10b1!14b0!69i675%26ech%3D1",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:45 to 15:00, 17:45 to 22:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:45 to 15:00, 17:45 to 22:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:45 to 15:00, 17:45 to 22:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:45 to 15:00, 17:45 to 22:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:45 to 15:00, 17:45 to 22:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:45 to 15:00, 17:45 to 22:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:45 to 15:00, 17:45 to 22:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      },
+      {
+        "啤酒種類多樣": true
+      },
+      {
+        "提供現場音樂演奏": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙座位": true
+      },
+      {
+        "無障礙停車場": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E9%9A%A8%E6%84%8F%E9%B3%A5%E5%9C%B0%E6%96%B9101%E6%99%AF%E8%A7%80%E9%A4%90%E5%BB%B3&query_place_id=ChIJ1S3Z6barQjQRUnd4BwJ6NkY",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 50,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAGHA9RPP_iuNttIr3JAK_1wlMX-RhZNUSJg2EEoMC-FA0YleIDhaH_o-PisBCLwa6KBejAvi8XNne18a1851-zvued1cKU49CZYpnf92OB4Q4Aq0JUCRGu8nMY5iOIHlikfdEzE=w408-h306-k-no",
+  "kgmid": "/g/1pzs84s52"
+},
+{
+  "title": "如意餐廳 Ju-Yi Hall",
+  "subTitle": null,
+  "description": null,
+  "price": null,
+  "categoryName": "餐廳",
+  "address": "110台灣臺北市信義區中興里光復南路495號11樓",
+  "neighborhood": null,
+  "street": "光復南路495號11樓",
+  "city": "中興里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "http://www.businesscenter.com.tw/restaurants/",
+  "phone": "+886 2 8780 8000",
+  "phoneUnformatted": "+886287808000",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0325764,
+    "lng": 121.5579893
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.5,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJRXCyJMqrQjQRaZ49thf-ho4",
+  "categories": [
+    "餐廳",
+    "中菜館"
+  ],
+  "fid": "0x3442abca24b27045:0x8e86fe17b63d9e69",
+  "cid": "10270175378060189289",
+  "reviewsCount": 64,
+  "reviewsDistribution": {
+    "oneStar": 2,
+    "twoStar": 3,
+    "threeStar": 2,
+    "fourStar": 11,
+    "fiveStar": 46
+  },
+  "imagesCount": 89,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:39.220Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "07:00 to 10:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "07:00 to 10:00, 11:00 to 14:00"
+    },
+    {
+      "day": "星期一",
+      "hours": "07:00 to 10:00, 11:00 to 14:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "07:00 to 10:00, 11:30 to 14:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "07:00 to 10:00, 11:30 to 14:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "07:00 to 10:00, 11:30 to 14:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "07:00 to 10:00, 11:30 to 14:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "美味甜點": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙座位": true
+      },
+      {
+        "無障礙停車場": true
+      },
+      {
+        "設有磁感應線圈助聽系統輔助": false
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "全素餐點": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "早餐": true
+      },
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "跨性別友善空間": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      },
+      {
+        "LGBTQ+ 友善空間": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E5%A6%82%E6%84%8F%E9%A4%90%E5%BB%B3%20Ju-Yi%20Hall&query_place_id=ChIJRXCyJMqrQjQRaZ49thf-ho4",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 51,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAE6jl2YOGS_kp4To0JmI_ydqY80tU54TG0p2UeyVTkxdUXQsvQpi-U8gMcV5h0URVFeupszfOBZ8rbnlPJH6OPP7cIHULHsUTZeGmkDPHRlmRwda8WEU5IW49G-d8N8mEFBwyjJgg=w408-h272-k-no",
+  "kgmid": "/g/11dxnq1j7d"
+},
+{
+  "title": "侯布雄法式餐廳",
+  "subTitle": null,
+  "description": "位於寶麗廣場中的時髦餐廳，可在精緻的用餐環境中享用高雅法式料理與精選葡萄酒。",
+  "price": null,
+  "categoryName": "法國餐廳",
+  "address": "110台灣臺北市信義區興雅里松仁路28號5樓",
+  "neighborhood": null,
+  "street": "松仁路28號5樓",
+  "city": "興雅里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.facebook.com/LatelierdeJoelRobuchonTaipei/",
+  "phone": "+886 2 8729 2628",
+  "phoneUnformatted": "+886287292628",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0398624,
+    "lng": 121.5676195
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.2,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJMX_7qLurQjQRy5IA3BMsmv4",
+  "categories": [
+    "法國餐廳",
+    "餐廳"
+  ],
+  "fid": "0x3442abbba8fb7f31:0xfe9a2c13dc0092cb",
+  "cid": "18346024495854162635",
+  "reviewsCount": 2401,
+  "reviewsDistribution": {
+    "oneStar": 160,
+    "twoStar": 104,
+    "threeStar": 236,
+    "fourStar": 561,
+    "fiveStar": 1340
+  },
+  "imagesCount": 17431,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:39.221Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:30 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 14:30, 18:00 to 21:30"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 14:30, 18:00 to 21:30"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "門市服務": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙停車場": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "櫃檯點餐服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "安靜": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費路邊停車格": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E4%BE%AF%E5%B8%83%E9%9B%84%E6%B3%95%E5%BC%8F%E9%A4%90%E5%BB%B3&query_place_id=ChIJMX_7qLurQjQRy5IA3BMsmv4",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 56,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAEYHmbCHsLKRIyS631FnpBVojxBXnDI_y0Q8FPP12vNoeI2dz0q_AvA3a1XXlX93PH9do2xu5KWZ6uQ1CtvgkljbA0gC6-Ldex46o14c0_90twhnwYRZISF9SkW_e0fvtl7l_iSZA=w408-h306-k-no",
+  "kgmid": "/g/1vyxg3cx"
+},
+{
+  "title": "分享餐廳",
+  "subTitle": null,
+  "description": null,
+  "price": null,
+  "categoryName": "餐廳",
+  "address": "110台灣臺北市信義區興雅里松仁路28號B2",
+  "neighborhood": null,
+  "street": "松仁路28號B2",
+  "city": "興雅里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "http://www.bellavita.com.tw/cht/store.php?d=25",
+  "phone": "+886 2 8729 2700",
+  "phoneUnformatted": "+886287292700",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0396219,
+    "lng": 121.567641
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.1,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJD2ReM02qQjQRAVtSkjmHrec",
+  "categories": [
+    "餐廳"
+  ],
+  "fid": "0x3442aa4d335e640f:0xe7ad873992525b01",
+  "cid": "16694148075070053121",
+  "reviewsCount": 364,
+  "reviewsDistribution": {
+    "oneStar": 38,
+    "twoStar": 16,
+    "threeStar": 24,
+    "fourStar": 93,
+    "fiveStar": 193
+  },
+  "imagesCount": 802,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:40.450Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:00 to 22:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:00 to 21:30"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:00 to 21:30"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:00 to 21:30"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:00 to 21:30"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:00 to 21:30"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:00 to 22:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "門市服務": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "美味甜點": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙停車場": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "全素餐點": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費停車場": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E5%88%86%E4%BA%AB%E9%A4%90%E5%BB%B3&query_place_id=ChIJD2ReM02qQjQRAVtSkjmHrec",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 65,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkCdJoqA1RZk1eOQ0OsAOcBKyIQowPCndOy2xu76grYVBPoDaa7s-Y_YVIu1Bpw1lvkoEWG4pi8Tr0ySU9aW0FjVj1Ph_eIwm7PqbVBF3H1rb17ry13JbOQkQi9qGBGY6IwtInu=w408-h306-k-no",
+  "kgmid": "/g/1tdmblj5"
+},
+{
+  "title": "bar & restaurant a³ 新義式餐廳",
+  "subTitle": null,
+  "description": null,
+  "price": null,
+  "categoryName": "西餐廳",
+  "address": "110台灣臺北市信義區興雅里松仁路28號1F",
+  "neighborhood": null,
+  "street": "松仁路28號1F",
+  "city": "興雅里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "https://www.facebook.com/bar.restaurant.a3/",
+  "phone": "+886 2 8729 2866",
+  "phoneUnformatted": "+886287292866",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0396219,
+    "lng": 121.567641
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJB3VqqLurQjQRDLpEXazEb7g",
+  "categories": [
+    "西餐廳",
+    "意大利餐廳"
+  ],
+  "fid": "0x3442abbba86a7507:0xb86fc4ac5d44ba0c",
+  "cid": "13290057269971827212",
+  "reviewsCount": 373,
+  "reviewsDistribution": {
+    "oneStar": 35,
+    "twoStar": 11,
+    "threeStar": 39,
+    "fourStar": 117,
+    "fiveStar": 171
+  },
+  "imagesCount": 1313,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:41.804Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/P-BK1MauMDs?source=pa&opi=79508299&hl=zh-TW&gei=UBxRapndLcS3qtsP6ZPW0QE&ahbb=1&sourceurl=https://www.google.com/search?authuser%3D0%26tbm%3Dmap%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26psi%3DRRxRatHDH7q3qtsPiIbE-Qs.1783700556315.1%26hl%3Dzh-TW%26pb%3D!4m12!1m3!1d28922.65838668607!2d121.59580035490565!3d25.022794627614772!2m3!1f0!2f0!3f0!3m2!1i1920!2i1080!4f13.1!7i20!8i60!10b1!12m36!1m1!18b1!2m3!5m1!6e2!20e3!6m18!4b1!49b1!63m0!73m0!74i150000!75b1!85b1!89b1!91b1!101i97!110m0!114b1!149b1!171b1!176f8!179f90!182b1!183m0!10b1!12b1!13b1!14b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!19m4!2m3!1i360!2i120!4i8!20m57!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m42!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e9!2b1!3e2!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!2b1!4b1!9b0!22m6!1sRRxRatHDH7q3qtsPiIbE-Qs!2s1i:0,t:20588,p:RRxRatHDH7q3qtsPiIbE-Qs:22!4m1!2i20588!7e81!12e3!24m92!1m26!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m15!3b1!4b1!5b1!6b1!13b1!14b1!15b1!17b1!21b1!22b0!25b1!27m1!1b0!28b0!31b0!2b1!5m5!2b1!5b1!6b1!7b1!10b1!10m1!8e3!11m1!3e1!14m1!3b1!17b1!20m2!1e3!1e6!24b1!25b1!26b1!29b1!30m1!2b1!36b1!39m3!2m2!2i1!3i1!43b1!52b1!55b1!56m2!1b1!3b1!65m5!3m4!1m3!1m2!1i224!2i298!71b1!72m17!1m5!1b1!2b1!3b1!5b1!7b1!4b1!8m8!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_reviews!9b1!89b1!103b1!113b1!117b1!122m1!1b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!31b1!34m19!2b1!3b1!4b1!6b1!7b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!37m1!1e81!42b1!46m1!1e10!47m0!49m7!3b1!6m2!1b1!2b1!7m2!1e3!2b1!50m25!1m21!2m7!1u3!4zT3RldsWZZW7DqQ!5e1!9s0ahUKEwivyfixwsiVAxUrnWoFHdB-NukQ_KkBCM8GKBc!10m2!3m1!1e1!2m7!1u2!4zTmVqbMOpcGUgaG9kbm9jZW7DqQ!5e1!9s0ahUKEwivyfixwsiVAxUrnWoFHdB-NukQ_KkBCM4GKBY!10m2!2m1!1e1!3m1!1u2!3m1!1u3!4BIAE!2e2!3m1!3b1!59BQ2dBd0Fn!61b1!67m3!7b1!10b1!14b0!69i675%26ech%3D3",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:00 to 22:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:00 to 21:30"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:00 to 21:30"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:00 to 21:30"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:00 to 21:30"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:00 to 21:30"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:00 to 22:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "門市服務": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      },
+      {
+        "外送": false
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "早餐": true
+      },
+      {
+        "早午餐": true
+      },
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      }
+    ],
+    "兒童": [
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費停車場": true
+      },
+      {
+        "收費路邊停車格": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=bar%20%26%20restaurant%20a%C2%B3%20%E6%96%B0%E7%BE%A9%E5%BC%8F%E9%A4%90%E5%BB%B3&query_place_id=ChIJB3VqqLurQjQRDLpEXazEb7g",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 86,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAH7gUWViXyK01DEDBWc-crHzi_NUOa7gyrDiluGPQogJyupv6OiKLyBK6z0oJDUoXaIV1jU-V_tR4HNA5IHQjW6cLW7uYx3aV6MvYoAp0wTp98zmPJ1wtHm-KeZksCDyutb6pKi=w408-h306-k-no",
+  "kgmid": "/g/1hc1pgq3d"
+},
+{
+  "title": "WILDWOOD 原木燒烤牛排海鮮餐廳",
+  "subTitle": null,
+  "description": null,
+  "price": null,
+  "categoryName": "扒房",
+  "address": "110台灣臺北市信義區西村里松壽路9號4樓",
+  "neighborhood": null,
+  "street": "松壽路9號4樓",
+  "city": "西村里",
+  "postalCode": "110",
+  "state": "臺北市信義區",
+  "countryCode": "TW",
+  "website": "http://www.wildwood.com.tw/index_ch.php",
+  "phone": "+886 2 2722 8886",
+  "phoneUnformatted": "+886227228886",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.036389,
+    "lng": 121.5667324
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.1,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJ55kZ-VOrQjQRsWhqEGglwzk",
+  "categories": [
+    "扒房",
+    "酒吧扒房",
+    "雞尾酒酒吧",
+    "海鮮餐廳"
+  ],
+  "fid": "0x3442ab53f91999e7:0x39c32568106a68b1",
+  "cid": "4162211609502705841",
+  "reviewsCount": 1066,
+  "reviewsDistribution": {
+    "oneStar": 112,
+    "twoStar": 46,
+    "threeStar": 70,
+    "fourStar": 183,
+    "fiveStar": 655
+  },
+  "imagesCount": 4593,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-10T16:22:41.805Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/IQFiIiyt2EE?source=pa&opi=79508299&hl=zh-TW&gei=UBxRapndLcS3qtsP6ZPW0QE&ahbb=1&sourceurl=https://www.google.com/search?authuser%3D0%26tbm%3Dmap%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26psi%3DRRxRatHDH7q3qtsPiIbE-Qs.1783700556315.1%26hl%3Dzh-TW%26pb%3D!4m12!1m3!1d28922.65838668607!2d121.59580035490565!3d25.022794627614772!2m3!1f0!2f0!3f0!3m2!1i1920!2i1080!4f13.1!7i20!8i60!10b1!12m36!1m1!18b1!2m3!5m1!6e2!20e3!6m18!4b1!49b1!63m0!73m0!74i150000!75b1!85b1!89b1!91b1!101i97!110m0!114b1!149b1!171b1!176f8!179f90!182b1!183m0!10b1!12b1!13b1!14b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!19m4!2m3!1i360!2i120!4i8!20m57!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m42!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e9!2b1!3e2!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!2b1!4b1!9b0!22m6!1sRRxRatHDH7q3qtsPiIbE-Qs!2s1i:0,t:20588,p:RRxRatHDH7q3qtsPiIbE-Qs:22!4m1!2i20588!7e81!12e3!24m92!1m26!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m15!3b1!4b1!5b1!6b1!13b1!14b1!15b1!17b1!21b1!22b0!25b1!27m1!1b0!28b0!31b0!2b1!5m5!2b1!5b1!6b1!7b1!10b1!10m1!8e3!11m1!3e1!14m1!3b1!17b1!20m2!1e3!1e6!24b1!25b1!26b1!29b1!30m1!2b1!36b1!39m3!2m2!2i1!3i1!43b1!52b1!55b1!56m2!1b1!3b1!65m5!3m4!1m3!1m2!1i224!2i298!71b1!72m17!1m5!1b1!2b1!3b1!5b1!7b1!4b1!8m8!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_reviews!9b1!89b1!103b1!113b1!117b1!122m1!1b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!1m6!1m2!1i0!2i0!2m2!1i0!2i0!31b1!34m19!2b1!3b1!4b1!6b1!7b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!37m1!1e81!42b1!46m1!1e10!47m0!49m7!3b1!6m2!1b1!2b1!7m2!1e3!2b1!50m25!1m21!2m7!1u3!4zT3RldsWZZW7DqQ!5e1!9s0ahUKEwivyfixwsiVAxUrnWoFHdB-NukQ_KkBCM8GKBc!10m2!3m1!1e1!2m7!1u2!4zTmVqbMOpcGUgaG9kbm9jZW7DqQ!5e1!9s0ahUKEwivyfixwsiVAxUrnWoFHdB-NukQ_KkBCM4GKBY!10m2!2m1!1e1!3m1!1u2!3m1!1u3!4BIAE!2e2!3m1!3b1!59BQ2dBd0Fn!61b1!67m3!7b1!10b1!14b0!69i675%26ech%3D3",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期六",
+      "hours": "11:00 to 17:00, 17:30 to 22:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:00 to 17:00, 17:30 to 21:30"
+    },
+    {
+      "day": "星期一",
+      "hours": "11:30 to 15:00, 17:30 to 21:30"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 15:00, 17:30 to 21:30"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 15:00, 17:30 to 21:30"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 15:00, 17:30 to 21:30"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 15:00, 17:30 to 22:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外送": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "好喝的雞尾酒": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "啤酒種類多樣": true
+      },
+      {
+        "葡萄酒單內容豐富": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "酒精飲料優惠時段": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      },
+      {
+        "雞尾酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "附設酒吧": true
+      },
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "浪漫氛圍": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=WILDWOOD%20%E5%8E%9F%E6%9C%A8%E7%87%92%E7%83%A4%E7%89%9B%E6%8E%92%E6%B5%B7%E9%AE%AE%E9%A4%90%E5%BB%B3&query_place_id=ChIJ55kZ-VOrQjQRsWhqEGglwzk",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 92,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAHeqvmo18Mws6olsMEAOpAtXoF8e8xtggEkgO6kt9G79FyBNSP_YvE1r3SXMKcpmTAJWZp9hRSBW5PHPIAzx7_EwrMtYEuiQYU0p6rCPIezUk8ogXNF8jH151HDp-gowf_-tcE=w408-h306-k-no",
+  "kgmid": "/g/11rcys9tlm"
+}]
