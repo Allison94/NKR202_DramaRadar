@@ -113,4 +113,8 @@ def top_intensity_data(limit: int = 10) -> pd.DataFrame:
 def scatter_intensity_reviews(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame(columns=["reviews", "intensity", "name"])
-    return df[["name", "reviews", "intensity"]].rename(columns={"name": "店家"})
+    # 散點用 DB 評論數，避免 Google reviewsCount 膨脹
+    frame = df.copy()
+    if "db_review_count" in frame.columns:
+        frame["reviews"] = frame["db_review_count"]
+    return frame[["name", "reviews", "intensity"]].rename(columns={"name": "店家"})

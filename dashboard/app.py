@@ -1,11 +1,31 @@
 from __future__ import annotations
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 import html
 import sys
-import time
 from pathlib import Path
 from textwrap import dedent
+
+TIMEZONE_OPTIONS = {
+    "台灣時間（台北）": "Asia/Taipei",
+    "日本時間": "Asia/Tokyo",
+    "UTC": "UTC",
+}
+
+
+def format_display_time(
+    when: datetime | None = None,
+    *,
+    tz_name: str = "Asia/Taipei",
+) -> str:
+    """把時間轉成指定時區的可讀字串。"""
+
+    moment = when or datetime.now(timezone.utc)
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=timezone.utc)
+    local = moment.astimezone(ZoneInfo(tz_name))
+    return local.strftime("%Y-%m-%d %H:%M:%S")
 
 import folium
 import pandas as pd
@@ -23,7 +43,6 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from domains.store.service import (
     get_dashboard_dataframe,
-    get_pr_reply_examples,
     get_store_reviews_dataframe,
 )
 from dashboard import charts as chart_data
@@ -87,150 +106,6 @@ def safe_text(value: object) -> str:
 
 
 # ============================================================
-# 開場動畫
-# 不使用 st.progress，避免出現看起來像兩條的進度條
-# ============================================================
-
-def show_splash_screen() -> None:
-    if st.session_state.get("splash_finished", False):
-        return
-
-    render_html(
-        """
-        <style>
-        [data-testid="stSidebar"],
-        [data-testid="stHeader"],
-        [data-testid="stToolbar"],
-        [data-testid="stDecoration"],
-        [data-testid="stStatusWidget"],
-        #MainMenu,
-        footer {
-            display: none !important;
-        }
-
-        .stApp {
-            background: #07050a;
-        }
-
-        .block-container {
-            max-width: 1400px !important;
-            padding: 0.5rem 1rem 1rem !important;
-        }
-
-        [data-testid="stImage"] {
-            display: flex;
-            justify-content: center;
-        }
-
-        [data-testid="stImage"] img {
-            width: 100%;
-            max-width: 1120px;
-            max-height: 78vh;
-            object-fit: contain;
-            object-position: center;
-        }
-
-        .splash-progress-wrap {
-            width: min(720px, 82vw);
-            margin: 16px auto 0;
-        }
-
-        .splash-progress-track {
-            width: 100%;
-            height: 14px;
-            padding: 2px;
-            overflow: hidden;
-            border: 1px solid #d93eff;
-            border-radius: 999px;
-            background: #211525;
-            box-sizing: border-box;
-        }
-
-        .splash-progress-fill {
-            height: 100%;
-            border-radius: 999px;
-            background:
-                linear-gradient(
-                    90deg,
-                    #ff315d 0%,
-                    #b53cff 55%,
-                    #ef4cff 100%
-                );
-            transition: width 0.05s linear;
-        }
-
-        .splash-loading-text {
-            margin-top: 16px;
-            color: #e34cff;
-            text-align: center;
-            font-size: clamp(15px, 2vw, 20px);
-            font-weight: 800;
-            letter-spacing: 0.04em;
-        }
-
-        @media (max-width: 700px) {
-            [data-testid="stImage"] img {
-                max-height: 68vh;
-            }
-
-            .block-container {
-                padding-left: 0.3rem !important;
-                padding-right: 0.3rem !important;
-            }
-        }
-        </style>
-        """
-    )
-
-    if not SPLASH_IMAGE.exists():
-        st.error(
-            "找不到開場圖片，請確認檔案位於："
-            "`dashboard/assets/splash.png`"
-        )
-        st.stop()
-
-    st.image(
-        str(SPLASH_IMAGE),
-        width="stretch",
-    )
-
-    skip_col, progress_col = st.columns([1, 4])
-    with skip_col:
-        if st.button("跳過開場", use_container_width=True):
-            st.session_state["splash_finished"] = True
-            st.rerun()
-
-    progress_placeholder = progress_col.empty()
-
-    for progress in range(0, 101, 2):
-        render_html(
-            f"""
-            <div class="splash-progress-wrap">
-                <div class="splash-progress-track">
-                    <div
-                        class="splash-progress-fill"
-                        style="width: {progress}%"
-                    ></div>
-                </div>
-
-                <div class="splash-loading-text">
-                    正在搜尋台北吵架戰場...
-                </div>
-            </div>
-            """,
-            container=progress_placeholder,
-        )
-
-        time.sleep(0.025)
-
-    st.session_state["splash_finished"] = True
-    st.rerun()
-
-
-show_splash_screen()
-
-
-# ============================================================
 # 從 PostgreSQL 讀取 Dashboard 資料（domains/store/repository.py）
 # 依 db/schema.sql 的 store / review / ai_analysis；範圍：台北市
 # ============================================================
@@ -252,12 +127,10 @@ if not data_source and not df.empty and "__data_source" in df.columns:
 db_error = str(df.attrs.get("error", "") or "")
 
 if (
-    "database_last_loaded_at" not in st.session_state
+    "database_loaded_at_utc" not in st.session_state
     or refresh_requested
 ):
-    st.session_state["database_last_loaded_at"] = (
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    )
+    st.session_state["database_loaded_at_utc"] = datetime.now(timezone.utc)
 
 st.session_state["database_row_count"] = len(df)
 st.session_state["database_data_source"] = data_source
@@ -631,12 +504,66 @@ render_html(
     }
 
     .empty-result {
-        margin-top: 12px;
-        padding: 16px;
-        border: 1px dashed rgba(255, 255, 255, 0.16);
-        border-radius: 13px;
-        color: var(--drama-muted);
+        margin: 4px 0 14px 0;
+        padding: 18px 20px;
+        border: 3px solid #ff2d55;
+        border-radius: 14px;
+        background: #ff2d55;
+        color: #ffffff;
         text-align: center;
+        font-size: 1.2rem;
+        font-weight: 900;
+        letter-spacing: 0.03em;
+        box-shadow: 0 0 0 4px rgba(255, 45, 85, 0.35);
+    }
+
+    .empty-result strong {
+        display: block;
+        margin-bottom: 6px;
+        color: #fff7b0;
+        font-size: 1.45rem;
+        font-weight: 900;
+    }
+
+    .empty-result span {
+        display: block;
+        color: #ffffff;
+        font-size: 1.05rem;
+        font-weight: 700;
+    }
+
+    /* 首頁固定 hero（不再幾秒後消失） */
+    .home-hero {
+        margin: 0 0 8px 0;
+        overflow: hidden;
+        border: 1px solid rgba(255, 49, 93, 0.28);
+        border-radius: 18px;
+        background: #07050a;
+    }
+
+    .home-hero img {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: min(78vh, 720px);
+        object-fit: cover;
+        object-position: center top;
+    }
+
+    .home-hero-scroll-hint {
+        margin: 10px 0 18px 0;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255, 49, 93, 0.12);
+        border: 1px solid rgba(255, 49, 93, 0.35);
+        color: #ffb0c4;
+        text-align: center;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+    }
+
+    .map-section-anchor {
+        scroll-margin-top: 12px;
     }
 
     @media (max-width: 800px) {
@@ -856,16 +783,31 @@ def add_map_marker_styles(drama_map: folium.Map) -> None:
 
 
 # ============================================================
-# Popup 資訊卡
+# Popup 資訊卡（精簡：不塞全文，連到站內評論清單）
 # ============================================================
 
+PAGE_SHOWDOWN = "⚔️ 精選對決"
+PAGE_OPTIONS = [
+    "🗺️ 吵架地圖",
+    "🏆 趣味排行榜",
+    "📊 數據分析",
+    PAGE_SHOWDOWN,
+    "🎭 匿名爆料",
+]
+
+
 def create_popup_html(row: pd.Series) -> str:
+    """地圖點擊只秀摘要 +「看更多留言」連到精選對決（用 store_id）。"""
+
+    place_id = html.escape(str(row.get("store_id") or "").strip(), quote=True)
+    more_href = f"?page=showdown&store_id={place_id}"
+
     return dedent(
         f"""
         <div
             style="
-                width: 270px;
-                padding: 5px;
+                width: 240px;
+                padding: 6px;
                 font-family:
                     Arial,
                     'Microsoft JhengHei',
@@ -876,7 +818,7 @@ def create_popup_html(row: pd.Series) -> str:
                 style="
                     margin-bottom: 5px;
                     color: #21161e;
-                    font-size: 17px;
+                    font-size: 16px;
                     font-weight: 800;
                 "
             >
@@ -897,7 +839,7 @@ def create_popup_html(row: pd.Series) -> str:
             <div
                 style="
                     display: inline-block;
-                    margin-bottom: 9px;
+                    margin-bottom: 10px;
                     padding: 4px 9px;
                     border-radius: 999px;
                     background: #ffe7ed;
@@ -910,70 +852,27 @@ def create_popup_html(row: pd.Series) -> str:
                 ・{int(row.get("db_review_count") or 0)} 則評論
             </div>
 
-            <div style="margin-bottom: 4px; color: #40353b; font-size: 12px;">
-                <strong>客人：</strong>
-                {float(row.get("guest_score") or 0):.0f} 分
-                ・{safe_text(row.get("guest_persona") or "尚無人設")}
+            <div style="margin-bottom: 10px; color: #40353b; font-size: 12px;">
+                客人 {float(row.get("guest_score") or 0):.0f}
+                ・老闆 {float(row.get("owner_score") or 0):.0f}
             </div>
 
-            <div style="margin-bottom: 9px; color: #40353b; font-size: 12px;">
-                <strong>老闆：</strong>
-                {float(row.get("owner_score") or 0):.0f} 分
-                ・{safe_text(row.get("owner_persona") or row.get("persona") or "尚無人設")}
-            </div>
-
-            <div
+            <a
+                href="{more_href}"
+                target="_top"
                 style="
-                    margin-bottom: 7px;
-                    padding: 8px;
+                    display: inline-block;
+                    padding: 8px 12px;
                     border-radius: 8px;
-                    background: #f4f0f2;
-                    color: #40353b;
-                    font-size: 12px;
-                    line-height: 1.55;
+                    background: #e3245b;
+                    color: #fff;
+                    font-size: 13px;
+                    font-weight: 800;
+                    text-decoration: none;
                 "
             >
-                <strong>顧客怎麼說：</strong><br>
-                {safe_text(row["review_text"])}
-            </div>
-
-            <div
-                style="
-                    margin-bottom: 7px;
-                    padding: 8px;
-                    border-left: 3px solid #e3245b;
-                    border-radius: 8px;
-                    background: #fff0f4;
-                    color: #40353b;
-                    font-size: 12px;
-                    line-height: 1.55;
-                "
-            >
-                <strong>老闆怎麼回：</strong><br>
-                {safe_text(row["owner_reply"])}
-            </div>
-
-            <div
-                style="
-                    margin-bottom: 7px;
-                    padding: 8px;
-                    border-left: 3px solid #2f6fed;
-                    border-radius: 8px;
-                    background: #eef4ff;
-                    color: #40353b;
-                    font-size: 12px;
-                    line-height: 1.55;
-                "
-            >
-                <strong>AI 公關範例：</strong><br>
-                {safe_text(str(row.get("pr_reply") or "").strip() or "（還沒有公關範例）")}
-            </div>
-
-            <div style="margin-top: 8px; font-size: 11px; line-height: 1.6;">
-                {"<a href='" + html.escape(str(row.get("store_url") or ""), quote=True) + "' target='_blank' rel='noopener'>看店家地圖</a>" if row.get("store_url") else "尚無店家連結"}
-                ・
-                {"<a href='" + html.escape(str(row.get("review_url") or ""), quote=True) + "' target='_blank' rel='noopener'>看原始評論</a>" if row.get("review_url") else "尚無評論連結"}
-            </div>
+                看更多留言 →
+            </a>
         </div>
         """
     ).strip()
@@ -1041,6 +940,17 @@ def filter_data(
 # 側邊欄
 # ============================================================
 
+# 地圖「看更多留言」→ ?page=showdown&store_id=<placeId>
+# 用 token 避免選單切走後被 query string 強制拉回
+_qp_page = str(st.query_params.get("page") or "").strip().lower()
+_qp_store = str(st.query_params.get("store_id") or "").strip()
+_deep_link_token = f"{_qp_page}:{_qp_store}"
+if _qp_page == "showdown" and _qp_store:
+    if st.session_state.get("_last_deep_link") != _deep_link_token:
+        st.session_state["nav_page"] = PAGE_SHOWDOWN
+        st.session_state["showdown_store_select"] = _qp_store
+        st.session_state["_last_deep_link"] = _deep_link_token
+
 with st.sidebar:
     st.markdown("## 🔥 Drama Radar")
     st.caption("台北市吵架地圖")
@@ -1049,14 +959,8 @@ with st.sidebar:
 
     current_page = st.radio(
         "功能選單",
-        [
-            "🗺️ 吵架地圖",
-            "🏆 趣味排行榜",
-            "📊 數據分析",
-            "⚔️ 精選對決",
-            "💬 公關回覆教室",
-            "🎭 匿名爆料",
-        ],
+        PAGE_OPTIONS,
+        key="nav_page",
         label_visibility="collapsed",
     )
 
@@ -1065,10 +969,22 @@ with st.sidebar:
     st.caption("範圍")
     st.write("台北市")
 
-    last_loaded_at = st.session_state.get(
-        "database_last_loaded_at",
-        "尚未更新",
+    tz_label = st.selectbox(
+        "時間顯示",
+        list(TIMEZONE_OPTIONS.keys()),
+        index=0,
+        key="display_timezone_label",
+        help="預設台灣時間；可改成其他時區。",
     )
+    tz_name = TIMEZONE_OPTIONS[tz_label]
+    loaded_utc = st.session_state.get("database_loaded_at_utc")
+    if isinstance(loaded_utc, datetime):
+        last_loaded_at = (
+            f"{format_display_time(loaded_utc, tz_name=tz_name)}（{tz_label}）"
+        )
+    else:
+        last_loaded_at = "尚未更新"
+
     database_row_count = st.session_state.get(
         "database_row_count",
         0,
@@ -1099,13 +1015,6 @@ with st.sidebar:
         st.info(f"已更新，現在有 {database_row_count} 家店。")
 
     if st.button(
-        "重新播放開場",
-        use_container_width=True,
-    ):
-        st.session_state["splash_finished"] = False
-        st.rerun()
-
-    if st.button(
         "重新整理資料",
         use_container_width=True,
     ):
@@ -1120,6 +1029,19 @@ with st.sidebar:
 # ============================================================
 
 if current_page == "🗺️ 吵架地圖":
+    # 首頁固定海報；往下捲才是地圖（不再幾秒後消失）
+    if SPLASH_IMAGE.exists():
+        st.image(str(SPLASH_IMAGE), use_container_width=True)
+        render_html(
+            """
+            <div class="home-hero-scroll-hint">
+                ↓ 往下滑看台北吵架地圖
+            </div>
+            """
+        )
+    else:
+        st.warning("找不到首頁圖 `dashboard/assets/splash.png`")
+
     header_left, header_right = st.columns(
         [5, 1],
         vertical_alignment="center",
@@ -1133,7 +1055,7 @@ if current_page == "🗺️ 吵架地圖":
             </div>
 
             <div class="drama-page-subtitle">
-                火焰越大，代表這家店吵得越兇。點標記可看評論與老闆回覆。
+                火焰越大，評論與店家回覆越激烈。點火焰看摘要，再連到評論清單。
             </div>
             """
         )
@@ -1238,106 +1160,113 @@ if current_page == "🗺️ 吵架地圖":
             """
         )
 
-    # 注意：這段使用 render_html，不會再顯示成 HTML 程式碼
-    render_html(
-        """
-        <div class="legend-panel">
-            <span class="legend-label">
-                烈度
-            </span>
-
-            <span class="legend-item">
-                <span class="legend-fire legend-fire-small">
-                    🔥
-                </span>
-                1～3
-            </span>
-
-            <span class="legend-item">
-                <span class="legend-fire legend-fire-medium">
-                    🔥
-                </span>
-                4～6
-            </span>
-
-            <span class="legend-item">
-                <span class="legend-fire legend-fire-large">
-                    🔥
-                </span>
-                7～8
-            </span>
-
-            <span class="legend-item">
-                <span class="legend-fire legend-fire-extreme">
-                    🔥
-                </span>
-                9～10
-            </span>
-        </div>
-        """
-    )
-
-    drama_map = folium.Map(
-        location=[25.065, 121.52],
-        zoom_start=11,
-        control_scale=True,
-        tiles=None,
-        prefer_canvas=False,
-    )
-
-    folium.TileLayer(
-        tiles="CartoDB positron",
-        name="地圖",
-        control=False,
-    ).add_to(drama_map)
-
-    add_map_marker_styles(drama_map)
-
-    for _, store in filtered_df.iterrows():
-        intensity = float(store["intensity"])
-
-        Marker(
-            location=[
-                float(store["lat"]),
-                float(store["lng"]),
-            ],
-            icon=create_flame_icon(intensity),
-            tooltip=(
-                f"{store['name']}｜"
-                f"烈度 {intensity:.1f}"
-            ),
-            popup=folium.Popup(
-                create_popup_html(store),
-                max_width=310,
-            ),
-        ).add_to(drama_map)
-
-    if len(filtered_df) >= 2:
-        points = filtered_df[
-            ["lat", "lng"]
-        ].values.tolist()
-
-        drama_map.fit_bounds(
-            points,
-            padding=(35, 35),
-        )
-
-    st_folium(
-        drama_map,
-        height=680,
-        use_container_width=True,
-        returned_objects=[],
-        key="drama_main_map",
-    )
-
+    # 搜不到：緊接在篩選下方（地圖上方箭頭處），紅底黃字很明顯
     if filtered_df.empty:
         render_html(
-            """
+            f"""
             <div class="empty-result">
-                找不到符合條件的店家，
-                請清除部分篩選或降低最低烈度。
+                <strong>⚠ 找不到符合條件的店家</strong>
+                <span>
+                    關鍵字「{safe_text(keyword) or "（空白）"}」沒有結果。
+                    請清除搜尋、改行政區，或把最低烈度往左調。
+                </span>
             </div>
             """
+        )
+        st.error(
+            "找不到符合條件的店家 — 請清除上方篩選後再試。"
+        )
+    else:
+        # 注意：這段使用 render_html，不會再顯示成 HTML 程式碼
+        render_html(
+            """
+            <div class="legend-panel">
+                <span class="legend-label">
+                    烈度
+                </span>
+
+                <span class="legend-item">
+                    <span class="legend-fire legend-fire-small">
+                        🔥
+                    </span>
+                    1～3
+                </span>
+
+                <span class="legend-item">
+                    <span class="legend-fire legend-fire-medium">
+                        🔥
+                    </span>
+                    4～6
+                </span>
+
+                <span class="legend-item">
+                    <span class="legend-fire legend-fire-large">
+                        🔥
+                    </span>
+                    7～8
+                </span>
+
+                <span class="legend-item">
+                    <span class="legend-fire legend-fire-extreme">
+                        🔥
+                    </span>
+                    9～10
+                </span>
+            </div>
+            """
+        )
+
+        drama_map = folium.Map(
+            location=[25.065, 121.52],
+            zoom_start=11,
+            control_scale=True,
+            tiles=None,
+            prefer_canvas=False,
+        )
+
+        folium.TileLayer(
+            tiles="CartoDB positron",
+            name="地圖",
+            control=False,
+        ).add_to(drama_map)
+
+        add_map_marker_styles(drama_map)
+
+        for _, store in filtered_df.iterrows():
+            intensity = float(store["intensity"])
+
+            Marker(
+                location=[
+                    float(store["lat"]),
+                    float(store["lng"]),
+                ],
+                icon=create_flame_icon(intensity),
+                tooltip=(
+                    f"{store['name']}｜"
+                    f"烈度 {intensity:.1f}"
+                ),
+                popup=folium.Popup(
+                    create_popup_html(store),
+                    max_width=280,
+                ),
+            ).add_to(drama_map)
+
+        if len(filtered_df) >= 2:
+            points = filtered_df[
+                ["lat", "lng"]
+            ].values.tolist()
+
+            drama_map.fit_bounds(
+                points,
+                padding=(35, 35),
+            )
+
+        st_folium(
+            drama_map,
+            height=680,
+            use_container_width=True,
+            returned_objects=[],
+            key="drama_main_map",
         )
 
 
@@ -1347,240 +1276,238 @@ if current_page == "🗺️ 吵架地圖":
 
 elif current_page == "🏆 趣味排行榜":
     st.title("趣味排行榜")
-
-    st.caption("看看誰最兇、誰最會回、哪個區最熱鬧。")
+    st.caption("同一頁看多個榜・直條圖・點店名看評論（沒有下拉選單）")
 
     if df.empty:
         st.error(db_error or "目前沒有可排行的店家資料。")
         st.stop()
 
-    ranking_type = st.selectbox(
-        "選擇排行榜",
-        [
-            "🔥 十大暴躁老闆",
-            "🤡 全台北最會酸",
-            "💬 店家回覆王",
-            "⭐ 一星評論王",
-            "🏘️ 行政區戰力榜",
-        ],
-    )
-
-    def _render_ranking_bar_chart(
+    def _rank_chart(
         ranking_frame: pd.DataFrame,
-        label_col: str,
         value_col: str,
         *,
         title: str,
-        suffix: str,
-    ) -> None:
-        if ranking_frame.empty:
-            return
+        value_title: str,
+        color: str,
+    ) -> pd.DataFrame:
+        """直條圖：X 軸只用 1 2 3，店名絕不畫在軸上（避免直立難讀）。"""
 
-        plot_df = ranking_frame.head(10).copy()
-        plot_df["display"] = plot_df[label_col].astype(str)
-        if suffix.strip() == "分":
-            plot_df["數值"] = plot_df[value_col].astype(float)
-        else:
-            plot_df["數值"] = plot_df[value_col].astype(int)
-
-        chart = (
-            alt.Chart(plot_df)
-            .mark_bar(color="#ff315d")
-            .encode(
-                x=alt.X("數值:Q", title=f"數值{suffix}"),
-                y=alt.Y("display:N", sort="-x", title="店家"),
-                tooltip=["display", "數值"],
-            )
-            .properties(title=title, height=380)
-        )
-        st.altair_chart(chart, use_container_width=True)
-
-    if ranking_type == "🔥 十大暴躁老闆":
-        ranking_df = df.sort_values(
-            ["intensity", "owner_replies"],
-            ascending=[False, False],
-        )
-
-        score_column = "intensity"
-        score_suffix = " 分"
-
-    elif ranking_type == "🤡 全台北最會酸":
-        ranking_df = df[
-            df["persona"] == "🤡 高級反串"
-        ].sort_values(
-            "intensity",
-            ascending=False,
-        )
-
-        score_column = "intensity"
-        score_suffix = " 分"
-
-    elif ranking_type == "💬 店家回覆王":
-        ranking_df = df.sort_values(
-            "owner_replies",
-            ascending=False,
-        )
-
-        score_column = "owner_replies"
-        score_suffix = " 則"
-
-    elif ranking_type == "⭐ 一星評論王":
-        ranking_df = df.sort_values(
-            "reviews",
-            ascending=False,
-        )
-
-        score_column = "reviews"
-        score_suffix = " 則"
-
-    else:
-        ranking_df = pd.DataFrame()
-
-        district_ranking = (
-            df.groupby(
-                ["city", "district"],
-                as_index=False,
-            )
-            .agg(
-                store_count=("store_id", "count"),
-                average_intensity=("intensity", "mean"),
-                review_count=("reviews", "sum"),
-            )
-            .sort_values(
-                [
-                    "average_intensity",
-                    "review_count",
-                ],
-                ascending=[False, False],
-            )
+        plot_df = (
+            ranking_frame.head(8)
+            .copy()
             .reset_index(drop=True)
         )
+        if plot_df.empty:
+            st.info(f"{title} 尚無資料")
+            return plot_df
 
-        district_ranking["地區"] = (
-            district_ranking["city"] + district_ranking["district"]
+        plot_df["rank_no"] = list(range(1, len(plot_df) + 1))
+        plot_df["score"] = pd.to_numeric(
+            plot_df[value_col], errors="coerce"
+        ).fillna(0)
+
+        # 用 Streamlit 原生直條圖，軸上只有數字，不會把中文轉直立
+        chart_data = (
+            plot_df[["rank_no", "score"]]
+            .rename(columns={"rank_no": "名次", "score": value_title})
+            .set_index("名次")
         )
-
-        district_plot = district_ranking.rename(
-            columns={"average_intensity": "平均烈度"}
+        st.bar_chart(
+            chart_data,
+            color=color,
+            height=260,
+            use_container_width=True,
         )
-        render_bar(
-            district_plot,
-            "地區",
-            "平均烈度",
-            title="🏘️ 行政區戰力榜 — 圖表",
-            horizontal=True,
-            color="#be3cff",
-        )
+        return plot_df
 
-        with st.expander("查看卡片式排行"):
-            for position, row in district_ranking.iterrows():
-                percentage = min(
-                    float(row["average_intensity"]) * 10,
-                    100,
-                )
+    def _rank_store_list(
+        plot_df: pd.DataFrame,
+        *,
+        board_key: str,
+        score_suffix: str,
+        use_float: bool,
+    ) -> None:
+        """店名用一般橫排文字列出，點了右邊就開評論。"""
 
-                render_html(
-                    f"""
-                    <div class="ranking-card">
-                        <div class="ranking-row">
-                            <div class="ranking-number">
-                                {position + 1}
-                            </div>
+        if plot_df.empty:
+            return
 
-                            <div class="ranking-content">
-                                <div class="ranking-name">
-                                    {safe_text(row["city"])}
-                                    {safe_text(row["district"])}
-                                </div>
-
-                                <div class="ranking-meta">
-                                    {int(row["store_count"])} 家店・
-                                    {int(row["review_count"])} 則評論
-                                </div>
-                            </div>
-
-                            <div class="ranking-score">
-                                {float(row["average_intensity"]):.1f} 分
-                            </div>
-                        </div>
-
-                        <div class="ranking-track">
-                            <div
-                                class="ranking-fill"
-                                style="width: {percentage}%"
-                            ></div>
-                        </div>
-                    </div>
-                    """
-                )
-
-    if not ranking_df.empty:
-        ranking_df = ranking_df.head(10)
-
-        _render_ranking_bar_chart(
-            ranking_df,
-            "name",
-            score_column,
-            title=f"{ranking_type} — 圖表",
-            suffix=score_suffix,
-        )
-
-        with st.expander("查看卡片式排行"):
-            maximum_score = float(
-                ranking_df[score_column].max()
+        for row in plot_df.itertuples():
+            score_text = (
+                f"{float(row.score):.1f}{score_suffix}"
+                if use_float
+                else f"{int(row.score)}{score_suffix}"
             )
+            left, right = st.columns([4, 1])
+            with left:
+                st.markdown(
+                    f"**第 {row.rank_no} 名　{row.name}**　"
+                    f"<span style='color:#ff9db4'>{score_text}</span>",
+                    unsafe_allow_html=True,
+                )
+            with right:
+                if st.button(
+                    "看評論",
+                    key=f"rank_pick_{board_key}_{row.store_id}",
+                    use_container_width=True,
+                ):
+                    st.session_state["ranking_selected_place"] = str(
+                        row.store_id
+                    )
+                    st.session_state["ranking_selected_name"] = str(row.name)
 
-            for position, (_, row) in enumerate(
-                ranking_df.iterrows(),
-                start=1,
-            ):
-                raw_score = float(row[score_column])
+    sarcastic = df[
+        df["guest_persona"].astype(str).str.contains(
+            "反串|酸|憤怒|客訴",
+            na=False,
+        )
+        | df["persona"].astype(str).str.contains(
+            "反串|酸|憤怒|防禦",
+            na=False,
+        )
+    ]
+    if sarcastic.empty:
+        sarcastic = df.sort_values("intensity", ascending=False)
 
-                percentage = (
-                    raw_score / maximum_score * 100
-                    if maximum_score > 0
-                    else 0
+    boards = [
+        (
+            "🔥 十大暴躁老闆",
+            "依吵架烈度排序",
+            df.sort_values(
+                ["intensity", "owner_replies"],
+                ascending=[False, False],
+            ),
+            "intensity",
+            "分",
+            True,
+            "#ff315d",
+            "boss",
+        ),
+        (
+            "🤡 全台北最會酸",
+            "依客人／老闆嗆度排序",
+            sarcastic.sort_values("intensity", ascending=False),
+            "intensity",
+            "分",
+            True,
+            "#be3cff",
+            "sarcasm",
+        ),
+        (
+            "💬 店家回覆王",
+            "依老闆回覆則數排序",
+            df.sort_values("owner_replies", ascending=False),
+            "owner_replies",
+            "則",
+            False,
+            "#ff811b",
+            "reply",
+        ),
+        (
+            "⭐ 一星評論王",
+            "依資料庫評論則數排序",
+            df.sort_values("db_review_count", ascending=False),
+            "db_review_count",
+            "則",
+            False,
+            "#f7ba38",
+            "onestar",
+        ),
+    ]
+
+    boards_col, review_col = st.columns([1.35, 1], gap="large")
+
+    with boards_col:
+        for title, subtitle, frame, score_col, suffix, use_float, color, key in boards:
+            with st.container(border=True):
+                st.markdown(f"### {title}")
+                st.caption(subtitle)
+                plot_df = _rank_chart(
+                    frame,
+                    score_col,
+                    title="",
+                    value_title=suffix,
+                    color=color,
+                )
+                _rank_store_list(
+                    plot_df,
+                    board_key=key,
+                    score_suffix=suffix,
+                    use_float=use_float,
                 )
 
-                if score_column == "intensity":
-                    score_text = f"{raw_score:.1f}"
-                else:
-                    score_text = str(int(raw_score))
-
-                render_html(
-                    f"""
-                    <div class="ranking-card">
-                        <div class="ranking-row">
-                            <div class="ranking-number">
-                                {position}
-                            </div>
-
-                            <div class="ranking-content">
-                                <div class="ranking-name">
-                                    {safe_text(row["name"])}
-                                </div>
-
-                                <div class="ranking-meta">
-                                    {safe_text(row["city"])}
-                                    {safe_text(row["district"])}
-                                    ・{safe_text(row["persona"])}
-                                </div>
-                            </div>
-
-                            <div class="ranking-score">
-                                {score_text}{score_suffix}
-                            </div>
-                        </div>
-
-                        <div class="ranking-track">
-                            <div
-                                class="ranking-fill"
-                                style="width: {percentage}%"
-                            ></div>
-                        </div>
-                    </div>
-                    """
+        with st.container(border=True):
+            st.markdown("### 🏘️ 行政區戰力榜")
+            st.caption("各行政區平均烈度")
+            district_ranking = (
+                df.groupby("district", as_index=False)
+                .agg(
+                    average_intensity=("intensity", "mean"),
+                    store_count=("store_id", "count"),
                 )
+                .sort_values("average_intensity", ascending=False)
+                .reset_index(drop=True)
+            )
+            if district_ranking.empty:
+                st.info("尚無行政區資料")
+            else:
+                district_ranking["rank_no"] = list(
+                    range(1, len(district_ranking) + 1)
+                )
+                district_ranking["score"] = district_ranking[
+                    "average_intensity"
+                ]
+                st.bar_chart(
+                    district_ranking[["rank_no", "score"]]
+                    .rename(columns={"rank_no": "名次", "score": "平均烈度"})
+                    .set_index("名次"),
+                    color="#e00043",
+                    height=240,
+                    use_container_width=True,
+                )
+                for row in district_ranking.itertuples():
+                    st.markdown(
+                        f"**第 {row.rank_no} 名　{row.district}**　"
+                        f"平均烈度 {float(row.score):.1f}　"
+                        f"（{int(row.store_count)} 家）"
+                    )
+
+    with review_col:
+        st.markdown("### 💬 店家評論")
+        st.caption("點左邊「看評論」後，內容會顯示在這裡")
+        selected_place = st.session_state.get("ranking_selected_place")
+        selected_name = st.session_state.get("ranking_selected_name", "")
+
+        if not selected_place:
+            st.info("還沒選店家。請點左邊任一間的「看評論」。")
+        else:
+            st.success(f"目前查看：{selected_name}")
+            reviews_df = get_store_reviews_dataframe(
+                str(selected_place),
+                limit=30,
+            )
+            if reviews_df.empty:
+                st.warning("這家店在資料庫還沒有評論。")
+            else:
+                st.caption(f"共 {len(reviews_df)} 則")
+                for _, rev in reviews_df.iterrows():
+                    with st.container(border=True):
+                        st.markdown(
+                            f"**顧客：** "
+                            f"{rev.get('review_text') or '（無文字）'}"
+                        )
+                        st.markdown(
+                            f"**老闆：** "
+                            f"{rev.get('owner_reply') or '（尚未回覆）'}"
+                        )
+                        pr_text = str(rev.get("pr_reply") or "").strip()
+                        if pr_text:
+                            st.markdown(f"**AI 公關範例：** {pr_text}")
+                        review_url = str(
+                            rev.get("review_url") or ""
+                        ).strip()
+                        if review_url:
+                            st.markdown(f"[看原始評論]({review_url})")
 
 
 # ============================================================
@@ -1599,7 +1526,11 @@ elif current_page == "📊 數據分析":
     with metric_columns[0]:
         st.metric("收錄店家", f"{len(df)} 家")
     with metric_columns[1]:
-        st.metric("評論數", f"{int(df['reviews'].sum())} 則")
+        # 用 DB review 筆數，不是 Google reviewsCount（會變成幾千）
+        st.metric(
+            "DB 評論數",
+            f"{int(df['db_review_count'].sum())} 則",
+        )
     with metric_columns[2]:
         st.metric("店家回覆", f"{int(df['owner_replies'].sum())} 則")
     with metric_columns[3]:
@@ -1632,7 +1563,7 @@ elif current_page == "📊 數據分析":
             "店家人設",
             "店家數",
             title="店家人設分布",
-            horizontal=True,
+            horizontal=False,
             color="#be3cff",
         )
 
@@ -1644,7 +1575,7 @@ elif current_page == "📊 數據分析":
                 "地區",
                 "平均烈度",
                 title="行政區平均烈度",
-                horizontal=True,
+                horizontal=False,
                 color="#ff6687",
             )
         with c2:
@@ -1652,17 +1583,14 @@ elif current_page == "📊 數據分析":
             if top_df.empty:
                 st.info("十大高烈度店家尚無資料。")
             else:
-                top_chart = (
-                    alt.Chart(top_df)
-                    .mark_bar(color="#e00043", cornerRadiusEnd=4)
-                    .encode(
-                        x=alt.X("烈度:Q", title="烈度"),
-                        y=alt.Y("店家:N", sort="-x", title="店家"),
-                        tooltip=["店家", "烈度"],
-                    )
-                    .properties(title="十大高烈度店家", height=320)
+                render_bar(
+                    top_df,
+                    "店家",
+                    "烈度",
+                    title="十大高烈度店家",
+                    horizontal=False,
+                    color="#e00043",
                 )
-                st.altair_chart(top_chart, use_container_width=True)
 
     with tab_review:
         c1, c2 = st.columns(2)
@@ -1692,46 +1620,73 @@ elif current_page == "📊 數據分析":
 # 分頁：精選對決
 # ============================================================
 
-elif current_page == "⚔️ 精選對決":
-    st.title("精選對決")
-    st.caption("挑一家店，把吵架原文一次攤開來看。")
+elif current_page == PAGE_SHOWDOWN:
+    st.title("店家評論清單")
+    st.caption("用店家 ID（placeId）切換；地圖「看更多留言」會帶 store_id 過來。")
 
     if df.empty:
         st.error(db_error or "目前沒有可對決的店家資料。")
         st.stop()
 
-    store_options = {
-        f"{row['name']}（{int(row.get('db_review_count') or 0)} 則）": row["store_id"]
-        for _, row in df.sort_values("intensity", ascending=False).iterrows()
-    }
-    selected_label = st.selectbox("選店家", list(store_options.keys()))
-    selected_place_id = store_options[selected_label]
-    store_row = df[df["store_id"] == selected_place_id].iloc[0]
+    # 一店一列，避免選單重複
+    store_frame = (
+        df.drop_duplicates(subset=["store_id"])
+        .sort_values("intensity", ascending=False)
+        .reset_index(drop=True)
+    )
+    store_ids = store_frame["store_id"].astype(str).tolist()
+    # 地圖連結帶進來的 store_id 優先
+    preset = str(st.session_state.get("showdown_store_select") or "").strip()
+    if preset and preset in store_ids:
+        st.session_state["showdown_store_select"] = preset
+    elif store_ids and st.session_state.get("showdown_store_select") not in store_ids:
+        st.session_state["showdown_store_select"] = store_ids[0]
+
+    selected_place_id = st.selectbox(
+        "選店家（依 placeId）",
+        options=store_ids,
+        format_func=lambda pid: (
+            f"{store_frame.loc[store_frame['store_id'].astype(str) == pid, 'name'].iloc[0]}"
+            f"｜{pid}"
+            f"（DB {int(store_frame.loc[store_frame['store_id'].astype(str) == pid, 'db_review_count'].iloc[0])} 則）"
+        ),
+        key="showdown_store_select",
+    )
+    # 同步網址，方便複製 / 地圖連進來
+    st.query_params["page"] = "showdown"
+    st.query_params["store_id"] = str(selected_place_id)
+
+    store_row = store_frame[
+        store_frame["store_id"].astype(str) == str(selected_place_id)
+    ].iloc[0]
+    st.caption(f"目前店家 ID：`{selected_place_id}`")
 
     st.subheader("店家資訊")
     info_cols = st.columns(4)
     info_cols[0].metric("烈度", f"{float(store_row['intensity']):.1f}")
     info_cols[1].metric("客人評分", f"{float(store_row.get('guest_score') or 0):.0f}")
     info_cols[2].metric("老闆評分", f"{float(store_row.get('owner_score') or 0):.0f}")
-    info_cols[3].metric("評論數", f"{int(store_row.get('db_review_count') or 0)}")
+    info_cols[3].metric("DB 評論數", f"{int(store_row.get('db_review_count') or 0)}")
 
     st.write(f"**地址：** {store_row.get('address') or '（沒有地址）'}")
     st.write(
         f"**客人人設：** {store_row.get('guest_persona') or '尚無'}　"
         f"**老闆人設：** {store_row.get('owner_persona') or store_row.get('persona') or '尚無'}"
     )
-    store_url = str(store_row.get("store_url") or "").strip()
-    if store_url:
-        st.markdown(f"[打開店家地圖]({store_url})")
-    else:
-        st.caption("這家還沒有地圖連結。")
+    review_url_one = str(store_row.get("review_url") or "").strip()
+    if review_url_one:
+        st.markdown(f"[看原始評論]({review_url_one})")
 
-    st.subheader("評論原文")
+    st.subheader(f"評論原文（僅 {store_row['name']}）")
     reviews_df = get_store_reviews_dataframe(str(selected_place_id), limit=50)
+    if not reviews_df.empty and "place_id" in reviews_df.columns:
+        reviews_df = reviews_df[
+            reviews_df["place_id"].astype(str) == str(selected_place_id)
+        ]
     if reviews_df.empty:
         st.warning("這家店目前沒有抓到評論。")
     else:
-        st.caption(f"一共 {len(reviews_df)} 則")
+        st.caption(f"這家店一共 {len(reviews_df)} 則（已依 placeId 篩選）")
         for _, rev in reviews_df.iterrows():
             with st.container(border=True):
                 top = st.columns([1, 1, 2])
@@ -1749,47 +1704,13 @@ elif current_page == "⚔️ 精選對決":
                 owner_text = str(rev.get("owner_reply") or "").strip()
                 st.write("**老闆怎麼回：**")
                 st.write(owner_text if owner_text else "（還沒回）")
+                # AI 公關範例只掛在留言區（地圖 popup / 這裡），沒有獨立頁
                 pr_text = str(rev.get("pr_reply") or "").strip()
                 st.write("**AI 公關範例：**")
                 st.info(pr_text if pr_text else "（還沒有公關範例）")
                 review_url = str(rev.get("review_url") or "").strip()
                 if review_url:
                     st.markdown(f"[看原始評論]({review_url})")
-                else:
-                    st.caption("這則沒有原始連結。")
-
-
-# ============================================================
-# 分頁：公關回覆教室
-# ============================================================
-
-elif current_page == "💬 公關回覆教室":
-    st.title("公關回覆教室")
-    st.caption("先看老闆原本怎麼回，再對照 AI 建議的公關說法。")
-
-    pr_df = get_pr_reply_examples(limit=30)
-    if pr_df.empty:
-        st.warning("目前還沒有可用的公關範例，等資料進來再看。")
-    else:
-        labels = [
-            f"{row['store_name']}｜客人 {int(row.get('guest_score') or 0)} / "
-            f"老闆 {int(row.get('owner_score') or 0)}"
-            for _, row in pr_df.iterrows()
-        ]
-        choice = st.selectbox("選一個案例", labels)
-        case = pr_df.iloc[labels.index(choice)]
-
-        st.subheader("老闆原本的回覆")
-        st.write(str(case.get("owner_reply") or "（還沒回）"))
-
-        st.subheader("AI 公關範例")
-        st.success(str(case.get("pr_reply") or ""))
-
-        st.write("**當時客人怎麼說：**")
-        st.write(str(case.get("review_text") or ""))
-        review_url = str(case.get("review_url") or "").strip()
-        if review_url:
-            st.markdown(f"[看原始評論]({review_url})")
 
 
 # ============================================================

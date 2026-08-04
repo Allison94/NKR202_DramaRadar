@@ -10,7 +10,9 @@
 | 2 | `domains/store/service.py` | 轉 DataFrame，**禁止**假資料 fallback |
 | 3 | `dashboard/app.py` | 畫面顯示 |
 
-測試 seed（可選）：`domains/store/seed_rows.py` — **不會**被網頁靜默呼叫。
+測試 seed（可選）：`domains/store/seed_rows.py` + `seed_demo_data` 寫進 DB — **不會**被網頁靜默呼叫；假資料只存在資料庫。
+
+畫面：搜不到在篩選下方醒目提示；排行榜同頁多榜＋直條圖；點店名讀 `review`。
 
 ## 組長要求 → 欄位
 
