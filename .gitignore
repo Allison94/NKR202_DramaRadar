@@ -8,6 +8,11 @@ ENV/
 env.bak/
 venv.bak/
 
+# Airflow 自動生成的本機設定與暫存
+airflow.cfg
+airflow.db
+webserver_config.py
+
 # SSH Keys
 *.pem
 
