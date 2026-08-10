@@ -1,5 +1,6 @@
 """
 * airflow
+* 只要跑一次，不用每天跑，store可能一個月或半年重跑一次就好
 """
 import sys,os
 current_dir = os.path.abspath(__file__)
