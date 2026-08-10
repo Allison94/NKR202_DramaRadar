@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from domains.store.pipeline import StoreInterface
 from domains.store.config import taipei_postcodes
 from airflow.sdk import task,dag
+from airflow.exceptions import AirflowException
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,11 @@ def store_pipeline_dag(): #ti是紀錄try幾次
         sinterface = StoreInterface(task1_output["postcode_str"])
         status_info = sinterface.task2_check_status(task1_output["job_info"],current_try)
         logger.info(f"[INFO: check_status]{status_info}\nretry_times:{current_try}")
+        if status_info.get("status") != "SUCCEEDED":
+            raise AirflowException(
+                f"目前狀態為 {status_info.get('status')}"
+                f"觸發第 {int(current_try)+1} 次重試..."
+            )
         return {
             "postcode_str":task1_output["postcode_str"],
             "status_info":status_info
@@ -58,7 +64,7 @@ def store_pipeline_dag(): #ti是紀錄try幾次
 
 
     # taipei_postcodes = taipei_postcodes # 正式用
-    test_taipei_postcodes = ["100", "103"] # 測試用
+    test_taipei_postcodes = ["103"] # 測試用
     task1_rs = start_job.expand(postcode_str=test_taipei_postcodes)
     task2_rs = check_status.expand(task1_output=task1_rs)
     final_rs = get_dataset.expand(task2_output=task2_rs)
