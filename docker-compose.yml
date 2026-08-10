@@ -18,9 +18,9 @@ x-airflow-common: &airflow-common
   volumes:
     - .:/opt/airflow:cached
     - ./domains:/opt/airflow/dags
-    - ./logs:/opt/airflow/logs
-    - ./plugins:/opt/airflow/plugins
-    - ./config:/opt/airflow/config
+    - ./scheduler/logs:/opt/airflow/logs
+    - ./scheduler/plugins:/opt/airflow/plugins
+    - ./scheduler/config:/opt/airflow/config
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     db:
