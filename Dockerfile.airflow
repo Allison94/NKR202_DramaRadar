@@ -1,0 +1,12 @@
+FROM apache/airflow:latest-python3.12
+
+USER root
+RUN apt-get update && apt-get install -y git && apt-get clean
+
+USER airflow
+
+RUN pip install --no-cache-dir "apache-airflow-providers-fab>=3.7.3"
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir --user -r requirements.txt
