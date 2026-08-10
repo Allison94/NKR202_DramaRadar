@@ -1,3 +1,12 @@
+"""
+* airflow
+"""
+import sys,os
+current_dir = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+    
 from datetime import datetime,timedelta
 import logging
 from airflow.sdk import task,dag
@@ -15,6 +24,7 @@ args = {
     dag_id="ai_analysis_daily_dag_v1",
     description="llm分析reviews，每日三點固定",
     catchup=False,
+    schedule=None,
     start_date=datetime(2027,1,1),
     default_args=args,
     tags=["ai","daily"]
@@ -23,12 +33,13 @@ args = {
 def ai_analysis_daily_dag():
 
     # daily
-    def daily_dag():
-        logger.info(f"[INFO: daily_dag] Start")
+    @task
+    def daily_task():
+        logger.info(f"[INFO: daily_task] Start")
         return ai_analysis_pipeline()
 
-    daily_dag()
-    logger.info(f"[INFO: daily_dag] End")
+    daily_task()
+    logger.info(f"[INFO: daily_task] End")
 
 ai_analysis_daily_dag()
 
@@ -45,11 +56,12 @@ ai_analysis_daily_dag()
 )
 
 def ai_analysis_all_dag():
-    def all_dag():
-        logger.info(f"[INFO: daily_dag] Start")
+    @task
+    def all_task():
+        logger.info(f"[INFO: all_task] Start")
         return ai_analysis_pipeline("all")
 
-    all_dag()
-    logger.info(f"[INFO: daily_dag] End")
+    all_task()
+    logger.info(f"[INFO: all_task] End")
 
 ai_analysis_all_dag()
