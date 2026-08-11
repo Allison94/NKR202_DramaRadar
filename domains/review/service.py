@@ -246,25 +246,37 @@ def run_initial_fetch(*, store_limit: int = 50, dry_run: bool = False) -> dict[s
     return aggregate
 
 
-def run_daily_fetch(*, store_limit: int = 100, dry_run: bool = False) -> dict[str, Any]:
-    """每日增量：昨天留言 + lowestRating。不是一次抓全部。"""
+def run_daily_fetch(
+    *,
+    store_limit: int = 100,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """每日增量：抓昨天的新評論。"""
 
     yesterday = (date.today() - timedelta(days=1)).isoformat()
+
     log.info(
         "run_daily_fetch store_limit=%s reviewsStartDate=%s",
         store_limit,
         yesterday,
     )
+
     place_ids = fetch_place_ids_for_review(limit=store_limit)
+
     if not place_ids:
-        log.warning("daily: store 無可抓店家（blocked=FALSE 且 skip_review_fetch=FALSE）")
+        log.warning(
+            "daily: store 無可抓店家（blocked=FALSE 且 skip_review_fetch=FALSE）"
+        )
         return {
             "mode": "daily",
             "place_ids": [],
             "reviews_start_date": yesterday,
-            "reviews_sort": "lowestRating",
+            "reviews_sort": "lowestRanking",
             "dry_run": dry_run,
-            "etl": {"source_upserted": 0, "review_upserted": 0},
+            "etl": {
+                "source_upserted": 0,
+                "review_upserted": 0,
+            },
             "message": "store 空或皆 skip_review_fetch=TRUE",
         }
 
@@ -272,33 +284,40 @@ def run_daily_fetch(*, store_limit: int = 100, dry_run: bool = False) -> dict[st
         "mode": "daily",
         "place_ids": place_ids,
         "reviews_start_date": yesterday,
-        "reviews_sort": "lowestRating",
+        "reviews_sort": "lowestRanking",
         "dry_run": dry_run,
     }
+
     if dry_run:
-        result["etl"] = {"source_upserted": 0, "review_upserted": 0}
+        result["etl"] = {
+            "source_upserted": 0,
+            "review_upserted": 0,
+        }
         return result
 
-    # 每日用較小 maxReviews，靠 reviewsStartDate 抓新資料，省錢
     raw_items, meta = fetch_reviews_from_apify(
         place_ids,
         pipeline="review_daily",
         max_reviews=50,
-        reviews_sort="lowestRating",
+        reviews_sort="lowestRanking",
         reviews_start_date=yesterday,
     )
+
     allowed = set(place_ids)
+
     raw_items = [
         item
         for item in raw_items
-        if isinstance(item, dict) and str(item.get("placeId")) in allowed
+        if isinstance(item, dict)
+        and str(item.get("placeId")) in allowed
     ]
+
     result["apify"] = meta
     result["etl"] = ingest_raw_reviews(raw_items)
 
-    # 同一天順便處理該查老闆回覆的評論
     recheck = run_owner_reply_recheck(limit=100)
     result["owner_reply_recheck"] = recheck
+
     return result
 
 

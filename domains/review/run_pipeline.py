@@ -56,7 +56,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--reviews-sort",
         default="newest",
-        choices=["newest", "highestRating", "lowestRating", "mostRelevant"],
+        choices=["newest", "highestRanking", "lowestRanking", "mostRelevant"],
     )
     parser.add_argument(
         "--reviews-start-date",

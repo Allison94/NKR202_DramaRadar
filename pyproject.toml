@@ -21,4 +21,5 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "pydantic>=2.13.4",
     "pydantic-settings",
+    "apache-airflow==3.3.0",
 ]

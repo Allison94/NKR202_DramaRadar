@@ -26,6 +26,13 @@ def start_review_actor(
 ) -> Any:
     """啟動 Actor。不帶 reviewsFilterString（API 端過濾很貴）。"""
 
+    token = (settings.apify_review or "").strip()
+    if not token:
+        raise RuntimeError(
+            "缺少 APIFY_REVIEW token（.env）。"
+            "請填入 Apify token 後再跑 Google Maps Reviews Scraper。"
+        )
+
     safe = dict(params)
     # 強制關閉昂貴篩選
     safe["reviewsFilterString"] = ""
