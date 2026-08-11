@@ -1,7 +1,6 @@
-import requests
+import requests,logging
 from shared.config import settings
-import logging
-
+from dotenv import set_key
 url = "https://graph.threads.net/"
 logger = logging.getLogger(__name__)
 
@@ -18,27 +17,29 @@ def change_long_key():
         rs = requests.get(url=endpoint,params=params)
         data = rs.json()
         print(data)
-        return data["access_token"]
+        return data.get("access_token",None)
     except Exception as e:
         logger.exception("[Error: change_long_key 短期token換長期token失敗]")
         print(e)
-        return ""
+        return None
 
 def refresh_threads_token():
     endpoint = f"{url}refresh_access_token"
     params = {
         "grant_type":"th_refresh_token",
-        "access_token":settings.threads_api_key
+        "access_token":"DELETED_KEY"
     }
     try:
         rs = requests.get(url=endpoint,params=params)
         data = rs.json()
-        print(data)
-        return data 
+        access_token = data.get("access_token",None)
+        if access_token:
+            set_key(".env","THREADS_LONG_KEY",access_token)
+            logger.info("[Info:refresh_threads_token] access_token已寫入")
+            return True
+        else:
+            logger.error("[Error:refresh_threads_token] access_token延長失敗")
+            return False
     except Exception as e:
         logger.exception(f"[Error: refresh_threads_token token效期更新失敗]")
-        print(e)
-        return None
-
-if __name__ == "__main__":
-    refresh_threads_token()
+        raise e
