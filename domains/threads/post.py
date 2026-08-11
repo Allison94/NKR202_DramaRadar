@@ -13,7 +13,7 @@ def threads_post():
         select(Ai_analysis,Review)
         .join(Review, Review.c.reviewId == Ai_analysis.c.reviewId)
         .where(Review.c.scrapedAt >= catch_time)
-        .order_by((Review.c.review_score+Review.c.review_score).desc())
+        .order_by((Ai_analysis.c.review_score+Ai_analysis.c.owner_score).desc())
         .limit(1)
     )
 
