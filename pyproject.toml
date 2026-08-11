@@ -30,4 +30,5 @@ dependencies = [
     "pydantic-settings", #env變數驗證
     # 排程定時更新 # 本地開發測試Airflow邏輯
     "apache-airflow>=3.3.0",
+    "apache-airflow-providers-fab>=3.7.3",
 ]
