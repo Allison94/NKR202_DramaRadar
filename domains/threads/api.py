@@ -5,6 +5,7 @@ from db.database import engine,metadata
 from db.shared_tables import execution_log
 from domains.threads.models import threads_log
 from sqlalchemy import insert
+from domains.threads.post import threads_post
 
 user_id = "DELETED_KEY" #!組長說這個要改到env
 
@@ -34,7 +35,7 @@ def threads_run():
     }
     params = {
         "media_type":"TEXT",
-        "text":f"This post is test By API. {datetime.now()}"
+        "text":threads_post
     }
     rs = requests.post(url=url+create_container_endpoint,headers=header,json=params, allow_redirects=False)
     rs_data = rs.json()
