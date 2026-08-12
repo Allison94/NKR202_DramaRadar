@@ -1,0 +1,701 @@
+[{
+  "title": "城市盒子餐盒（寧波店）、台北健康會議便當專賣",
+  "subTitle": null,
+  "description": null,
+  "price": "$1-200",
+  "categoryName": "飯盒供應商",
+  "address": "100台灣臺北市中正區龍福里寧波西街77-1號1樓",
+  "neighborhood": null,
+  "street": "寧波西街77-1號1樓",
+  "city": "龍福里",
+  "postalCode": "100",
+  "state": "臺北市中正區",
+  "countryCode": "TW",
+  "website": "https://liff.line.me/1645278921-kWRPP32q/?accountId=872oniay",
+  "phone": "+886 2 2322 3536",
+  "phoneUnformatted": "+886223223536",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0303735,
+    "lng": 121.5168498
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.9,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJlQpcXmCpQjQRtIFALOkODVU",
+  "categories": [
+    "飯盒供應商"
+  ],
+  "fid": "0x3442a9605e5c0a95:0x550d0ee92c4081b4",
+  "cid": "6128571062553706932",
+  "reviewsCount": 741,
+  "imagesCount": 246,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-13T08:45:32.623Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期一",
+      "hours": "10:00 to 19:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "10:00 to 19:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "10:00 to 19:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "10:00 to 19:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "10:00 to 19:00"
+    },
+    {
+      "day": "星期六",
+      "hours": "10:00 to 19:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "10:00 to 17:00"
+    }
+  ],
+  "additionalOpeningHours": {
+    "外送": [
+      {
+        "day": "星期一",
+        "hours": "10:00–19:30"
+      },
+      {
+        "day": "星期二",
+        "hours": "10:00–19:30"
+      },
+      {
+        "day": "星期三",
+        "hours": "10:00–19:30"
+      },
+      {
+        "day": "星期四",
+        "hours": "10:00–19:30"
+      },
+      {
+        "day": "星期五",
+        "hours": "10:00–19:30"
+      },
+      {
+        "day": "星期六",
+        "hours": "10:00–19:30"
+      },
+      {
+        "day": "星期日",
+        "hours": "休息"
+      }
+    ]
+  },
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "由商家提供": [
+      {
+        "業主為女性的商家": true
+      }
+    ],
+    "服務項目": [
+      {
+        "無接觸送餐服務": true
+      },
+      {
+        "外送": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": false
+      },
+      {
+        "無障礙停車場": false
+      }
+    ],
+    "設施": [
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "規劃": [
+      {
+        "快速採買": true
+      }
+    ],
+    "付款方式": [
+      {
+        "只收現金": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E5%9F%8E%E5%B8%82%E7%9B%92%E5%AD%90%E9%A4%90%E7%9B%92%EF%BC%88%E5%AF%A7%E6%B3%A2%E5%BA%97%EF%BC%89%E3%80%81%E5%8F%B0%E5%8C%97%E5%81%A5%E5%BA%B7%E6%9C%83%E8%AD%B0%E4%BE%BF%E7%95%B6%E5%B0%88%E8%B3%A3&query_place_id=ChIJlQpcXmCpQjQRtIFALOkODVU",
+  "searchPageUrl": "https://www.google.com/maps/search/%E4%BE%BF%E7%95%B6/@25.209377294770462,121.59580035490565,14z?hl=zh-TW",
+  "searchString": "便當",
+  "language": "zh-TW",
+  "rank": 17,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWljgKpQijyKUCWgybTM8jPpExfnnWTQwaY8sTjwqFDRJ58jWYwSmOtNvZo29qe4kECwno_pPe74SqY8YZwPr9HrH0tNC41YGvWaRo_23oU3ps_OdP2wG_AdmVK2hn-vyuryQ7Gx=w408-h544-k-no",
+  "kgmid": "/g/11tcw_1_1n"
+},
+{
+  "title": "蘇杭餐廳 濟南店",
+  "subTitle": null,
+  "description": null,
+  "price": "$400-800",
+  "categoryName": "滬菜館",
+  "address": "100台灣臺北市中正區東門里濟南路一段2-1號",
+  "neighborhood": null,
+  "street": "濟南路一段2-1號",
+  "city": "東門里",
+  "postalCode": "100",
+  "state": "臺北市中正區",
+  "countryCode": "TW",
+  "website": "http://www.suhung.com.tw/",
+  "phone": "+886 2 2396 3186",
+  "phoneUnformatted": "+886223963186",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.043022,
+    "lng": 121.519646
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.3,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJJwMI43OpQjQRwwiSvnmKVyk",
+  "categories": [
+    "滬菜館",
+    "亞洲菜餐廳",
+    "中菜館",
+    "餐廳"
+  ],
+  "fid": "0x3442a973e3080327:0x29578a79be9208c3",
+  "cid": "2979001934021789891",
+  "reviewsCount": 3695,
+  "imagesCount": 6262,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-13T08:46:09.842Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期一",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期二",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期六",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "11:30 to 14:00, 17:30 to 21:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "服務項目": [
+      {
+        "外送": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "美味甜點": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "私人用餐包廂": true
+      },
+      {
+        "烈酒": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "啤酒": true
+      },
+      {
+        "提供素食料理": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "洗手間": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "高級餐廳": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "需要預訂": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費停車場": true
+      },
+      {
+        "收費路邊停車格": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E8%98%87%E6%9D%AD%E9%A4%90%E5%BB%B3%20%E6%BF%9F%E5%8D%97%E5%BA%97&query_place_id=ChIJJwMI43OpQjQRwwiSvnmKVyk",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.52719864509434,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 3,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAGJ5v1vkC6Vaoagm9tt1WlVsl7sL4FFVsATpEp1d8jLdSTrqRlrkad8he4C6BO5-vPGJrd8RV_WdUDGYFnZJRuXy5fJuGwBexuBvrz9mbxd5os8wXjcmTG1ldrNdL2LLVepl_xDJvQDxh4=w408-h307-k-no",
+  "kgmid": "/g/1tgz350t"
+},
+{
+  "title": "詩篇咖啡餐廳Psalms Cafe & Restaurant",
+  "subTitle": null,
+  "description": "位於國家圖書館內的寧靜餐廳，供應常見的當地料理、蛋糕和咖啡。",
+  "price": "$200-400",
+  "categoryName": "餐廳",
+  "address": "100台灣臺北市中正區建國里中山南路20號B1",
+  "neighborhood": "博愛特區",
+  "street": "中山南路20號B1",
+  "city": "建國里",
+  "postalCode": "100",
+  "state": "臺北市中正區",
+  "countryCode": "TW",
+  "website": "https://www.facebook.com/PsalmsCafe",
+  "phone": "+886 2 2382 2666",
+  "phoneUnformatted": "+886223822666",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 25.0372009,
+    "lng": 121.5164413
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": null,
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.7,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJz_UT0p-pQjQRrpA4MLmPo-A",
+  "categories": [
+    "餐廳"
+  ],
+  "fid": "0x3442a99fd213f5cf:0xe0a38fb9303890ae",
+  "cid": "16186939511240429742",
+  "reviewsCount": 3488,
+  "imagesCount": 4598,
+  "imageCategories": [],
+  "scrapedAt": "2026-07-13T08:46:09.842Z",
+  "reserveTableUrl": "https://www.google.com/maps/reserve/v/dine/c/PhWUGD9DvpM?source=pa&opi=79508299&hl=zh-TW&gei=zqVUaoOtB7rAp84P__yU0Q8&ahbb=1&sourceurl=https://www.google.com/search?tbm%3Dmap%26authuser%3D0%26hl%3Dzh-TW%26gl%3Dus%26pb%3D!4m8!1m3!1d28922.65838668607!2d121.52719864509434!3d25.022794627614772!3m2!1i1475!2i1327!4f13.1!7i20!10b1!12m25!1m5!18b1!30b1!31m1!1b1!34e1!2m4!5m1!6e2!20e3!39b1!10b1!12b1!13b1!16b1!17m1!3e1!20m3!5e2!6b1!14b1!46m1!1b0!96b1!99b1!19m4!2m3!1i360!2i120!4i8!20m65!2m2!1i203!2i100!3m2!2i4!5b1!6m6!1m2!1i86!2i86!1m2!1i408!2i240!7m33!1m3!1e1!2b0!3e3!1m3!1e2!2b1!3e2!1m3!1e2!2b0!3e3!1m3!1e8!2b0!3e3!1m3!1e10!2b0!3e3!1m3!1e10!2b1!3e2!1m3!1e10!2b0!3e4!1m3!1e9!2b1!3e2!2b1!9b0!15m16!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!1m7!1m2!1m1!1e2!2m2!1i195!2i195!3i20!22m2!1syqVUav7dIc-_p84PyoSCyAo!7e81!24m109!1m30!13m9!2b1!3b1!4b1!6i1!8b1!9b1!14b1!20b1!25b1!18m19!3b1!4b1!5b1!6b1!9b1!13b1!14b1!17b1!20b1!21b1!22b1!27m1!1b0!28b0!32b1!33m1!1b1!34b1!36e2!10m1!8e3!11m1!3e1!14m1!3b0!17b1!20m2!1e3!1e6!24b1!25b1!26b1!27b1!29b1!30m1!2b1!36b1!37b1!39m3!2m2!2i1!3i1!43b1!52b1!54m1!1b1!55b1!56m1!1b1!61m2!1m1!1e1!65m5!3m4!1m3!1m2!1i224!2i298!72m22!1m8!2b1!5b1!7b1!12m4!1b1!2b1!4m1!1e1!4b1!8m10!1m6!4m1!1e1!4m1!1e3!4m1!1e4!3sother_user_google_review_posts__and__hotel_and_vr_partner_review_posts!6m1!1e1!9b1!89b1!98m3!1b1!2b1!3b1!103b1!113b1!114m3!1b1!2m1!1b1!117b1!122m1!1b1!126b1!127b1!26m4!2m3!1i80!2i92!4i8!30m28!1m6!1m2!1i0!2i0!2m2!1i530!2i1327!1m6!1m2!1i1425!2i0!2m2!1i1475!2i1327!1m6!1m2!1i0!2i0!2m2!1i1475!2i20!1m6!1m2!1i0!2i1307!2m2!1i1475!2i1327!34m19!2b1!3b1!4b1!6b1!8m6!1b1!3b1!4b1!5b1!6b1!7b1!9b1!12b1!14b1!20b1!23b1!25b1!26b1!31b1!37m1!1e81!49m10!3b1!6m2!1b1!2b1!7m2!1e3!2b1!8b1!9b1!10e2!50m3!2e2!3m1!3b1!61b1!67m5!7b1!10b1!14b1!15m1!1b0!69i757%26q%3D%25E9%25A4%2590%25E5%25BB%25B3%26ech%3D1%26psi%3DyqVUav7dIc-_p84PyoSCyAo.1783932363586.1",
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "星期一",
+      "hours": "休息"
+    },
+    {
+      "day": "星期二",
+      "hours": "10:30 to 20:00"
+    },
+    {
+      "day": "星期三",
+      "hours": "10:30 to 20:00"
+    },
+    {
+      "day": "星期四",
+      "hours": "10:30 to 20:00"
+    },
+    {
+      "day": "星期五",
+      "hours": "10:30 to 20:00"
+    },
+    {
+      "day": "星期六",
+      "hours": "09:30 to 20:00"
+    },
+    {
+      "day": "星期日",
+      "hours": "09:30 to 17:00"
+    }
+  ],
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "由商家提供": [
+      {
+        "業主為女性的商家": true
+      }
+    ],
+    "服務項目": [
+      {
+        "室外雅座": true
+      },
+      {
+        "外送": true
+      },
+      {
+        "外帶": true
+      },
+      {
+        "內用": true
+      }
+    ],
+    "特色": [
+      {
+        "好喝的咖啡": true
+      },
+      {
+        "美味甜點": true
+      },
+      {
+        "茶種多樣": true
+      },
+      {
+        "提供現場音樂演奏": true
+      }
+    ],
+    "熱門原因": [
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "獨自用餐": true
+      }
+    ],
+    "無障礙程度": [
+      {
+        "無障礙入口": true
+      },
+      {
+        "無障礙洗手間": true
+      },
+      {
+        "無障礙座位": true
+      },
+      {
+        "無障礙停車場": true
+      }
+    ],
+    "產品/服務": [
+      {
+        "小菜": true
+      },
+      {
+        "全素餐點": true
+      },
+      {
+        "咖啡": true
+      },
+      {
+        "酒精飲料": true
+      },
+      {
+        "提供素食料理": true
+      },
+      {
+        "葡萄酒": true
+      }
+    ],
+    "用餐選擇": [
+      {
+        "早餐": true
+      },
+      {
+        "早午餐": true
+      },
+      {
+        "午餐": true
+      },
+      {
+        "晚餐": true
+      },
+      {
+        "餐飲服務": true
+      },
+      {
+        "甜點": true
+      },
+      {
+        "座位": true
+      },
+      {
+        "餐桌服務": true
+      }
+    ],
+    "設施": [
+      {
+        "洗手間": true
+      },
+      {
+        "Wi-Fi": true
+      },
+      {
+        "提供免費 Wi-Fi": true
+      }
+    ],
+    "氣氛": [
+      {
+        "休閒": true
+      },
+      {
+        "安靜": true
+      },
+      {
+        "新潮流行": true
+      },
+      {
+        "環境舒適": true
+      }
+    ],
+    "客層族群": [
+      {
+        "大專院校學生": true
+      },
+      {
+        "遊客": true
+      },
+      {
+        "適合團體": true
+      },
+      {
+        "適合闔家光臨": true
+      }
+    ],
+    "規劃": [
+      {
+        "建議預訂早午餐": true
+      },
+      {
+        "建議預訂午餐": true
+      },
+      {
+        "建議預訂晚餐": true
+      },
+      {
+        "接受訂位": true
+      }
+    ],
+    "付款方式": [
+      {
+        "信用卡": true
+      },
+      {
+        "簽帳金融卡": true
+      },
+      {
+        "NFC 行動支付": true
+      },
+      {
+        "信用卡": true
+      }
+    ],
+    "兒童": [
+      {
+        "兒童高腳椅": true
+      },
+      {
+        "適合兒童": true
+      }
+    ],
+    "停車場": [
+      {
+        "收費室內停車場": true
+      },
+      {
+        "收費停車場": true
+      },
+      {
+        "收費路邊停車格": true
+      },
+      {
+        "停車位很多": true
+      }
+    ]
+  },
+  "gasPrices": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=%E8%A9%A9%E7%AF%87%E5%92%96%E5%95%A1%E9%A4%90%E5%BB%B3Psalms%20Cafe%20%26%20Restaurant&query_place_id=ChIJz_UT0p-pQjQRrpA4MLmPo-A",
+  "searchPageUrl": "https://www.google.com/maps/search/%E9%A4%90%E5%BB%B3/@25.022794627614772,121.52719864509434,14z?hl=zh-TW",
+  "searchString": "餐廳",
+  "language": "zh-TW",
+  "rank": 4,
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAHrQEiNQE651SKisxn8UF18dio63Ww5si_pKukBB7jA49mqcVgGAjVWmiPKBgDBcKDvnbDeRuhAfJGqtzU1SOB_OGzcepEdwMCmdXOgWsI7TeUkdyOdpMmUE7co8aK9LXyxoHuDvA=w426-h240-k-no",
+  "kgmid": "/g/11bwhb1nh3"
+}]

@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     apify_store:str
     apify_review:str
     threads_api_key:str
+    threads_long_key:str
+    threads_user_id:str
 
     model_config = SettingsConfigDict(
         env_file= BASE_DIR/".env",
