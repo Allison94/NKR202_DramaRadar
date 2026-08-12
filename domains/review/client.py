@@ -1,64 +1,90 @@
-"""Apify Google Maps Reviews client — connect / start / poll / dataset only.
+"""只負責 Review Apify API 連線，不處理 ETL / DB。"""
 
-不做 ETL、不寫 DB。昂貴的 API 端篩選（reviewsFilterString）一律不用，
-改在本地 filters/etl 處理。
-"""
-
-from __future__ import annotations
-
-from typing import Any
+import logging
 
 from apify_client import ApifyClient
 
-from domains.review.logging_setup import get_logger
 from shared.config import settings
+from domains.review import config
 
-log = get_logger(__name__)
-
-client = ApifyClient(settings.apify_review)
-ACTOR_ID = "compass/google-maps-reviews-scraper"
+logger = logging.getLogger(__name__)
 
 
-def start_review_actor(
-    params: dict[str, Any],
-    *,
-    max_total_charge_usd: float = 0.5,
-) -> Any:
-    """啟動 Actor。不帶 reviewsFilterString（API 端過濾很貴）。"""
+class ReviewClient:
 
-    token = (settings.apify_review or "").strip()
-    if not token:
-        raise RuntimeError(
-            "缺少 APIFY_REVIEW token（.env）。"
-            "請填入 Apify token 後再跑 Google Maps Reviews Scraper。"
-        )
+    def __init__(self):
+        token = (settings.apify_review or "").strip()
 
-    safe = dict(params)
-    # 強制關閉昂貴篩選
-    safe["reviewsFilterString"] = ""
-    log.info(
-        "start_review_actor placeIds=%s maxReviews=%s sort=%s startDate=%s",
-        safe.get("placeIds"),
-        safe.get("maxReviews"),
-        safe.get("reviewsSort"),
-        safe.get("reviewsStartDate"),
-    )
-    return client.actor(ACTOR_ID).start(
-        run_input=safe,
-        max_total_charge_usd=max_total_charge_usd,
-    )
+        if not token:
+            raise RuntimeError(
+                "缺少 APIFY_REVIEW token，請確認 .env 設定。"
+            )
+
+        self.client = ApifyClient(token)
+
+    def start_job_actor(self, run_input: dict) -> dict:
+        try:
+            safe_input = run_input.copy()
+
+            # 不使用 API 端昂貴文字篩選
+            safe_input["reviewsFilterString"] = ""
+
+            actor = self.client.actor(config.ACTOR_ID)
+
+            obj = actor.start(
+                run_input=safe_input,
+                max_total_charge_usd=config.MAX_TOTAL_CHARGE_USD,
+            )
+
+            return obj if isinstance(obj, dict) else dict(obj)
+
+        except Exception as e:
+            logger.exception(
+                f"[Error:start_job_actor] 啟動 Review Apify 發生錯誤\n"
+                f"輸入資料:{run_input}"
+            )
+            raise e
+
+    def check_status(self, run_id: str) -> dict:
+        try:
+            obj = self.client.run(run_id).get()
+
+            if isinstance(obj, dict):
+                return obj
+
+            return dict(obj)
+
+        except Exception as e:
+            logger.exception(
+                f"[Error:check_status] Review 狀態確認錯誤 run_id:{run_id}"
+            )
+            raise e
+
+    def get_dataset(self, dataset_id: str) -> list[dict]:
+        try:
+            items = self.client.dataset(dataset_id).list_items().items
+            return list(items)
+
+        except Exception as e:
+            logger.exception(
+                f"[Error:get_dataset] Review dataset 讀取錯誤 "
+                f"dataset_id:{dataset_id}"
+            )
+            raise e
+        # 舊版 service.py 相容介面
+ACTOR_ID = config.ACTOR_ID
 
 
-def check_status(run_id: str) -> Any:
-    status = client.run(run_id).get()
-    state = getattr(status, "status", None) or (
-        status.get("status") if isinstance(status, dict) else None
-    )
-    log.debug("check_status run_id=%s state=%s", run_id, state)
-    return status
+def start_review_actor(params: dict):
+    client = ReviewClient()
+    return client.start_job_actor(params)
 
 
-def get_dataset(dataset_id: str) -> list[dict]:
-    items = list(client.dataset(dataset_id).list_items().items)
-    log.info("get_dataset dataset_id=%s items=%s", dataset_id, len(items))
-    return items
+def check_status(run_id: str):
+    client = ReviewClient()
+    return client.check_status(run_id)
+
+
+def get_dataset(dataset_id: str):
+    client = ReviewClient()
+    return client.get_dataset(dataset_id)
