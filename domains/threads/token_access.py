@@ -27,7 +27,7 @@ def refresh_threads_token():
     endpoint = f"{url}refresh_access_token"
     params = {
         "grant_type":"th_refresh_token",
-        "access_token":"DELETED_KEY"
+        "access_token":settings.threads_long_key
     }
     try:
         rs = requests.get(url=endpoint,params=params)
