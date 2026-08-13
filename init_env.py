@@ -31,6 +31,7 @@ def init_env():
     content = content.replace("AIRFLOW_ADMIN_USER=", "AIRFLOW_ADMIN_USER=dev_user")
     content = content.replace("AIRFLOW_ADMIN_PASSWORD=", f"AIRFLOW_ADMIN_PASSWORD={random_password}")
     content = content.replace("AIRFLOW_JWT_SECRET=", f"AIRFLOW_JWT_SECRET={secrets.token_urlsafe(28)}")
+    content = content.replace("AIRFLOW_API_SECRET_KEY=", f"AIRFLOW_API_SECRET_KEY={secrets.token_urlsafe(28)}")
     with open(env_file, "w", encoding="utf-8") as f:
         f.write(content)
 
