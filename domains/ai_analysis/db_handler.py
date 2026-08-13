@@ -96,7 +96,7 @@ def ai_analysis_save(datalist:list[dict]):
             }
             stmt = stmt.on_conflict_do_update(
                 set_= update_columns,
-                index_elements= ["reviewId","placeId"]
+                index_elements= ["reviewId"]
             )
             rs = conn.execute(stmt,datalist)
             return rs.rowcount
