@@ -3,7 +3,8 @@
 """
 import json
 from datetime import datetime, timedelta
-from sqlalchemy import insert,select
+from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import SQLAlchemyError
 from db.database import engine,metadata
 from domains.review.models import Review
@@ -89,6 +90,14 @@ def ai_analysis_save(datalist:list[dict]):
     with engine.begin() as conn:
         try:
             stmt = insert(Ai_analysis)
+            update_columns ={
+                column.name: getattr(stmt.excluded, column.name)
+                for column in Ai_analysis.columns
+            }
+            stmt = stmt.on_conflict_do_update(
+                set_= update_columns,
+                index_elements= ["reviewId"]
+            )
             rs = conn.execute(stmt,datalist)
             return rs.rowcount
         except SQLAlchemyError as e:

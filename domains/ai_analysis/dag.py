@@ -25,7 +25,7 @@ args = {
     description="llm分析reviews，每日三點固定",
     catchup=False,
     schedule=None,
-    start_date=datetime(2027,1,1),
+    start_date=datetime(2026,1,1),
     default_args=args,
     tags=["ai","daily"]
 )

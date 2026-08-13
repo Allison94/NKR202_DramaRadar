@@ -4,7 +4,8 @@
 """
 import logging
 from db.database import engine,metadata
-from sqlalchemy import insert,update
+from sqlalchemy import update
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import SQLAlchemyError
 from db.shared_tables import execution_log
 from domains.store.models import Store, Store_source
@@ -69,11 +70,16 @@ def update_apify_log(obj:dict,retry_times:int):
 def save_to_store_source(obj:list[dict]):
     if not obj:
         return
-    stmt = insert(Store_source).values(obj)
+    stmt = insert(Store_source)
+    update_columns = {
+        column.name: getattr(stmt.excluded, column.name)
+        for column in Store_source.columns
+    }
+    stmt = stmt.on_conflict_do_update(set_=update_columns,index_elements=["placeId"])
 
     with engine.begin() as conn:
         try:
-            result = conn.execute(stmt)
+            result = conn.execute(stmt,obj)
             return result.rowcount
         except SQLAlchemyError as e:
             logger.exception(f"[Error:save_to_store_source]Store Origin Source 存入發生錯誤")
@@ -83,11 +89,16 @@ def save_to_store(df:list[dict]):
     if not df:
         return
     
-    stmt = insert(Store).values(df)
-
+    stmt = insert(Store)
+    update_columns = {
+        column.name: getattr(stmt.excluded, column.name)
+        for column in Store.columns
+    }
+    stmt = stmt.on_conflict_do_update(set_=update_columns,index_elements=["placeId"])
+    
     with engine.begin() as conn:
         try:
-            result = conn.execute(stmt)
+            result = conn.execute(stmt,df)
             return result.rowcount
         except SQLAlchemyError as e:
             logger.exception(f"[Error:save_to_store] Store 存入發生錯誤")
