@@ -59,7 +59,7 @@ class Gemini(LLMServiceInterface):
         }
         return {
             "ai_output":response_list,
-            "status":safety,
+            "status":safety_msg,
             "response_msg":response_msg,
             "review_id_list":review_keys
         }
