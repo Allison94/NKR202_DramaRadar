@@ -60,7 +60,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - "15432:5432"
     volumes:
       # 建立一個虛擬硬碟，確保資料庫重啟時，爬蟲進去的資料不會不見
       - postgres_data:/var/lib/postgresql/data
