@@ -1,14 +1,13 @@
-from datetime import datetime
+import pendulum
 import logging
 from airflow.sdk import dag,task
 from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
-
 logger = logging.getLogger(__name__)
 
 @dag(
     dag_id="dags_trigger_3am",
     description="整合所有 domains 的 DAG",
-    start_date=datetime(2026, 1, 1),
+    start_date=pendulum.datetime(2026, 1, 1,tz="Asia/Taipei"),
     schedule="0 3 * * *",
     catchup=False,
     tags=["daily","dags_all"]
