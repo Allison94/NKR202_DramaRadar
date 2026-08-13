@@ -30,8 +30,8 @@ def threads_post():
             • 老闆：「{data.owner_text[:100]if len(data.owner_text) > 100 else data.owner_text}...」 
 
             🤖 AI 戰力指數分析：
-            • 客人火藥味：{data.customer_ai_score}
-            • 老闆戰力數：{data.owner_ai_score}
+            • 客人火藥味：{data.review_score}
+            • 老闆戰力數：{data.owner_score}
 
             🤫 AI公關一下：
             「{data.ai_pr_response[:100]if len(data.ai_pr_response) > 100 else data.ai_pr_response}...」 
