@@ -34,10 +34,10 @@ def threads_post():
             • 老闆戰力數：{data.owner_score}
 
             🤫 AI公關一下：
-            「{data.ai_pr_response[:100]if len(data.ai_pr_response) > 100 else data.ai_pr_response}...」 
+            「{data.pr_reply[:100]if len(data.pr_reply) > 100 else data.pr_reply}...」 
 
             🔗 前往案發現場觀賞：
-            {data.review_url}
+            {data.reviewUrl}
 
             「🍿今天沒有平安地度過🍿，感謝兩位Drama大師的努力~」
         """
