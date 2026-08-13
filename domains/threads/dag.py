@@ -20,9 +20,8 @@ args = {
     dag_id="threads_dags_v1",
     description="每日晚上七點post案例到threads",
     start_date=datetime(2026,1,1),
-    schedule="0 19 * * *",
+    schedule=None,
     catchup=False,
-    max_active_runs=1,
     default_args=args,
     tags=["threads","daily"]
 )
