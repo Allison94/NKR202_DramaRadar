@@ -67,12 +67,19 @@ def should_write_business_review(review_row: dict[str, Any]) -> tuple[bool, str]
     if len(text) < MIN_REVIEW_TEXT_LEN:
         return False, "empty_review_text"
 
-    if is_generic_pr_reply(review_row.get("response_from_owner_text")):
-        return False, "generic_pr_reply"
-
     stars = int(review_row.get("stars") or 0)
-    if stars <= 0:
-        return False, "invalid_stars"
+    if stars not in (1, 2):
+        return False, "not_low_star_review"
+
+    owner_reply = str(
+        review_row.get("response_from_owner_text") or ""
+    ).strip()
+
+    if not owner_reply:
+        return False, "missing_owner_reply"
+
+    if is_generic_pr_reply(owner_reply):
+        return False, "generic_pr_reply"
 
     return True, "ok"
 

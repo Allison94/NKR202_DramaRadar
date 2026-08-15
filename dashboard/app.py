@@ -36,7 +36,7 @@ st.set_page_config(
     page_title="Drama Radar｜台北吵架地圖",
     page_icon="🔥",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -44,20 +44,22 @@ ASSETS_DIR = BASE_DIR / "assets"
 SPLASH_IMAGE = ASSETS_DIR / "splash.png"
 
 PAGE_MAP = "🗺️ 吵架地圖"
-PAGE_INTENSITY = "🔥 烈度評分"
-PAGE_PERSONA = "🎭 店家回覆類型"
-PAGE_REASON = "🧨 糾紛分類"
+PAGE_ANALYSIS = "📊 吵架分析"
+PAGE_CLASSIC = "💬 經典吵架 / 公關回覆"
 PAGE_RANKING = "🏆 趣味排行榜"
-PAGE_PR = "💬 經典公關回覆"
 PAGE_REPORT = "🕵️ 匿名爆料"
+
+# 舊頁面名稱保留成 alias，讓既有功能可以合併進 5 個入口，不必重寫資料邏輯。
+PAGE_INTENSITY = PAGE_ANALYSIS
+PAGE_REASON = PAGE_ANALYSIS
+PAGE_PERSONA = PAGE_CLASSIC
+PAGE_PR = PAGE_CLASSIC
 
 PAGE_OPTIONS = [
     PAGE_MAP,
-    PAGE_INTENSITY,
-    PAGE_PERSONA,
-    PAGE_REASON,
+    PAGE_ANALYSIS,
+    PAGE_CLASSIC,
     PAGE_RANKING,
-    PAGE_PR,
     PAGE_REPORT,
 ]
 
@@ -278,6 +280,11 @@ render_html(
         border-bottom: 1px solid var(--border);
     }
 
+    /* V2：原生 sidebar 不使用，導覽改到 Hero 圖下方左欄 */
+    [data-testid="stSidebar"] { display: none !important; }
+    [data-testid="collapsedControl"] { display: none !important; }
+
+
     /* 只藏 footer，不碰 header / sidebar toggle */
     footer {
         display: none !important;
@@ -456,6 +463,38 @@ render_html(
         font-weight: 800;
     }
 
+    .analysis-summary {
+        padding: 16px 18px;
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        background: var(--panel);
+        line-height: 1.8;
+    }
+
+    .podium-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1.15fr 1fr;
+        gap: 12px;
+        align-items: end;
+        margin: 18px 0 20px;
+    }
+
+    .podium-card {
+        padding: 16px 12px;
+        border: 1px solid var(--border);
+        border-radius: 16px 16px 8px 8px;
+        background: linear-gradient(160deg, rgba(31,24,33,.98), rgba(18,14,20,.98));
+        text-align: center;
+    }
+
+    .podium-card.first { min-height: 190px; border-color: rgba(247,186,56,.42); }
+    .podium-card.second { min-height: 160px; }
+    .podium-card.third { min-height: 145px; }
+    .podium-medal { font-size: 2rem; }
+    .podium-name { margin-top: 6px; font-size: 1rem; font-weight: 900; }
+    .podium-score { margin-top: 6px; color: #ff8aa4; font-size: 1.15rem; font-weight: 900; }
+    .podium-note { margin-top: 8px; color: var(--muted); font-size: .78rem; line-height: 1.5; }
+
     @media (max-width: 800px) {
         .block-container {
             padding-left: .8rem;
@@ -484,26 +523,44 @@ render_html(
 # 火焰 Marker
 # ============================================================
 
-def flame_size(intensity: float) -> int:
-    value = max(1.0, min(float(intensity), 10.0))
-    return int(18 + value * 4.4)
+def ai_fire_score(row: pd.Series) -> float | None:
+    """組長規格：review_score + owner_score。沒有正式 AI 分數時不製造假分數。"""
+    guest = pd.to_numeric(pd.Series([row.get("guest_score")]), errors="coerce").iloc[0]
+    owner = pd.to_numeric(pd.Series([row.get("owner_score")]), errors="coerce").iloc[0]
+    if pd.isna(guest) or pd.isna(owner) or float(guest) <= 0 or float(owner) <= 0:
+        return None
+    return float(guest) + float(owner)
 
 
-def flame_colors(intensity: float) -> tuple[str, str, str]:
-    if intensity <= 3:
+def flame_size(score: float | None) -> int:
+    if score is None:
+        return 34
+    value = max(2.0, min(float(score), 20.0))
+    return int(24 + ((value - 2.0) / 18.0) * 42)
+
+
+def flame_colors(score: float | None) -> tuple[str, str, str]:
+    if score is None:
+        return "#ff811b", "#ffd05b", "rgba(255,129,27,.38)"
+    value = max(2.0, min(float(score), 20.0))
+    if value <= 7:
         return "#f7ba38", "#fff0a5", "rgba(247,186,56,.45)"
-    if intensity <= 6:
+    if value <= 12:
         return "#ff811b", "#ffd05b", "rgba(255,129,27,.50)"
-    if intensity <= 8:
+    if value <= 16:
         return "#ff4338", "#ffad3d", "rgba(255,67,56,.62)"
     return "#e00043", "#ff7138", "rgba(224,0,67,.84)"
 
 
-def create_flame_icon(intensity: float) -> DivIcon:
-    value = max(1.0, min(float(intensity), 10.0))
-    size = flame_size(value)
-    outer, inner, glow = flame_colors(value)
-    pulse = "flame-pulse" if value >= 9 else ""
+def create_flame_icon(score: float | None) -> DivIcon:
+    size = flame_size(score)
+    outer, inner, glow = flame_colors(score)
+    pulse = "flame-pulse" if score is not None and score >= 17 else ""
+    score_html = (
+        f'<div class="drama-flame-score">{score:.0f}</div>'
+        if score is not None
+        else ''
+    )
 
     marker_html = dedent(
         f"""
@@ -532,7 +589,7 @@ def create_flame_icon(intensity: float) -> DivIcon:
                           fill="{inner}" />
                 </svg>
             </div>
-            <div class="drama-flame-score">{value:.1f}</div>
+            {score_html}
         </div>
         """
     ).strip()
@@ -596,56 +653,66 @@ def add_map_styles(drama_map: folium.Map) -> None:
 
 
 def popup_html(row: pd.Series) -> str:
-    review = safe_text(str(row.get("review_text") or "")[:95])
-    owner = safe_text(str(row.get("owner_reply") or "")[:95])
+    """地圖火焰點擊後，只顯示使用者真正需要的資訊。"""
+    review = safe_text(str(row.get("review_text") or "")[:180])
+    owner = safe_text(str(row.get("owner_reply") or "")[:180])
+    store_url = str(row.get("store_url") or "").strip()
     review_url = str(row.get("review_url") or "").strip()
 
-    link_html = ""
-    if review_url:
-        link_html = (
-            f'<a href="{html.escape(review_url, quote=True)}" target="_blank" '
-            'style="display:inline-block;margin-top:8px;padding:7px 10px;'
-            'border-radius:8px;background:#e3245b;color:white;'
-            'font-weight:800;text-decoration:none;">看原始評論 →</a>'
+    google_score = float(row.get("google_score") or 0)
+    fire_score = ai_fire_score(row)
+
+    target_url = store_url or review_url
+    map_button = ""
+    if target_url:
+        map_button = (
+            f'<a href="{html.escape(target_url, quote=True)}" target="_blank" '
+            'style="display:inline-block;margin-top:10px;padding:8px 12px;'
+            'border-radius:8px;background:#242126;color:white;font-weight:800;'
+            'text-decoration:none;font-size:12px;">Google Maps</a>'
         )
 
     return dedent(
         f"""
-        <div style="width:270px;padding:6px;
-                    font-family:Arial,'Microsoft JhengHei',sans-serif;">
-            <div style="font-size:16px;font-weight:900;color:#241820;">
+        <div style="width:300px;padding:8px;font-family:Arial,'Microsoft JhengHei',sans-serif;">
+            <div style="font-size:17px;font-weight:900;color:#241820;margin-bottom:6px;">
                 {safe_text(row.get("name") or "未命名店家")}
             </div>
-            <div style="margin:4px 0 8px;color:#74666e;font-size:12px;">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+                <span style="padding:4px 8px;border-radius:999px;background:#fff4d8;color:#9a6900;font-size:12px;font-weight:900;">
+                    ⭐ Google {google_score:.1f}
+                </span>
+                {f'<span style="padding:4px 8px;border-radius:999px;background:#ffe7ed;color:#d71952;font-size:12px;font-weight:900;">🔥 火焰 {fire_score:.0f}/20</span>' if fire_score is not None else ''}
+            </div>
+            <div style="margin-bottom:10px;color:#74666e;font-size:12px;line-height:1.5;">
                 📍 {safe_text(row.get("address") or "")}
             </div>
-            <div style="display:inline-block;margin-bottom:8px;padding:4px 8px;
-                        border-radius:999px;background:#ffe7ed;color:#d71952;
-                        font-size:12px;font-weight:900;">
-                🔥 烈度 {float(row.get("intensity") or 1):.1f}/10
-                ・{safe_text(row.get("reason_display") or "其他")}
+            <div style="padding:8px;border-radius:8px;background:#fff7f8;font-size:12px;line-height:1.6;color:#41363c;">
+                <b>顧客評論</b><br>{review or "（沒有評論內容）"}
             </div>
-            <div style="font-size:12px;line-height:1.5;color:#41363c;">
-                <b>顧客：</b>{review or "（沒有文字）"}
+            <div style="margin-top:7px;padding:8px;border-radius:8px;background:#f7f7f7;font-size:12px;line-height:1.6;color:#41363c;">
+                <b>店家回覆</b><br>{owner or "（店家尚未回覆）"}
             </div>
-            <div style="margin-top:6px;font-size:12px;line-height:1.5;color:#41363c;">
-                <b>店家：</b>{owner or "（尚未回覆）"}
-            </div>
-            {link_html}
+            <div>{map_button}</div>
         </div>
         """
     ).strip()
 
 
 # ============================================================
-# Sidebar
+# 首頁 Hero + 內嵌導覽
 # ============================================================
 
-with st.sidebar:
-    st.markdown("# 🔥 Drama Radar")
-    st.caption("台北市吵架地圖")
-    st.divider()
+if SPLASH_IMAGE.exists():
+    st.image(str(SPLASH_IMAGE), use_container_width=True)
+else:
+    st.warning("找不到 `dashboard/assets/splash.png`")
 
+st.write("")
+nav_col, content_col = st.columns([1.15, 4.85], gap="large")
+
+with nav_col:
+    st.markdown("### 🔥 Drama Radar")
     current_page = st.radio(
         "功能",
         PAGE_OPTIONS,
@@ -653,699 +720,286 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    st.divider()
-    st.caption("目前範圍")
-    st.markdown("**📍 台北市**")
 
-    if db_error:
-        st.error("資料庫讀取異常")
-        st.caption(db_error)
-    elif df.empty:
-        st.warning("目前沒有可顯示的台北市資料")
-    else:
-        st.success(f"目前載入 {len(df)} 家店")
-
-    if st.button("重新整理資料", use_container_width=True):
-        refresh_dashboard()
-
-    st.caption(
-        "資料來源：PostgreSQL。AI 分析欄位若尚未產生，"
-        "前端只做展示用 fallback，不回寫資料庫。"
-    )
+def page_heading(title: str) -> None:
+    render_html(f'<div class="page-title">{safe_text(title)}</div>')
 
 
-# ============================================================
-# 共用頁首
-# ============================================================
+def render_podium(frame: pd.DataFrame, score_col: str, score_label: str) -> None:
+    ranked = frame.copy()
+    ranked[score_col] = pd.to_numeric(ranked[score_col], errors="coerce").fillna(0)
+    ranked = ranked[ranked[score_col] > 0].sort_values(score_col, ascending=False)
+    ranked = ranked.drop_duplicates("store_id").head(5)
 
-def page_heading(title: str, subtitle: str) -> None:
-    render_html(
-        f"""
-        <div class="page-title">{safe_text(title)}</div>
-        <div class="page-subtitle">{safe_text(subtitle)}</div>
-        """
-    )
+    if ranked.empty:
+        st.info("目前資料庫尚未有可用的正式 AI 分數。")
+        return
 
-
-# ============================================================
-# 1. 吵架地圖
-# ============================================================
-
-if current_page == PAGE_MAP:
-    if SPLASH_IMAGE.exists():
-        st.image(str(SPLASH_IMAGE), use_container_width=True)
-        render_html('<div class="hero-hint">↓ 往下滑，看台北市吵架熱點</div>')
-    else:
-        st.warning("找不到 `dashboard/assets/splash.png`")
-
-    page_heading(
-        "台北吵架地圖",
-        "像看地圖一樣找店家；火焰越大，評論與店家回覆越激烈。",
-    )
-
-    if df.empty:
-        st.error(db_error or "目前沒有台北市店家可以顯示。")
-        st.stop()
-
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("收錄店家", f"{len(df)} 家")
-    c2.metric("平均烈度", f"{df['intensity'].mean():.1f}")
-    c3.metric("高烈度", f"{int((df['intensity'] >= 7).sum())} 家")
-    c4.metric("有店家回覆", f"{int((df['owner_replies'] > 0).sum())} 家")
-
-    st.write("")
-
-    search_col, district_col, reason_col, intensity_col = st.columns(
-        [2.2, 1.1, 1.1, 1.4]
-    )
-
-    with search_col:
-        keyword = st.text_input(
-            "搜尋店家",
-            placeholder="店名、地址、餐飲類型…",
-        )
-
-    district_values = sorted(
-        x for x in df["district"].dropna().unique().tolist() if str(x).strip()
-    )
-    with district_col:
-        district = st.selectbox("行政區", ["全部", *district_values])
-
-    reason_values = ["價格", "態度", "排隊", "品質", "熱點新聞", "其他"]
-    with reason_col:
-        reason = st.selectbox("糾紛分類", ["全部", *reason_values])
-
-    with intensity_col:
-        min_intensity = st.slider(
-            "最低烈度",
-            min_value=1.0,
-            max_value=10.0,
-            value=1.0,
-            step=0.5,
-        )
-
-    filtered = df.copy()
-
-    clean_keyword = keyword.strip()
-    if clean_keyword:
-        keyword_mask = (
-            filtered["name"].str.contains(clean_keyword, case=False, na=False)
-            | filtered["address"].str.contains(clean_keyword, case=False, na=False)
-            | filtered["category"].str.contains(clean_keyword, case=False, na=False)
-        )
-        filtered = filtered[keyword_mask]
-
-    if district != "全部":
-        filtered = filtered[filtered["district"] == district]
-
-    if reason != "全部":
-        filtered = filtered[filtered["reason_display"] == reason]
-
-    filtered = filtered[filtered["intensity"] >= min_intensity]
-
-    render_html(
-        """
-        <div class="legend">
-            <span class="legend-item">🔥 小火｜1–3 理性溝通</span>
-            <span class="legend-item">🔥 中火｜4–6 開始有火氣</span>
-            <span class="legend-item">🔥 大火｜7–8 明顯互嗆</span>
-            <span class="legend-item">🔥 爆炎｜9–10 史詩級互嗆</span>
-        </div>
-        """
-    )
-
-    if filtered.empty:
-        st.warning("目前找不到符合條件的店家，請降低烈度或清除篩選。")
-    else:
-        valid_geo = filtered[
-            filtered["lat"].between(24.8, 25.3)
-            & filtered["lng"].between(121.2, 122.0)
-        ].copy()
-
-        if valid_geo.empty:
-            st.warning("店家資料有載入，但目前沒有可用的經緯度。")
+    top = ranked.head(3).reset_index(drop=True)
+    cards: list[str] = []
+    slots = [(1, "🥇", "first"), (0, "🥈", "second"), (2, "🥉", "third")]
+    for idx, medal, css_class in slots:
+        if idx < len(top):
+            row = top.iloc[idx]
+            note = str(row.get("owner_reply") or row.get("review_text") or "").strip()[:55]
+            cards.append(
+                f'<div class="podium-card {css_class}">'
+                f'<div class="podium-medal">{medal}</div>'
+                f'<div class="podium-name">{safe_text(row.get("name") or "未命名店家")}</div>'
+                f'<div class="podium-score">{score_label} {float(row[score_col]):.1f}</div>'
+                f'<div class="podium-note">{safe_text(note) if note else ""}</div>'
+                '</div>'
+            )
         else:
-            map_center = [
-                float(valid_geo["lat"].mean()),
-                float(valid_geo["lng"].mean()),
-            ]
-            zoom = 13 if len(valid_geo) <= 2 else 11
+            cards.append(f'<div class="podium-card {css_class}"></div>')
 
-            drama_map = folium.Map(
-                location=map_center,
-                zoom_start=zoom,
-                control_scale=True,
-                tiles=None,
-                prefer_canvas=False,
+    render_html('<div class="podium-wrap">' + ''.join(cards) + '</div>')
+
+    if len(ranked) > 3:
+        st.markdown("**其他上榜店家**")
+        for rank, (_, row) in enumerate(ranked.iloc[3:].iterrows(), start=4):
+            st.write(f"**{rank}. {row['name']}**　{score_label} {float(row[score_col]):.1f}")
+
+
+with content_col:
+    if current_page == PAGE_MAP:
+        page_heading("台北吵架地圖")
+
+        if df.empty:
+            st.error(db_error or "目前沒有台北市店家可以顯示。")
+            st.stop()
+
+        search_col, district_col = st.columns([3.4, 1.4])
+        with search_col:
+            keyword = st.text_input("搜尋店家", placeholder="搜尋店名、地址、餐飲類型…")
+
+        district_values = sorted(
+            x for x in df["district"].dropna().unique().tolist() if str(x).strip()
+        )
+        with district_col:
+            district = st.selectbox("行政區", ["全部", *district_values])
+
+        filtered = df.copy()
+        clean_keyword = keyword.strip()
+        if clean_keyword:
+            keyword_mask = (
+                filtered["name"].str.contains(clean_keyword, case=False, na=False)
+                | filtered["address"].str.contains(clean_keyword, case=False, na=False)
+                | filtered["category"].str.contains(clean_keyword, case=False, na=False)
             )
+            filtered = filtered[keyword_mask]
+        if district != "全部":
+            filtered = filtered[filtered["district"] == district]
 
-            # 視覺接近一般道路地圖，不需要 Google Maps API key
-            folium.TileLayer(
-                tiles="CartoDB Voyager",
-                name="台北市地圖",
-                control=False,
-            ).add_to(drama_map)
-
-            add_map_styles(drama_map)
-
-            for _, store in valid_geo.iterrows():
-                Marker(
-                    location=[float(store["lat"]), float(store["lng"])],
-                    icon=create_flame_icon(float(store["intensity"])),
-                    tooltip=(
-                        f"{store['name']}｜烈度 "
-                        f"{float(store['intensity']):.1f}"
-                    ),
-                    popup=folium.Popup(popup_html(store), max_width=310),
-                ).add_to(drama_map)
-
-            if len(valid_geo) >= 3:
-                drama_map.fit_bounds(
-                    valid_geo[["lat", "lng"]].values.tolist(),
-                    padding=(28, 28),
-                )
-
-            st_folium(
-                drama_map,
-                height=680,
-                use_container_width=True,
-                returned_objects=[],
-                key="drama_main_map",
-            )
-
-            st.caption(
-                f"目前顯示 {len(valid_geo)} 家。"
-                "火焰大小依 intensity 1–10 動態縮放。"
-            )
-
-
-# ============================================================
-# 2. 烈度評分
-# ============================================================
-
-elif current_page == PAGE_INTENSITY:
-    page_heading(
-        "烈度評分",
-        "1 分是理性溝通，10 分是史詩級互嗆；地圖火焰大小直接跟著烈度變化。",
-    )
-
-    scale_labels = {
-        1: "理性溝通",
-        2: "有點不爽",
-        3: "語氣變硬",
-        4: "開始有火氣",
-        5: "互不相讓",
-        6: "明顯對嗆",
-        7: "戰況升溫",
-        8: "高強度互嗆",
-        9: "接近炎上",
-        10: "史詩級互嗆",
-    }
-
-    for score, label in scale_labels.items():
-        render_html(
-            f"""
-            <div class="scale-row">
-                <div class="scale-no">{score} 分</div>
-                <div class="scale-bar">
-                    <div class="scale-fill" style="width:{score * 10}%"></div>
-                </div>
-                <div class="scale-label">{safe_text(label)}</div>
-            </div>
-            """
-        )
-
-    st.divider()
-
-    if df.empty:
-        st.info("目前沒有店家資料。")
-    else:
-        threshold = st.slider(
-            "只看烈度至少幾分",
-            1.0,
-            10.0,
-            1.0,
-            0.5,
-            key="intensity_page_filter",
-        )
-        table = (
-            df[df["intensity"] >= threshold]
-            .sort_values("intensity", ascending=False)
-            [["name", "district", "intensity", "db_review_count", "owner_replies"]]
-            .rename(
-                columns={
-                    "name": "店家",
-                    "district": "行政區",
-                    "intensity": "烈度",
-                    "db_review_count": "DB評論",
-                    "owner_replies": "店家回覆",
-                }
-            )
-        )
-        st.dataframe(table, hide_index=True, use_container_width=True)
-
-
-# ============================================================
-# 3. 店家回覆類型
-# ============================================================
-
-elif current_page == PAGE_PERSONA:
-    page_heading(
-        "店家回覆類型",
-        "把老闆回覆整理成三種最有戲的人設；C 類可提供後端作 hidden / skip 規則參考。",
-    )
-
-    a, b, c = st.columns(3)
-
-    with a:
-        render_html(
-            """
-            <div class="persona-card">
-                <div class="persona-title">🤡 A｜高級反串</div>
-                <div class="muted">
-                    表面客氣，實際暗藏嘲諷、陰陽怪氣或高級酸。
-                </div>
-            </div>
-            """
-        )
-
-    with b:
-        render_html(
-            """
-            <div class="persona-card">
-                <div class="persona-title">😡 B｜暴躁老哥</div>
-                <div class="muted">
-                    直接開嗆、情緒上頭、回覆帶強烈攻擊性或情緒勒索。
-                </div>
-            </div>
-            """
-        )
-
-    with c:
-        render_html(
-            """
-            <div class="persona-card">
-                <div class="persona-title">🤖 C｜無聊公關</div>
-                <div class="muted">
-                    制式道歉、複製貼上式公關回覆；可作為後端隱藏名單規則參考。
-                </div>
-            </div>
-            """
-        )
-
-    st.divider()
-
-    if df.empty:
-        st.info("目前沒有可分類的店家。")
-    else:
-        persona_counts = (
-            df["persona_display"]
-            .value_counts()
-            .rename_axis("回覆類型")
-            .reset_index(name="店家數")
-        )
-
-        st.bar_chart(
-            persona_counts.set_index("回覆類型"),
-            height=300,
-            use_container_width=True,
-        )
-
-        selected_persona = st.selectbox(
-            "查看某一類店家",
-            ["全部", *persona_counts["回覆類型"].tolist()],
-        )
-        persona_df = df
-        if selected_persona != "全部":
-            persona_df = df[df["persona_display"] == selected_persona]
-
-        st.dataframe(
-            persona_df[
-                ["name", "district", "persona_display", "owner_reply", "intensity"]
-            ]
-            .sort_values("intensity", ascending=False)
-            .rename(
-                columns={
-                    "name": "店家",
-                    "district": "行政區",
-                    "persona_display": "回覆類型",
-                    "owner_reply": "店家回覆",
-                    "intensity": "烈度",
-                }
-            ),
-            hide_index=True,
-            use_container_width=True,
-        )
-
-
-# ============================================================
-# 4. 糾紛分類
-# ============================================================
-
-elif current_page == PAGE_REASON:
-    page_heading(
-        "糾紛分類",
-        "價格、態度、排隊、品質、熱點新聞；AI 欄位尚未產生時，前端只做展示用關鍵字 fallback。",
-    )
-
-    categories = ["價格", "態度", "排隊", "品質", "熱點新聞", "其他"]
-
-    cols = st.columns(3)
-    category_icons = {
-        "價格": "💸",
-        "態度": "🙄",
-        "排隊": "🕒",
-        "品質": "🍽️",
-        "熱點新聞": "📰",
-        "其他": "💥",
-    }
-
-    for index, category in enumerate(categories):
-        count = int((df["reason_display"] == category).sum()) if not df.empty else 0
-        with cols[index % 3]:
-            st.metric(
-                f"{category_icons[category]} {category}",
-                f"{count} 家",
-            )
-
-    st.divider()
-
-    if not df.empty:
-        reason_counts = (
-            df["reason_display"]
-            .value_counts()
-            .reindex(categories, fill_value=0)
-            .rename_axis("糾紛分類")
-            .reset_index(name="店家數")
-        )
-        st.bar_chart(
-            reason_counts.set_index("糾紛分類"),
-            height=330,
-            use_container_width=True,
-        )
-
-        chosen_reason = st.selectbox("查看分類", ["全部", *categories])
-        reason_df = df if chosen_reason == "全部" else df[
-            df["reason_display"] == chosen_reason
-        ]
-
-        for _, row in reason_df.sort_values(
-            "intensity", ascending=False
-        ).head(30).iterrows():
-            with st.container(border=True):
-                st.markdown(
-                    f"### {row['name']}　🔥 {float(row['intensity']):.1f}"
-                )
-                st.caption(
-                    f"{row['district']}｜{row['reason_display']}｜"
-                    f"{row['persona_display']}"
-                )
-                st.write(row["review_text"] or "（目前沒有評論文字）")
-
-
-# ============================================================
-# 5. 趣味排行榜
-# ============================================================
-
-elif current_page == PAGE_RANKING:
-    page_heading(
-        "趣味排行榜",
-        "把資料庫變成有社群分享感的榜單。目前資料範圍只計台北市。",
-    )
-
-    if df.empty:
-        st.info("目前沒有可排行的店家。")
-        st.stop()
-
-    tab1, tab2, tab3, tab4 = st.tabs(
-        [
-            "🔥 台北十大暴躁老闆",
-            "🗯️ 奧客最愛抱怨",
-            "🤡 最會酸的老闆",
-            "📹 監視器還原大師",
-        ]
-    )
-
-    with tab1:
-        top_boss = (
-            df.sort_values(
-                ["intensity", "owner_score", "owner_replies"],
-                ascending=False,
-            )
-            .head(10)
-            .copy()
-        )
-        top_boss["榜單分數"] = top_boss["intensity"].round(1)
-        st.bar_chart(
-            top_boss.set_index("name")[["榜單分數"]],
-            height=360,
-            use_container_width=True,
-        )
-        st.dataframe(
-            top_boss[
-                ["name", "district", "intensity", "persona_display", "owner_replies"]
-            ].rename(
-                columns={
-                    "name": "店家",
-                    "district": "行政區",
-                    "intensity": "烈度",
-                    "persona_display": "人設",
-                    "owner_replies": "回覆數",
-                }
-            ),
-            hide_index=True,
-            use_container_width=True,
-        )
-
-    with tab2:
-        reason_counts = (
-            df["reason_display"]
-            .value_counts()
-            .rename_axis("抱怨原因")
-            .reset_index(name="店家數")
-        )
-        st.bar_chart(
-            reason_counts.set_index("抱怨原因"),
-            height=340,
-            use_container_width=True,
-        )
-        if not reason_counts.empty:
-            st.success(
-                f"目前最常見：{reason_counts.iloc[0]['抱怨原因']} "
-                f"（{int(reason_counts.iloc[0]['店家數'])} 家）"
-            )
-
-    with tab3:
-        sarcastic_mask = df["persona_display"].str.startswith("A｜")
-        sarcastic = df[sarcastic_mask].copy()
-        if sarcastic.empty:
-            st.info("目前資料還沒有被分類成「高級反串」的店家。")
+        if filtered.empty:
+            st.warning("目前找不到符合條件的店家，請清除搜尋或更換篩選條件。")
         else:
-            sarcastic = sarcastic.sort_values(
-                ["owner_score", "intensity"],
-                ascending=False,
-            ).head(10)
-            sarcastic["酸度"] = sarcastic[
-                ["owner_score", "intensity"]
-            ].max(axis=1)
-            st.bar_chart(
-                sarcastic.set_index("name")[["酸度"]],
-                height=340,
-                use_container_width=True,
-            )
-            st.dataframe(
-                sarcastic[
-                    ["name", "owner_reply", "owner_score", "intensity"]
-                ].rename(
-                    columns={
-                        "name": "店家",
-                        "owner_reply": "經典回覆",
-                        "owner_score": "老闆分數",
-                        "intensity": "烈度",
-                    }
-                ),
-                hide_index=True,
-                use_container_width=True,
-            )
+            valid_geo = filtered[
+                filtered["lat"].between(24.8, 25.3)
+                & filtered["lng"].between(121.2, 122.0)
+            ].copy()
 
-    with tab4:
-        monitor_mask = (
-            df["review_text"].str.contains(
-                r"監視器|錄影|影片|畫面|調閱",
-                regex=True,
-                na=False,
-            )
-            | df["owner_reply"].str.contains(
-                r"監視器|錄影|影片|畫面|調閱",
-                regex=True,
-                na=False,
-            )
-        )
-        monitor_df = (
-            df[monitor_mask]
-            .sort_values("intensity", ascending=False)
-            .head(10)
-        )
-        st.caption(
-            "這個榜目前用評論 / 店家回覆中的「監視器、錄影、影片、畫面、調閱」"
-            "關鍵字產生，之後可改接 AI 專屬標籤。"
-        )
-        if monitor_df.empty:
-            st.info("目前還沒有符合「監視器還原大師」關鍵字的店家。")
-        else:
-            for rank, (_, row) in enumerate(monitor_df.iterrows(), start=1):
-                with st.container(border=True):
-                    st.markdown(
-                        f"### 第 {rank} 名｜{row['name']}　"
-                        f"🔥 {float(row['intensity']):.1f}"
-                    )
-                    st.write(
-                        row["owner_reply"]
-                        or row["review_text"]
-                        or "（沒有文字）"
-                    )
-
-
-# ============================================================
-# 6. 經典公關回覆
-# ============================================================
-
-elif current_page == PAGE_PR:
-    page_heading(
-        "經典公關回覆",
-        "展示 LLM 已產生的公關示範；這個頁面不主動呼叫 AI，也不修改其他組員的 pipeline。",
-    )
-
-    if df.empty:
-        st.info("目前沒有店家資料。")
-        st.stop()
-
-    store_options = (
-        df.drop_duplicates("store_id")
-        .sort_values("intensity", ascending=False)
-        [["store_id", "name"]]
-    )
-    store_ids = store_options["store_id"].astype(str).tolist()
-
-    selected_id = st.selectbox(
-        "選擇店家",
-        store_ids,
-        format_func=lambda pid: store_options.loc[
-            store_options["store_id"].astype(str) == pid,
-            "name",
-        ].iloc[0],
-    )
-
-    store_row = df[df["store_id"].astype(str) == selected_id].iloc[0]
-
-    st.markdown(f"## {store_row['name']}")
-    st.caption(
-        f"{store_row['district']}｜烈度 {float(store_row['intensity']):.1f}/10"
-    )
-
-    reviews_df = get_store_reviews_dataframe(selected_id, limit=50)
-
-    if reviews_df.empty:
-        st.warning("這家店目前沒有評論資料。")
-    else:
-        for _, rev in reviews_df.iterrows():
-            with st.container(border=True):
-                st.markdown("**顧客評論**")
-                st.write(str(rev.get("review_text") or "（沒有內容）"))
-
-                st.markdown("**店家原始回覆**")
-                st.write(str(rev.get("owner_reply") or "（尚未回覆）"))
-
-                pr_reply = str(rev.get("pr_reply") or "").strip()
-                st.markdown("**LLM 公關示範**")
-                if pr_reply:
-                    render_html(
-                        f'<div class="pr-card">{safe_text(pr_reply)}</div>'
-                    )
-                else:
-                    st.info(
-                        "目前 AI 尚未產生公關示範。"
-                        "這裡只負責顯示，不會主動執行 AI pipeline。"
-                    )
-
-                review_url = str(rev.get("review_url") or "").strip()
-                if review_url:
-                    st.markdown(f"[查看原始 Google Maps 評論]({review_url})")
-
-
-# ============================================================
-# 7. 匿名爆料
-# ============================================================
-
-elif current_page == PAGE_REPORT:
-    page_heading(
-        "匿名爆料",
-        "讓使用者補充 API 不一定抓得到的事件；目前是前端展示版，不假裝已寫入正式資料庫。",
-    )
-
-    st.info(
-        "正式版建議流程：匿名投稿 → 待審核 → 人工確認 → "
-        "再加入店家 / 事件資料。這樣才能避免惡意爆料直接公開。"
-    )
-
-    if "session_reports" not in st.session_state:
-        st.session_state["session_reports"] = []
-
-    with st.form("anonymous_report_form", clear_on_submit=True):
-        store_name = st.text_input("店家名稱 *")
-        location = st.text_input("店家地點（台北市）")
-        category = st.selectbox(
-            "事件類型",
-            ["態度", "價格", "排隊", "品質", "熱點新聞", "其他"],
-        )
-        description = st.text_area(
-            "事件內容 *",
-            height=180,
-            placeholder="請描述發生什麼事，避免填寫不必要的個人資料。",
-        )
-        evidence_url = st.text_input(
-            "Google Maps / 新聞 / 公開證據網址（選填）"
-        )
-        submitted = st.form_submit_button(
-            "送出匿名爆料",
-            use_container_width=True,
-        )
-
-        if submitted:
-            if not store_name.strip() or not description.strip():
-                st.warning("請至少填寫店家名稱與事件內容。")
+            if valid_geo.empty:
+                st.warning("店家資料有載入，但目前沒有可用的經緯度。")
             else:
-                st.session_state["session_reports"].append(
-                    {
-                        "store_name": store_name.strip(),
-                        "location": location.strip(),
-                        "category": category,
-                        "description": description.strip(),
-                        "evidence_url": evidence_url.strip(),
-                    }
+                map_center = [float(valid_geo["lat"].mean()), float(valid_geo["lng"].mean())]
+                zoom = 13 if len(valid_geo) <= 2 else 11
+                drama_map = folium.Map(
+                    location=map_center,
+                    zoom_start=zoom,
+                    control_scale=True,
+                    tiles=None,
+                    prefer_canvas=False,
                 )
-                st.success(
-                    "展示版已暫存在這個瀏覽工作階段。"
-                    "目前尚未寫入正式資料庫。"
+                folium.TileLayer(
+                    tiles="CartoDB Voyager",
+                    name="台北市地圖",
+                    control=False,
+                ).add_to(drama_map)
+                add_map_styles(drama_map)
+
+                for _, store in valid_geo.iterrows():
+                    fire_score = ai_fire_score(store)
+                    tooltip = str(store["name"])
+                    if fire_score is not None:
+                        tooltip += f"｜火焰 {fire_score:.0f}/20"
+                    Marker(
+                        location=[float(store["lat"]), float(store["lng"])],
+                        icon=create_flame_icon(fire_score),
+                        tooltip=tooltip,
+                        popup=folium.Popup(popup_html(store), max_width=320),
+                    ).add_to(drama_map)
+
+                if len(valid_geo) >= 3:
+                    drama_map.fit_bounds(
+                        valid_geo[["lat", "lng"]].values.tolist(),
+                        padding=(28, 28),
+                    )
+
+                st_folium(
+                    drama_map,
+                    height=760,
+                    use_container_width=True,
+                    returned_objects=[],
+                    key="drama_main_map",
                 )
 
-    if st.session_state["session_reports"]:
-        st.divider()
-        st.subheader("本次工作階段的投稿")
-        st.caption(
-            f"共 {len(st.session_state['session_reports'])} 筆；"
-            "關閉工作階段後不保證保留。"
-        )
-        st.dataframe(
-            pd.DataFrame(st.session_state["session_reports"]).rename(
-                columns={
-                    "store_name": "店家",
-                    "location": "地點",
-                    "category": "分類",
-                    "description": "內容",
-                    "evidence_url": "證據網址",
-                }
-            ),
-            hide_index=True,
-            use_container_width=True,
-        )
+    elif current_page == PAGE_ANALYSIS:
+        page_heading("吵架分析")
+
+        if df.empty:
+            st.info("目前沒有可分析的資料。")
+        else:
+            st.subheader("大家都在吵什麼？")
+            reason_counts = (
+                df["reason_display"]
+                .replace("", "其他")
+                .value_counts()
+                .rename_axis("糾紛原因")
+                .reset_index(name="店家數")
+            )
+            st.bar_chart(reason_counts.set_index("糾紛原因"), height=330, use_container_width=True)
+
+            st.divider()
+            st.subheader("顧客 vs 店家，誰比較火？")
+            guest_scores = pd.to_numeric(df["guest_score"], errors="coerce").fillna(0)
+            owner_scores = pd.to_numeric(df["owner_score"], errors="coerce").fillna(0)
+            guest_valid = guest_scores[guest_scores > 0]
+            owner_valid = owner_scores[owner_scores > 0]
+
+            if guest_valid.empty and owner_valid.empty:
+                st.info("目前 ai_analysis 尚未產生正式分數；資料進來後這裡會直接顯示 AI 分析結果。")
+            else:
+                g_avg = float(guest_valid.mean()) if not guest_valid.empty else 0.0
+                o_avg = float(owner_valid.mean()) if not owner_valid.empty else 0.0
+                score_frame = pd.DataFrame(
+                    {"平均分數": [g_avg, o_avg]},
+                    index=["😡 顧客", "🤬 店家"],
+                )
+                st.bar_chart(score_frame, height=260, use_container_width=True)
+                top_reason = reason_counts.iloc[0]["糾紛原因"] if not reason_counts.empty else "尚無"
+                render_html(
+                    f'<div class="analysis-summary"><b>目前分析摘要</b><br>'
+                    f'最常見糾紛：{safe_text(top_reason)}<br>'
+                    f'顧客平均分數：{g_avg:.1f} / 10<br>'
+                    f'店家平均分數：{o_avg:.1f} / 10</div>'
+                )
+
+    elif current_page == PAGE_CLASSIC:
+        page_heading("經典吵架")
+
+        if df.empty:
+            st.info("目前沒有店家資料。")
+        else:
+            store_options = (
+                df.drop_duplicates("store_id")
+                .sort_values("intensity", ascending=False)
+                [["store_id", "name"]]
+            )
+            store_ids = store_options["store_id"].astype(str).tolist()
+            selected_id = st.selectbox(
+                "選擇店家",
+                store_ids,
+                format_func=lambda pid: store_options.loc[
+                    store_options["store_id"].astype(str) == pid,
+                    "name",
+                ].iloc[0],
+            )
+
+            store_row = df[df["store_id"].astype(str) == selected_id].iloc[0]
+            st.markdown(f"## {store_row['name']}")
+            tags = []
+            persona = str(store_row.get("persona_display") or "").strip()
+            reason_display = str(store_row.get("reason_display") or "").strip()
+            if persona and persona != "尚未分類":
+                tags.append(persona)
+            if reason_display:
+                tags.append(f"🧨 {reason_display}")
+            if tags:
+                st.caption("　".join(tags))
+
+            reviews_df = get_store_reviews_dataframe(selected_id, limit=20)
+            if reviews_df.empty:
+                st.warning("這家店目前沒有評論資料。")
+            else:
+                for _, rev in reviews_df.iterrows():
+                    review_text = str(rev.get("review_text") or "").strip()
+                    owner_reply = str(rev.get("owner_reply") or "").strip()
+                    pr_reply = str(rev.get("pr_reply") or "").strip()
+                    guest_score = float(rev.get("guest_score") or 0)
+                    owner_score = float(rev.get("owner_score") or 0)
+
+                    with st.container(border=True):
+                        score_tags = []
+                        if guest_score > 0:
+                            score_tags.append(f"😡 顧客 {guest_score:.1f}")
+                        if owner_score > 0:
+                            score_tags.append(f"🤬 店家 {owner_score:.1f}")
+                        if score_tags:
+                            st.caption("　".join(score_tags))
+
+                        st.markdown("### 😡 顧客")
+                        st.write(review_text or "（沒有評論內容）")
+                        st.markdown("### 🏪 店家")
+                        st.write(owner_reply or "（店家尚未回覆）")
+                        st.markdown("### 🤖 AI 公關救援")
+                        if pr_reply:
+                            render_html(f'<div class="pr-card">{safe_text(pr_reply)}</div>')
+                        else:
+                            st.caption("AI 公關建議尚未產生。")
+
+                        review_url = str(rev.get("review_url") or "").strip()
+                        if review_url:
+                            st.link_button("Google Maps", review_url)
+
+    elif current_page == PAGE_RANKING:
+        page_heading("趣味排行榜")
+
+        if df.empty:
+            st.info("目前沒有可排行的店家。")
+        else:
+            ranking_type = st.radio(
+                "排行榜",
+                ["🔥 最激烈店家", "😡 最怒顧客", "🤬 最嗆老闆"],
+                horizontal=True,
+                label_visibility="collapsed",
+            )
+            if ranking_type == "🔥 最激烈店家":
+                render_podium(df, "intensity", "🔥")
+            elif ranking_type == "😡 最怒顧客":
+                render_podium(df, "guest_score", "😡")
+            else:
+                render_podium(df, "owner_score", "🤬")
+
+    elif current_page == PAGE_REPORT:
+        page_heading("匿名爆料")
+        st.caption("提供公開可查證的資訊即可；正式資料是否入庫，交由後續審核流程決定。")
+
+        if "session_reports" not in st.session_state:
+            st.session_state["session_reports"] = []
+
+        with st.form("anonymous_report_form", clear_on_submit=True):
+            store_name = st.text_input("店家名稱 *")
+            location = st.text_input("店家地點（台北市）")
+            category = st.selectbox(
+                "事件類型",
+                ["態度", "價格", "排隊", "品質", "熱點新聞", "其他"],
+            )
+            description = st.text_area("事件內容 *", height=180)
+            evidence_url = st.text_input("公開證據網址（選填）")
+            submitted = st.form_submit_button("送出匿名爆料", use_container_width=True)
+
+            if submitted:
+                if not store_name.strip() or not description.strip():
+                    st.warning("請至少填寫店家名稱與事件內容。")
+                else:
+                    st.session_state["session_reports"].append(
+                        {
+                            "store_name": store_name.strip(),
+                            "location": location.strip(),
+                            "category": category,
+                            "description": description.strip(),
+                            "evidence_url": evidence_url.strip(),
+                        }
+                    )
+                    st.success("已收到這筆爆料（目前暫存在本次工作階段）。")
