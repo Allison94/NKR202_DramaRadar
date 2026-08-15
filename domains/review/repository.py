@@ -21,8 +21,22 @@ from domains.review.logging_setup import get_logger
 log = get_logger(__name__)
 
 
-# skip_review_fetch = TRUE → 不抓
-FETCH_STORES_FOR_REVIEW = text(
+FETCH_ALL_STORES_FOR_REVIEW = text(
+    '''
+    SELECT
+        s."placeId",
+        s."oneStar",
+        s."twoStar",
+        s."reviewsCount",
+        s."skip_review_fetch"
+    FROM "store" AS s
+    WHERE s."blocked" = FALSE
+      AND s."skip_review_fetch" = FALSE
+    ORDER BY s."reviewsCount" DESC, s."placeId"
+    '''
+)
+
+FETCH_STORES_FOR_REVIEW_LIMITED = text(
     '''
     SELECT
         s."placeId",
@@ -126,26 +140,38 @@ UPSERT_REVIEW = text(
 
 
 def fetch_stores_for_review(
-    limit: int = 50,
+    limit: int | None = None,
     *,
     db_engine: Engine | None = None,
 ) -> list[dict[str, Any]]:
-    """READ store — only rows with skip_review_fetch = FALSE."""
+    """READ store rows eligible for Review.
 
-    safe_limit = max(1, min(int(limit), 500))
+    limit=None: 正式 Initial / Daily，讀取全部符合條件的 store。
+    limit=N: Manual / 測試，只讀前 N 家。
+    """
+
     active = db_engine or engine
     with active.connect() as connection:
-        rows = connection.execute(
-            FETCH_STORES_FOR_REVIEW,
-            {"limit": safe_limit},
-        ).mappings().all()
+        if limit is None:
+            rows = connection.execute(FETCH_ALL_STORES_FOR_REVIEW).mappings().all()
+        else:
+            safe_limit = max(1, int(limit))
+            rows = connection.execute(
+                FETCH_STORES_FOR_REVIEW_LIMITED,
+                {"limit": safe_limit},
+            ).mappings().all()
+
     result = [dict(row) for row in rows]
-    log.info("fetch_stores_for_review: %s stores (skip_review_fetch=FALSE)", len(result))
+    log.info(
+        "fetch_stores_for_review: %s stores (limit=%s, blocked=FALSE, skip_review_fetch=FALSE)",
+        len(result),
+        limit,
+    )
     return result
 
 
 def fetch_place_ids_for_review(
-    limit: int = 50,
+    limit: int | None = None,
     *,
     db_engine: Engine | None = None,
 ) -> list[str]:
@@ -166,14 +192,16 @@ def fetch_reviews_needing_recheck(
 
     from datetime import timezone
 
-    safe_limit = max(1, min(int(limit), 500))
+    safe_limit = max(1, int(limit))
     active = db_engine or engine
     when = now or datetime.now(timezone.utc)
+
     with active.connect() as connection:
         rows = connection.execute(
             FETCH_REVIEWS_NEEDING_RECHECK,
             {"limit": safe_limit, "now": when},
         ).mappings().all()
+
     result = [dict(row) for row in rows]
     log.info("fetch_reviews_needing_recheck: %s rows", len(result))
     return result
@@ -201,6 +229,7 @@ def filter_existing_place_ids(
 
     with active.connect() as connection:
         rows = connection.execute(query, {"place_ids": cleaned}).mappings().all()
+
     existing = {str(row["placeId"]) for row in rows}
     return [pid for pid in cleaned if pid in existing]
 
@@ -215,10 +244,12 @@ def save_review_batch(
 
     active = db_engine or engine
     source_payload = []
+
     for row in source_rows:
         raw_json = row["raw_json"]
         if not isinstance(raw_json, str):
             raw_json = json.dumps(raw_json, ensure_ascii=False)
+
         source_payload.append(
             {
                 "review_id": row["review_id"],
@@ -273,8 +304,10 @@ def write_execution_log(
         "error_msg": error_msg,
         "retry_count": retry_count,
     }
+
     with active.begin() as connection:
         row_id = connection.execute(INSERT_EXECUTION_LOG, payload).scalar_one()
+
     log.info(
         "execution_log id=%s pipeline=%s status=%s items=%s error=%s",
         row_id,
@@ -298,9 +331,11 @@ def clear_all_store_and_review_data(*, db_engine: Engine | None = None) -> dict[
         ("store_source", 'DELETE FROM "store_source"'),
         ("store", 'DELETE FROM "store"'),
     ]
+
     with active.begin() as connection:
         for name, sql in statements:
             result = connection.execute(text(sql))
             counts[name] = int(result.rowcount or 0)
+
     log.warning("cleared DB tables: %s", counts)
     return counts

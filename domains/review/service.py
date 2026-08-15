@@ -1,10 +1,11 @@
 """Review pipeline: store → Apify → ETL → review_source / review.
 
 Rules (R002 + 組長):
-- initial: maxReviews = oneStar + twoStar + 50, sort=newest
-- daily: sort=lowestRating, reviewsStartDate=昨天（只抓新留言，不是全抓）
-- skip_review_fetch=TRUE 的店不抓
-- 不用 API 端 reviewsFilterString（貴）
+- initial: maxReviews = oneStar + twoStar + 50
+- daily: sort=newest + reviewsStartDate=昨天，只抓新增留言
+- recheck: 3 天後補查；每次最多 100 筆待查資料、每店抓 20 則 newest
+- blocked=TRUE / skip_review_fetch=TRUE 的店不抓
+- reviewsFilterString 留空，統一由本地 ETL 篩選
 - 每次 API 觸發都寫 execution_log（request + response/error）
 - owner_reply_recheck / next_check_at 決定要不要再查老闆回覆
 """
@@ -40,7 +41,7 @@ def initial_max_reviews(one_star: int, two_star: int, *, buffer: int = 50) -> in
 def build_actor_input(
     place_ids: list[str],
     *,
-    max_reviews: int,
+    max_reviews: int | None,
     reviews_sort: str,
     reviews_start_date: str | None = None,
     language: str = "zh-TW",
@@ -49,13 +50,14 @@ def build_actor_input(
 
     payload: dict[str, Any] = {
         "language": language,
-        "maxReviews": max(1, int(max_reviews)),
         "personalData": True,
         "placeIds": place_ids,
         "reviewsSort": reviews_sort,
         "reviewsFilterString": "",  # 不用 API 篩選，本地 ETL 處理
         "reviewsOrigin": "all",
     }
+    if max_reviews is not None:
+        payload["maxReviews"] = max(1, int(max_reviews))
     if reviews_start_date:
         payload["reviewsStartDate"] = reviews_start_date
     return payload
@@ -95,7 +97,7 @@ def fetch_reviews_from_apify(
     place_ids: list[str],
     *,
     pipeline: str,
-    max_reviews: int,
+    max_reviews: int | None,
     reviews_sort: str,
     reviews_start_date: str | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -179,11 +181,13 @@ def ingest_raw_reviews(raw_items: list[dict[str, Any]]) -> dict[str, int]:
     }
 
 
-def run_initial_fetch(*, store_limit: int = 50, dry_run: bool = False) -> dict[str, Any]:
-    """第一次全量：每店 maxReviews = 1★+2★+50，sort=newest。"""
+def run_initial_fetch(*, dry_run: bool = False) -> dict[str, Any]:
+    """第一次全量：所有可抓店家；每店 maxReviews = 1★+2★+50。"""
 
-    log.info("run_initial_fetch store_limit=%s dry_run=%s", store_limit, dry_run)
-    stores = fetch_stores_for_review(limit=store_limit)
+    log.info("run_initial_fetch dry_run=%s", dry_run)
+    # 正式 Initial 不在 service 層限制店家數。
+    # repository.py 需配合支援 limit=None，代表讀取全部可抓店家。
+    stores = fetch_stores_for_review(limit=None)
     if not stores:
         log.warning("initial: store 無可抓店家（blocked=FALSE 且 skip_review_fetch=FALSE）")
         return {
@@ -248,20 +252,20 @@ def run_initial_fetch(*, store_limit: int = 50, dry_run: bool = False) -> dict[s
 
 def run_daily_fetch(
     *,
-    store_limit: int = 100,
     dry_run: bool = False,
 ) -> dict[str, Any]:
-    """每日增量：抓昨天的新評論。"""
+    """每日增量：所有可抓店家，依 newest + 昨天日期只抓新增評論。"""
 
     yesterday = (date.today() - timedelta(days=1)).isoformat()
 
     log.info(
-        "run_daily_fetch store_limit=%s reviewsStartDate=%s",
-        store_limit,
+        "run_daily_fetch reviewsSort=newest reviewsStartDate=%s",
         yesterday,
     )
 
-    place_ids = fetch_place_ids_for_review(limit=store_limit)
+    # 正式 Daily 不在 service 層限制店家數。
+    # repository.py 需配合支援 limit=None，代表讀取全部可抓店家。
+    place_ids = fetch_place_ids_for_review(limit=None)
 
     if not place_ids:
         log.warning(
@@ -271,7 +275,7 @@ def run_daily_fetch(
             "mode": "daily",
             "place_ids": [],
             "reviews_start_date": yesterday,
-            "reviews_sort": "lowestRanking",
+            "reviews_sort": "newest",
             "dry_run": dry_run,
             "etl": {
                 "source_upserted": 0,
@@ -284,7 +288,7 @@ def run_daily_fetch(
         "mode": "daily",
         "place_ids": place_ids,
         "reviews_start_date": yesterday,
-        "reviews_sort": "lowestRanking",
+        "reviews_sort": "newest",
         "dry_run": dry_run,
     }
 
@@ -298,8 +302,8 @@ def run_daily_fetch(
     raw_items, meta = fetch_reviews_from_apify(
         place_ids,
         pipeline="review_daily",
-        max_reviews=50,
-        reviews_sort="lowestRanking",
+        max_reviews=None,
+        reviews_sort="newest",
         reviews_start_date=yesterday,
     )
 
@@ -367,9 +371,9 @@ def run_review_pipeline(
     """手動單次測試。"""
 
     if mode == "initial":
-        return run_initial_fetch(store_limit=store_limit, dry_run=dry_run)
+        return run_initial_fetch(dry_run=dry_run)
     if mode == "daily":
-        return run_daily_fetch(store_limit=store_limit, dry_run=dry_run)
+        return run_daily_fetch(dry_run=dry_run)
     if mode == "recheck":
         return run_owner_reply_recheck(limit=store_limit, dry_run=dry_run)
 
