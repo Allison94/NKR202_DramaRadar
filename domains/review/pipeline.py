@@ -1,48 +1,42 @@
-"""Review domain pipeline.
+"""Review domain compatibility pipeline wrappers.
 
-負責串接：
-client -> etl -> db_handler
+正式排程：
+- Initial：domains/review/dag.py，手動 DAG
+- Daily + Recheck：domains/review/dag.py，每日 DAG
 
-目前沿用已驗證成功的 service.py 邏輯，
-提供給 Airflow / CLI 呼叫。
+此檔保留 CLI / 舊 import 相容介面，不再加入正式 Store / Recheck 數量限制。
 """
 
 from typing import Any
 
 from domains.review.service import (
-    run_initial_fetch,
     run_daily_fetch,
+    run_initial_fetch,
     run_owner_reply_recheck,
     run_review_pipeline,
 )
 
 
 def review_initial_pipeline(
-    store_limit: int = 50,
     dry_run: bool = False,
 ) -> dict[str, Any]:
     return run_initial_fetch(
-        store_limit=store_limit,
         dry_run=dry_run,
     )
 
 
 def review_daily_pipeline(
-    store_limit: int = 100,
     dry_run: bool = False,
 ) -> dict[str, Any]:
     return run_daily_fetch(
-        store_limit=store_limit,
         dry_run=dry_run,
     )
 
 
 def review_recheck_pipeline(
-    limit: int = 100,
     dry_run: bool = False,
 ) -> dict[str, Any]:
     return run_owner_reply_recheck(
-        limit=limit,
         dry_run=dry_run,
     )
 

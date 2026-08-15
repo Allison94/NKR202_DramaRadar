@@ -7,6 +7,7 @@ from apify_client import ApifyClient
 from shared.config import settings
 from domains.review import config
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -26,14 +27,14 @@ class ReviewClient:
         try:
             safe_input = run_input.copy()
 
-            # 不使用 API 端昂貴文字篩選
+            # API 端不做文字篩選；統一交給本地 ETL。
             safe_input["reviewsFilterString"] = ""
 
             actor = self.client.actor(config.ACTOR_ID)
 
+            # 不在 Review Domain 人為設定費用上限。
             obj = actor.start(
                 run_input=safe_input,
-                max_total_charge_usd=config.MAX_TOTAL_CHARGE_USD,
             )
 
             return obj if isinstance(obj, dict) else dict(obj)
@@ -43,7 +44,7 @@ class ReviewClient:
                 f"[Error:start_job_actor] 啟動 Review Apify 發生錯誤\n"
                 f"輸入資料:{run_input}"
             )
-            raise e
+            raise
 
     def check_status(self, run_id: str) -> dict:
         try:
@@ -54,24 +55,26 @@ class ReviewClient:
 
             return dict(obj)
 
-        except Exception as e:
+        except Exception:
             logger.exception(
                 f"[Error:check_status] Review 狀態確認錯誤 run_id:{run_id}"
             )
-            raise e
+            raise
 
     def get_dataset(self, dataset_id: str) -> list[dict]:
         try:
             items = self.client.dataset(dataset_id).list_items().items
             return list(items)
 
-        except Exception as e:
+        except Exception:
             logger.exception(
                 f"[Error:get_dataset] Review dataset 讀取錯誤 "
                 f"dataset_id:{dataset_id}"
             )
-            raise e
-        # 舊版 service.py 相容介面
+            raise
+
+
+# service.py 相容介面
 ACTOR_ID = config.ACTOR_ID
 
 

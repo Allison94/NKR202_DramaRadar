@@ -1,8 +1,11 @@
 """Review ETL filters: dedup, validation, generic PR detection.
 
-Per team plan, owner replies with >= 80% similarity to template PR text
-should be excluded from the business ``review`` table (raw still lands in
-``review_source``).
+Business rules:
+- Only 1-star / 2-star reviews enter the business review table.
+- Reviews without owner reply are still kept for owner-reply recheck.
+- Owner replies with >= 80% similarity to generic PR templates are excluded.
+- Stores that trigger generic PR detection will later be marked
+  store.skip_review_fetch = TRUE by repository/service.
 """
 
 from __future__ import annotations
@@ -26,14 +29,24 @@ MIN_REVIEW_TEXT_LEN = 2
 
 
 def text_similarity(left: str, right: str) -> float:
+    """Return normalized text similarity from 0.0 to 1.0."""
+
     left_norm = re.sub(r"\s+", "", left.strip())
     right_norm = re.sub(r"\s+", "", right.strip())
+
     if not left_norm or not right_norm:
         return 0.0
-    return difflib.SequenceMatcher(None, left_norm, right_norm).ratio()
+
+    return difflib.SequenceMatcher(
+        None,
+        left_norm,
+        right_norm,
+    ).ratio()
 
 
 def is_generic_pr_reply(owner_text: object) -> bool:
+    """Generic PR reply = >= 80% similar to configured PR template."""
+
     if owner_text is None:
         return False
 
@@ -42,13 +55,9 @@ def is_generic_pr_reply(owner_text: object) -> bool:
         return False
 
     for template in GENERIC_PR_TEMPLATES:
-        if text_similarity(text, template) >= SIMILARITY_THRESHOLD:
-            return True
+        similarity = text_similarity(text, template)
 
-    generic_keywords = ("非常抱歉", "感謝您的寶貴意見", "我們會持續改善", "深感抱歉")
-    if len(text) < 40 and all(kw not in text for kw in ("不要來", "不爽", "唯一")):
-        hits = sum(1 for kw in generic_keywords if kw in text)
-        if hits >= 2:
+        if similarity >= SIMILARITY_THRESHOLD:
             return True
 
     return False
@@ -57,17 +66,26 @@ def is_generic_pr_reply(owner_text: object) -> bool:
 def validate_raw_item(raw: dict[str, Any]) -> tuple[bool, str]:
     if not raw.get("reviewId"):
         return False, "missing_review_id"
+
     if not raw.get("placeId"):
         return False, "missing_place_id"
+
     return True, "ok"
 
 
-def should_write_business_review(review_row: dict[str, Any]) -> tuple[bool, str]:
+def should_write_business_review(
+    review_row: dict[str, Any],
+) -> tuple[bool, str]:
+    """Decide whether a transformed review should enter review table."""
+
     text = str(review_row.get("text", "")).strip()
+
     if len(text) < MIN_REVIEW_TEXT_LEN:
         return False, "empty_review_text"
 
     stars = int(review_row.get("stars") or 0)
+
+    # 正式 review table 只存 1★ / 2★
     if stars not in (1, 2):
         return False, "not_low_star_review"
 
@@ -75,9 +93,15 @@ def should_write_business_review(review_row: dict[str, Any]) -> tuple[bool, str]
         review_row.get("response_from_owner_text") or ""
     ).strip()
 
+    # 沒有老闆回覆仍然要進 review，
+    # 後續使用 owner_reply_recheck / next_check_at 補查。
     if not owner_reply:
-        return False, "missing_owner_reply"
+        return True, "needs_owner_recheck"
 
+    # >= 80% 制式公關回覆：
+    # 此 Review 不進正式 review；
+    # placeId 會由 ETL 回報給 service/repository，
+    # 再更新 store.skip_review_fetch = TRUE。
     if is_generic_pr_reply(owner_reply):
         return False, "generic_pr_reply"
 
@@ -97,11 +121,13 @@ def dedupe_raw_items(
             continue
 
         review_id = item.get("reviewId")
+
         if not review_id:
             skipped += 1
             continue
 
         key = str(review_id)
+
         if key in seen:
             skipped += 1
             continue
