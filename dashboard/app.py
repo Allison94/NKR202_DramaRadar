@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 from textwrap import dedent
+from urllib.parse import quote, urlparse
 import html
 import re
 import sys
@@ -11,25 +12,28 @@ import folium
 import pandas as pd
 import streamlit as st
 from folium import DivIcon, Marker
+from folium.plugins import HeatMap, MarkerCluster
 from streamlit_folium import st_folium
 
 
 # ============================================================
-# 專案路徑 / import
+# Project path / existing project data access
 # ============================================================
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from domains.store.service import (
-    get_dashboard_dataframe,
-    get_store_reviews_dataframe,
+# 沿用組內既有 Dashboard SQL 入口。
+# 本檔只 READ，不新增欄位、不修改 schema、不寫 Store / Review / AI。
+from domains.store.repository import (
+    fetch_dashboard_rows,
+    fetch_store_reviews,
 )
 
 
 # ============================================================
-# Streamlit 基本設定
+# Streamlit config
 # ============================================================
 
 st.set_page_config(
@@ -44,34 +48,31 @@ ASSETS_DIR = BASE_DIR / "assets"
 SPLASH_IMAGE = ASSETS_DIR / "splash.png"
 
 PAGE_MAP = "🗺️ 吵架地圖"
-PAGE_ANALYSIS = "📊 吵架分析"
-PAGE_CLASSIC = "💬 經典吵架 / 公關回覆"
-PAGE_RANKING = "🏆 趣味排行榜"
+PAGE_CLASSIC = "💬 經典對決"
+PAGE_ANALYSIS = "📊 戰況分析"
+PAGE_RANKING = "🏆 趣味排行"
+PAGE_PR = "🤖 公關救援"
 PAGE_REPORT = "🕵️ 匿名爆料"
-
-# 舊頁面名稱保留成 alias，讓既有功能可以合併進 5 個入口，不必重寫資料邏輯。
-PAGE_INTENSITY = PAGE_ANALYSIS
-PAGE_REASON = PAGE_ANALYSIS
-PAGE_PERSONA = PAGE_CLASSIC
-PAGE_PR = PAGE_CLASSIC
 
 PAGE_OPTIONS = [
     PAGE_MAP,
-    PAGE_ANALYSIS,
     PAGE_CLASSIC,
+    PAGE_ANALYSIS,
     PAGE_RANKING,
+    PAGE_PR,
     PAGE_REPORT,
 ]
 
-TAIPEI_CENTER = [25.0478, 121.5319]
+DISTRICT_PATTERN = re.compile(
+    r"(?:台北市|臺北市).*?([\u4e00-\u9fff]{1,4}區)"
+)
 
 
 # ============================================================
-# 共用工具
+# Helpers
 # ============================================================
 
 def render_html(content: str) -> None:
-    """安全地渲染本站自行產生的 HTML。"""
     st.html(dedent(content).strip())
 
 
@@ -81,149 +82,267 @@ def safe_text(value: object) -> str:
     return html.escape(str(value))
 
 
-def ensure_columns(frame: pd.DataFrame) -> pd.DataFrame:
+def safe_url(value: object) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+
+    try:
+        parsed = urlparse(text)
+    except ValueError:
+        return ""
+
+    return text if parsed.scheme in {"http", "https"} else ""
+
+
+def to_number(value: object) -> float | None:
+    parsed = pd.to_numeric(
+        pd.Series([value]),
+        errors="coerce",
+    ).iloc[0]
+
+    if pd.isna(parsed):
+        return None
+
+    return float(parsed)
+
+
+def district_from_address(address: object) -> str:
+    text = str(address or "")
+    match = DISTRICT_PATTERN.search(text)
+    return match.group(1) if match else "未辨識行政區"
+
+
+def short_store_name(value: object, limit: int = 24) -> str:
+    """UI-only shortening; database title is never changed."""
+    text = str(value or "").strip()
+
+    if len(text) <= limit:
+        return text
+
+    return text[:limit].rstrip() + "…"
+
+
+def format_case_label(
+    review: pd.Series,
+    index: int,
+) -> str:
+    stars = to_number(review.get("stars"))
+    intensity = to_number(review.get("intensity"))
+    published_at = review.get("published_at")
+
+    parts = [f"案例 {index}"]
+
+    if stars is not None:
+        parts.append(f"{int(stars)}★")
+
+    if pd.notna(published_at):
+        parts.append(str(published_at)[:10])
+
+    if intensity is not None:
+        parts.append(f"🔥 {intensity:.1f}")
+
+    return "｜".join(parts)
+
+
+def row_has_ai(row: pd.Series) -> bool:
     """
-    Dashboard 只做「顯示層防呆」，不改 DB schema。
-    後端若暫時缺 AI 欄位，前端仍能顯示真實 review/store 資料。
+    domains/store/repository.py 目前會把 AI score 缺值 COALESCE 成 0。
+    因此用 score / sentiment / pr_reply 綜合判斷是否已有正式 AI 結果。
     """
+
+    review_score = to_number(row.get("review_score")) or 0.0
+    owner_score = to_number(row.get("owner_score")) or 0.0
+
+    return any(
+        [
+            review_score > 0,
+            owner_score > 0,
+            bool(str(row.get("review_sentiment") or "").strip()),
+            bool(str(row.get("owner_sentiment") or "").strip()),
+            bool(str(row.get("pr_reply") or "").strip()),
+        ]
+    )
+
+
+def official_intensity(row: pd.Series) -> float | None:
+    """
+    組長既定烈度：
+    review_score + owner_score
+
+    沒有正式 AI 結果就回傳 None，不從星等、文字自行補分。
+    """
+
+    if not row_has_ai(row):
+        return None
+
+    review_score = to_number(row.get("review_score"))
+    owner_score = to_number(row.get("owner_score"))
+
+    if review_score is None or owner_score is None:
+        return None
+
+    return float(review_score) + float(owner_score)
+
+
+def normalize_store_frame(frame: pd.DataFrame) -> pd.DataFrame:
     result = frame.copy()
 
-    defaults: dict[str, object] = {
-        "store_id": "",
-        "name": "",
-        "category": "未分類",
-        "address": "",
-        "city": "台北市",
-        "district": "未辨識行政區",
-        "lat": 25.0478,
-        "lng": 121.5319,
-        "intensity": 1.0,
-        "google_score": 0.0,
-        "reviews": 0,
-        "db_review_count": 0,
-        "owner_replies": 0,
-        "review_text": "",
-        "owner_reply": "",
-        "review_url": "",
-        "pr_reply": "",
-        "guest_score": 0.0,
-        "owner_score": 0.0,
-        "guest_persona": "",
-        "owner_persona": "",
-        "persona": "",
-        "reason": "",
-    }
+    if result.empty:
+        return result
 
-    for column, default in defaults.items():
-        if column not in result.columns:
-            result[column] = default
-
-    # 數值欄位
-    numeric_columns = [
-        "lat",
-        "lng",
-        "intensity",
-        "google_score",
-        "reviews",
-        "db_review_count",
-        "owner_replies",
-        "guest_score",
-        "owner_score",
-    ]
-    for column in numeric_columns:
-        result[column] = pd.to_numeric(result[column], errors="coerce").fillna(
-            defaults[column]
-        )
-
-    # 文字欄位
     text_columns = [
         "store_id",
         "name",
         "category",
         "address",
-        "city",
-        "district",
+        "store_url",
         "review_text",
         "owner_reply",
-        "review_url",
         "pr_reply",
-        "guest_persona",
-        "owner_persona",
-        "persona",
-        "reason",
+        "review_url",
+        "review_sentiment",
+        "owner_sentiment",
     ]
+
     for column in text_columns:
+        if column not in result.columns:
+            result[column] = ""
         result[column] = result[column].fillna("").astype(str)
 
-    # 目前專案只做台北市：前端再保險過濾一次
-    taipei_mask = (
-        result["city"].str.contains("台北", na=False)
-        | result["address"].str.contains("台北市", na=False)
+    numeric_columns = [
+        "lat",
+        "lng",
+        "google_score",
+        "reviews",
+        "db_review_count",
+        "owner_replies",
+        "drama_stars",
+        "review_score",
+        "owner_score",
+    ]
+
+    for column in numeric_columns:
+        if column not in result.columns:
+            result[column] = pd.NA
+
+        result[column] = pd.to_numeric(
+            result[column],
+            errors="coerce",
+        )
+
+    result["district"] = result["address"].apply(district_from_address)
+    result["has_ai"] = result.apply(row_has_ai, axis=1)
+    result["intensity"] = result.apply(official_intensity, axis=1)
+
+    result["has_representative_reply"] = (
+        result["owner_reply"].str.strip().ne("")
+        & result["owner_reply"].str.strip().ne("店家尚未回覆")
     )
-    if taipei_mask.any():
-        result = result[taipei_mask].copy()
 
-    # intensity 固定 1~10
-    result["intensity"] = result["intensity"].clip(lower=1.0, upper=10.0)
+    review_count = result["db_review_count"].fillna(0)
+    owner_count = result["owner_replies"].fillna(0)
 
-    # AI 尚未產 reason 時，前端僅做展示用 fallback，不回寫 DB
-    result["reason_display"] = result.apply(derive_reason, axis=1)
-    result["persona_display"] = result.apply(derive_persona, axis=1)
+    result["reply_rate"] = 0.0
+    valid = review_count > 0
+    result.loc[valid, "reply_rate"] = (
+        owner_count[valid]
+        / review_count[valid]
+        * 100
+    )
+
+    # schema 的 lat/lng default 是 0，但 Dashboard 不把 0/0 當成真實台北座標。
+    result = result.dropna(subset=["lat", "lng"])
+    result = result[
+        result["lat"].between(24.8, 25.3)
+        & result["lng"].between(121.2, 122.0)
+    ].copy()
+
+    return result.reset_index(drop=True)
+
+
+def normalize_review_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    result = frame.copy()
+
+    if result.empty:
+        return result
+
+    numeric_columns = [
+        "stars",
+        "likes_count",
+        "guest_score",
+        "owner_score",
+    ]
+
+    for column in numeric_columns:
+        if column in result.columns:
+            result[column] = pd.to_numeric(
+                result[column],
+                errors="coerce",
+            )
+
+    text_columns = [
+        "review_id",
+        "place_id",
+        "review_text",
+        "review_url",
+        "owner_reply",
+        "guest_sentiment",
+        "owner_sentiment",
+        "guest_summary",
+        "owner_summary",
+        "pr_reply",
+    ]
+
+    for column in text_columns:
+        if column not in result.columns:
+            result[column] = ""
+        result[column] = result[column].fillna("").astype(str)
+
+    result["has_ai"] = result.apply(
+        lambda row: any(
+            [
+                (to_number(row.get("guest_score")) or 0) > 0,
+                (to_number(row.get("owner_score")) or 0) > 0,
+                bool(str(row.get("guest_sentiment") or "").strip()),
+                bool(str(row.get("owner_sentiment") or "").strip()),
+                bool(str(row.get("pr_reply") or "").strip()),
+            ]
+        ),
+        axis=1,
+    )
+
+    result["intensity"] = result.apply(
+        lambda row: (
+            (to_number(row.get("guest_score")) or 0)
+            + (to_number(row.get("owner_score")) or 0)
+            if bool(row.get("has_ai"))
+            else None
+        ),
+        axis=1,
+    )
+
+    result["has_owner_reply"] = (
+        result["owner_reply"].str.strip().ne("")
+    )
 
     return result
 
 
-def derive_reason(row: pd.Series) -> str:
-    existing = str(row.get("reason") or "").strip()
-    if existing and existing not in {"未分類", "其他", "None", "nan"}:
-        return existing
+@st.cache_data(ttl=300, show_spinner="正在讀取資料…")
+def load_store_data() -> pd.DataFrame:
+    # 沿用現有 Store repository；不修改它。
+    rows = fetch_dashboard_rows(limit=2000)
+    return normalize_store_frame(pd.DataFrame(rows))
 
-    text = " ".join(
-        [
-            str(row.get("review_text") or ""),
-            str(row.get("owner_reply") or ""),
-        ]
+
+@st.cache_data(ttl=300, show_spinner=False)
+def load_reviews(place_id: str) -> pd.DataFrame:
+    rows = fetch_store_reviews(
+        place_id,
+        limit=200,
     )
-
-    rules = [
-        ("價格", r"價格|漲價|太貴|貴|收費|價錢|錢"),
-        ("排隊", r"排隊|等太久|久等|候位|等位|插隊|出餐慢"),
-        ("態度", r"態度|沒禮貌|口氣|服務|嗆|罵|兇|不耐煩"),
-        ("品質", r"品質|難吃|頭髮|臭|酸掉|不新鮮|油耗|份量|食物|餐點"),
-        ("熱點新聞", r"新聞|爆料|虐狗|監視器|影片|上新聞|炎上"),
-    ]
-    for label, pattern in rules:
-        if re.search(pattern, text, flags=re.IGNORECASE):
-            return label
-    return "其他"
-
-
-def derive_persona(row: pd.Series) -> str:
-    raw = " ".join(
-        [
-            str(row.get("owner_persona") or ""),
-            str(row.get("persona") or ""),
-            str(row.get("owner_reply") or ""),
-        ]
-    ).strip()
-
-    if re.search(r"反串|嘲諷|酸|陰陽|高級反串|🤡", raw, flags=re.IGNORECASE):
-        return "A｜🤡 高級反串"
-    if re.search(r"暴躁|開嗆|情緒|勒索|兇|😡", raw, flags=re.IGNORECASE):
-        return "B｜😡 暴躁老哥"
-    if re.search(
-        r"公關|制式|抱歉|很抱歉|造成困擾|努力改進|謝謝.*惠顧|🤖",
-        raw,
-        flags=re.IGNORECASE,
-    ):
-        return "C｜🤖 無聊公關"
-    return "尚未分類"
-
-
-@st.cache_data(ttl=300, show_spinner="正在載入台北市店家資料...")
-def load_dashboard_data(limit: int = 300) -> pd.DataFrame:
-    frame = get_dashboard_dataframe(limit=limit)
-    return ensure_columns(frame)
+    return normalize_review_frame(pd.DataFrame(rows))
 
 
 def refresh_dashboard() -> None:
@@ -233,285 +352,339 @@ def refresh_dashboard() -> None:
 
 
 # ============================================================
-# 資料載入
-# ============================================================
-
-try:
-    df = load_dashboard_data(limit=300)
-    db_error = str(df.attrs.get("error", "") or "")
-except Exception as exc:
-    df = ensure_columns(pd.DataFrame())
-    db_error = str(exc)
-
-if "last_refresh_utc" not in st.session_state:
-    st.session_state["last_refresh_utc"] = datetime.now(timezone.utc)
-
-
-# ============================================================
 # CSS
-# 不隱藏 Streamlit header / sidebar toggle，避免 sidebar 收合後叫不回來
 # ============================================================
 
 render_html(
     """
     <style>
     :root {
-        --bg: #0c090d;
-        --panel: #171219;
-        --panel-2: #211821;
-        --border: rgba(255,255,255,.09);
-        --text: #fff9fc;
-        --muted: #b9aab3;
-        --red: #ff315d;
-        --orange: #ff811b;
-        --purple: #be3cff;
-        --yellow: #f7ba38;
+        --bg:#09090b;
+        --panel:rgba(24,24,29,.93);
+        --panel2:rgba(35,29,39,.92);
+        --border:rgba(255,255,255,.09);
+        --text:#fff8fb;
+        --muted:#b9acb3;
+        --pink:#ff315d;
+        --orange:#ff811b;
+        --purple:#c13cff;
+        --yellow:#f7ba38;
     }
 
     .stApp {
         background:
-            radial-gradient(circle at 90% 0%, rgba(190,60,255,.08), transparent 30%),
+            radial-gradient(circle at 10% 0%, rgba(255,49,93,.08), transparent 26%),
+            radial-gradient(circle at 90% 8%, rgba(193,60,255,.07), transparent 24%),
             var(--bg);
-        color: var(--text);
+        color:var(--text);
+    }
+
+    [data-testid="stSidebar"],
+    [data-testid="collapsedControl"] {
+        display:none !important;
     }
 
     [data-testid="stHeader"] {
-        background: rgba(12,9,13,.92);
-        border-bottom: 1px solid var(--border);
+        background:rgba(9,9,11,.88);
+        border-bottom:1px solid var(--border);
+        backdrop-filter:blur(14px);
     }
 
-    /* V2：原生 sidebar 不使用，導覽改到 Hero 圖下方左欄 */
-    [data-testid="stSidebar"] { display: none !important; }
-    [data-testid="collapsedControl"] { display: none !important; }
-
-
-    /* 只藏 footer，不碰 header / sidebar toggle */
-    footer {
-        display: none !important;
-    }
-
-    [data-testid="stSidebar"] {
-        background: #141017;
-        border-right: 1px solid var(--border);
-    }
-
-    [data-testid="stSidebar"] * {
-        color: #f9f1f5;
-    }
+    footer { display:none !important; }
 
     .block-container {
-        max-width: 1580px;
-        padding-top: 4.2rem;
-        padding-bottom: 2.5rem;
+        max-width:1580px;
+        padding-top:3.4rem;
+        padding-bottom:3rem;
     }
 
-    h1, h2, h3 {
-        color: var(--text) !important;
-    }
-
-    .hero-wrap {
-        overflow: hidden;
-        margin-bottom: 10px;
-        border: 1px solid rgba(255,49,93,.22);
-        border-radius: 20px;
-        background: #070509;
-    }
-
-    .hero-hint {
-        margin: 10px auto 20px;
-        padding: 9px 15px;
-        max-width: 440px;
-        border: 1px solid rgba(255,49,93,.30);
-        border-radius: 999px;
-        background: rgba(255,49,93,.09);
-        color: #ffb5c5;
-        text-align: center;
-        font-weight: 800;
-    }
+    h1,h2,h3 { color:var(--text) !important; }
 
     .page-title {
-        margin: 0;
-        font-size: clamp(1.8rem, 3vw, 2.5rem);
-        font-weight: 900;
-        letter-spacing: -.04em;
+        margin-top:8px;
+        font-size:clamp(1.55rem,2.5vw,2.05rem);
+        font-weight:950;
+        letter-spacing:-.03em;
     }
 
-    .page-subtitle {
-        margin: 5px 0 18px;
-        color: var(--muted);
-        font-size: .92rem;
-    }
-
-    .section-card {
-        margin-bottom: 14px;
-        padding: 17px 18px;
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        background: linear-gradient(145deg, rgba(23,18,25,.96), rgba(33,24,33,.90));
-    }
-
-    .persona-card {
-        min-height: 175px;
-        padding: 18px;
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        background: var(--panel);
-    }
-
-    .persona-title {
-        margin-bottom: 9px;
-        font-size: 1.1rem;
-        font-weight: 900;
-    }
-
-    .muted {
-        color: var(--muted);
+    .small-muted {
+        color:var(--muted);
+        font-size:.82rem;
     }
 
     .legend {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px 18px;
-        align-items: center;
-        margin: 10px 0 13px;
-        padding: 11px 14px;
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        background: rgba(23,18,25,.94);
-    }
-
-    .legend-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: var(--muted);
-        font-size: .82rem;
-        font-weight: 700;
-    }
-
-    .scale-row {
-        display: grid;
-        grid-template-columns: 52px 1fr 170px;
-        gap: 12px;
-        align-items: center;
-        margin: 8px 0;
-        padding: 10px 12px;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        background: rgba(23,18,25,.88);
-    }
-
-    .scale-no {
-        font-size: 1.05rem;
-        font-weight: 900;
-        color: #ff8aa4;
-    }
-
-    .scale-bar {
-        height: 9px;
-        overflow: hidden;
-        border-radius: 999px;
-        background: #382c36;
-    }
-
-    .scale-fill {
-        height: 100%;
-        border-radius: 999px;
-        background: linear-gradient(90deg, #f7ba38, #ff811b, #ff315d, #be3cff);
-    }
-
-    .tag {
-        display: inline-block;
-        margin: 2px 4px 2px 0;
-        padding: 4px 8px;
-        border: 1px solid rgba(255,255,255,.10);
-        border-radius: 999px;
-        background: rgba(255,255,255,.05);
-        color: #e8dce3;
-        font-size: .78rem;
-        font-weight: 750;
-    }
-
-    .pr-card {
-        padding: 16px;
-        border: 1px solid rgba(190,60,255,.22);
-        border-radius: 15px;
-        background: rgba(190,60,255,.06);
-    }
-
-    .empty-note {
-        padding: 14px 16px;
-        border: 1px dashed rgba(255,255,255,.14);
-        border-radius: 13px;
-        color: var(--muted);
-        background: rgba(255,255,255,.025);
+        display:flex;
+        flex-wrap:wrap;
+        gap:14px;
+        margin:5px 0 10px;
+        color:var(--muted);
+        font-size:.78rem;
     }
 
     [data-testid="stMetric"] {
-        padding: 14px;
-        border: 1px solid var(--border);
+        border:1px solid var(--border);
+        border-radius:15px;
+        padding:12px;
+        background:var(--panel);
+    }
+
+    .rank-row {
+        display:grid;
+        grid-template-columns:38px minmax(0,1fr) auto;
+        gap:9px;
+        align-items:center;
+        margin-bottom:8px;
+        padding:10px 11px;
+        border:1px solid var(--border);
+        border-radius:12px;
+        background:var(--panel);
+    }
+
+    .rank-no {
+        color:#ff9ab0;
+        font-weight:950;
+    }
+
+    .rank-name {
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+        font-weight:850;
+    }
+
+    .rank-score {
+        color:#ffd082;
+        font-weight:950;
+    }
+
+    .battle-card {
+        margin-bottom:13px;
+        padding:16px;
+        border:1px solid rgba(255,49,93,.16);
+        border-radius:17px;
+        background:var(--panel);
+    }
+
+    .battle-head {
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        margin-bottom:10px;
+    }
+
+    .battle-name {
+        font-size:1.05rem;
+        font-weight:950;
+    }
+
+    .battle-score {
+        color:#ff9eb3;
+        font-weight:950;
+    }
+
+    .battle-grid {
+        display:grid;
+        grid-template-columns:1fr 46px 1fr;
+        gap:9px;
+        align-items:stretch;
+    }
+
+    .battle-side {
+        padding:11px 12px;
+        border-radius:12px;
+        line-height:1.65;
+        font-size:.88rem;
+    }
+
+    .battle-customer {
+        background:rgba(255,49,93,.05);
+        border:1px solid rgba(255,49,93,.14);
+    }
+
+    .battle-owner {
+        background:rgba(255,129,27,.05);
+        border:1px solid rgba(255,129,27,.14);
+    }
+
+    .battle-vs {
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:950;
+        color:#ff93aa;
+    }
+
+    .ai-card {
+        margin-top:9px;
+        padding:11px 12px;
+        border-radius:12px;
+        border:1px solid rgba(193,60,255,.14);
+        background:rgba(193,60,255,.05);
+        line-height:1.65;
+        font-size:.87rem;
+    }
+
+    .pill {
+        display:inline-block;
+        margin:2px 5px 2px 0;
+        padding:4px 8px;
+        border:1px solid rgba(255,255,255,.10);
+        border-radius:999px;
+        background:rgba(255,255,255,.045);
+        color:#e8dde3;
+        font-size:.74rem;
+        font-weight:800;
+    }
+
+    .pill-hot {
+        border-color:rgba(255,49,93,.26);
+        background:rgba(255,49,93,.08);
+        color:#ff9bb1;
+    }
+
+    .duel-stage {
+        padding: 18px;
+        border: 1px solid rgba(255,49,93,.18);
+        border-radius: 20px;
+        background:
+            radial-gradient(circle at 50% 0%, rgba(255,49,93,.07), transparent 38%),
+            var(--panel);
+    }
+
+    .duel-store {
+        font-size: clamp(1.2rem, 2vw, 1.65rem);
+        font-weight: 950;
+        letter-spacing: -.02em;
+    }
+
+    .duel-meta {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: .8rem;
+    }
+
+    .duel-scoreline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 12px;
+    }
+
+    .duel-grid {
+        display: grid;
+        grid-template-columns: 1fr 58px 1fr;
+        gap: 12px;
+        margin-top: 14px;
+        align-items: stretch;
+    }
+
+    .duel-side {
+        min-height: 210px;
+        padding: 16px;
         border-radius: 15px;
-        background: var(--panel);
+        line-height: 1.78;
+    }
+
+    .duel-customer {
+        border: 1px solid rgba(255,49,93,.18);
+        background: rgba(255,49,93,.055);
+    }
+
+    .duel-owner {
+        border: 1px solid rgba(255,129,27,.18);
+        background: rgba(255,129,27,.055);
+    }
+
+    .duel-label {
+        margin-bottom: 8px;
+        font-size: 1rem;
+        font-weight: 950;
+    }
+
+    .duel-vs {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ff8aa4;
+        font-size: 1.35rem;
+        font-weight: 950;
+    }
+
+    .duel-ai {
+        margin-top: 12px;
+        padding: 13px 14px;
+        border-radius: 13px;
+        border: 1px solid rgba(193,60,255,.15);
+        background: rgba(193,60,255,.05);
+        line-height: 1.7;
+    }
+
+    .preview-badge {
+        display: inline-block;
+        margin-bottom: 10px;
+        padding: 5px 9px;
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 999px;
+        color: var(--muted);
+        background: rgba(255,255,255,.035);
+        font-size: .75rem;
+        font-weight: 800;
+    }
+
+    .note-box {
+        padding:14px 15px;
+        border:1px dashed rgba(255,255,255,.14);
+        border-radius:13px;
+        background:rgba(255,255,255,.025);
+        color:var(--muted);
+        line-height:1.7;
     }
 
     .stButton > button,
     [data-testid="stFormSubmitButton"] button {
-        border: 1px solid rgba(255,49,93,.34);
-        border-radius: 10px;
-        background: linear-gradient(90deg, #a81c49, #782078);
-        color: white;
-        font-weight: 800;
+        border:1px solid rgba(255,49,93,.32);
+        border-radius:11px;
+        background:linear-gradient(90deg,#ac204c,#7d247f);
+        color:white;
+        font-weight:850;
     }
 
-    .analysis-summary {
-        padding: 16px 18px;
-        border: 1px solid var(--border);
-        border-radius: 15px;
-        background: var(--panel);
-        line-height: 1.8;
+
+    /* 首頁地圖優先：減少主視覺與導覽之間的空白 */
+    [data-testid="stImage"] {
+        margin-bottom: .15rem;
     }
 
-    .podium-wrap {
-        display: grid;
-        grid-template-columns: 1fr 1.15fr 1fr;
-        gap: 12px;
-        align-items: end;
-        margin: 18px 0 20px;
+    iframe[title="streamlit_folium.st_folium"] {
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,.08);
+        overflow: hidden;
     }
 
-    .podium-card {
-        padding: 16px 12px;
-        border: 1px solid var(--border);
-        border-radius: 16px 16px 8px 8px;
-        background: linear-gradient(160deg, rgba(31,24,33,.98), rgba(18,14,20,.98));
-        text-align: center;
-    }
-
-    .podium-card.first { min-height: 190px; border-color: rgba(247,186,56,.42); }
-    .podium-card.second { min-height: 160px; }
-    .podium-card.third { min-height: 145px; }
-    .podium-medal { font-size: 2rem; }
-    .podium-name { margin-top: 6px; font-size: 1rem; font-weight: 900; }
-    .podium-score { margin-top: 6px; color: #ff8aa4; font-size: 1.15rem; font-weight: 900; }
-    .podium-note { margin-top: 8px; color: var(--muted); font-size: .78rem; line-height: 1.5; }
-
-    @media (max-width: 800px) {
+    @media (max-width:800px) {
         .block-container {
-            padding-left: .8rem;
-            padding-right: .8rem;
-            padding-top: 3.7rem;
+            padding-left:.8rem;
+            padding-right:.8rem;
+            padding-top:3.4rem;
         }
 
-        .scale-row {
-            grid-template-columns: 42px 1fr;
+        .battle-grid,
+        .duel-grid {
+            grid-template-columns:1fr;
         }
 
-        .scale-row .scale-label {
-            grid-column: 1 / -1;
+        .battle-vs,
+        .duel-vs {
+            min-height:30px;
         }
 
-        [data-testid="stSidebar"] {
-            min-width: 245px;
+        .rank-row {
+            grid-template-columns:32px minmax(0,1fr);
+        }
+
+        .rank-score {
+            grid-column:2;
         }
     }
     </style>
@@ -520,154 +693,257 @@ render_html(
 
 
 # ============================================================
-# 火焰 Marker
+# Data
 # ============================================================
 
-def ai_fire_score(row: pd.Series) -> float | None:
-    """組長規格：review_score + owner_score。沒有正式 AI 分數時不製造假分數。"""
-    guest = pd.to_numeric(pd.Series([row.get("guest_score")]), errors="coerce").iloc[0]
-    owner = pd.to_numeric(pd.Series([row.get("owner_score")]), errors="coerce").iloc[0]
-    if pd.isna(guest) or pd.isna(owner) or float(guest) <= 0 or float(owner) <= 0:
-        return None
-    return float(guest) + float(owner)
+try:
+    df = load_store_data()
+    db_error = ""
+except Exception as exc:
+    df = pd.DataFrame()
+    db_error = str(exc)
+
+if "last_refresh_utc" not in st.session_state:
+    st.session_state["last_refresh_utc"] = datetime.now(timezone.utc)
+
+
+# ============================================================
+# Header / navigation
+# ============================================================
+
+# 主視覺縮小，首頁第一屏就能看到地圖。
+if SPLASH_IMAGE.exists():
+    _, image_col, _ = st.columns([2.2, 5.6, 2.2])
+    with image_col:
+        st.image(
+            str(SPLASH_IMAGE),
+            use_container_width=True,
+        )
+
+# Folium popup 可直接導向「經典對決」並帶入店家。
+requested_page = str(st.query_params.get("page", "") or "")
+requested_store = str(st.query_params.get("store", "") or "")
+
+if requested_page == "classic":
+    st.session_state["dashboard_page_v8"] = PAGE_CLASSIC
+
+nav_col, refresh_col = st.columns([6, 1])
+
+with nav_col:
+    current_page = st.radio(
+        "功能",
+        PAGE_OPTIONS,
+        horizontal=True,
+        label_visibility="collapsed",
+        key="dashboard_page_v8",
+    )
+
+with refresh_col:
+    st.button(
+        "↻ 重新整理",
+        use_container_width=True,
+        on_click=refresh_dashboard,
+    )
+
+
+def page_title(title: str) -> None:
+    render_html(
+        f'<div class="page-title">{safe_text(title)}</div>'
+    )
+
+
+# ============================================================
+# Shared rendering
+# ============================================================
+
+def render_rank(
+    frame: pd.DataFrame,
+    score_col: str,
+    label: str,
+    *,
+    limit: int = 8,
+    ascending: bool = False,
+    percentage: bool = False,
+) -> None:
+    if frame.empty or score_col not in frame.columns:
+        st.info("目前沒有資料。")
+        return
+
+    ranked = frame.copy()
+    ranked[score_col] = pd.to_numeric(
+        ranked[score_col],
+        errors="coerce",
+    )
+    ranked = ranked.dropna(subset=[score_col])
+
+    if ranked.empty:
+        st.info("目前沒有資料。")
+        return
+
+    ranked = ranked.sort_values(
+        [score_col, "db_review_count"],
+        ascending=[ascending, False],
+    ).head(limit)
+
+    rows = []
+
+    for rank, (_, row) in enumerate(
+        ranked.iterrows(),
+        start=1,
+    ):
+        score = float(row[score_col])
+
+        if percentage:
+            score_text = f"{score:.0f}%"
+        elif score_col in {"db_review_count", "owner_replies"}:
+            score_text = f"{score:.0f}"
+        else:
+            score_text = f"{score:.1f}"
+
+        rows.append(
+            f"""
+            <div class="rank-row">
+                <div class="rank-no">#{rank}</div>
+                <div class="rank-name">{safe_text(row.get("name") or "")}</div>
+                <div class="rank-score">{safe_text(label)} {score_text}</div>
+            </div>
+            """
+        )
+
+    render_html("".join(rows))
 
 
 def flame_size(score: float | None) -> int:
     if score is None:
-        return 34
-    value = max(2.0, min(float(score), 20.0))
-    return int(24 + ((value - 2.0) / 18.0) * 42)
+        return 31
+
+    value = max(0.0, min(float(score), 20.0))
+    return int(30 + (value / 20.0) * 35)
 
 
 def flame_colors(score: float | None) -> tuple[str, str, str]:
     if score is None:
-        return "#ff811b", "#ffd05b", "rgba(255,129,27,.38)"
-    value = max(2.0, min(float(score), 20.0))
-    if value <= 7:
+        return "#746d73", "#bbb2b9", "rgba(180,170,178,.22)"
+
+    value = max(0.0, min(float(score), 20.0))
+
+    if value < 7:
         return "#f7ba38", "#fff0a5", "rgba(247,186,56,.45)"
-    if value <= 12:
+    if value < 12:
         return "#ff811b", "#ffd05b", "rgba(255,129,27,.50)"
-    if value <= 16:
+    if value < 16:
         return "#ff4338", "#ffad3d", "rgba(255,67,56,.62)"
+
     return "#e00043", "#ff7138", "rgba(224,0,67,.84)"
 
 
-def create_flame_icon(score: float | None) -> DivIcon:
+def make_flame_icon(score: float | None) -> DivIcon:
     size = flame_size(score)
     outer, inner, glow = flame_colors(score)
-    pulse = "flame-pulse" if score is not None and score >= 17 else ""
+
     score_html = (
-        f'<div class="drama-flame-score">{score:.0f}</div>'
+        f"""
+        <div style="
+            position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+            min-width:28px;padding:1px 5px;border-radius:999px;
+            background:rgba(18,13,18,.94);
+            border:1px solid rgba(255,255,255,.25);
+            color:white;font:800 10px/14px Arial;text-align:center;
+        ">{score:.0f}</div>
+        """
         if score is not None
-        else ''
+        else ""
     )
 
-    marker_html = dedent(
+    icon_html = dedent(
         f"""
-        <div class="drama-flame-marker {pulse}"
-             style="width:{size}px;height:{size + 18}px;">
-            <div class="drama-flame-svg"
-                 style="width:{size}px;height:{size}px;
-                        filter:drop-shadow(0 0 {max(4, size // 7)}px {glow});">
-                <svg width="{size}" height="{size}" viewBox="0 0 64 64"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <path d="M34 3 C37 13 31 17 38 25
-                             C41 20 45 16 45 10
-                             C55 21 60 31 57 43
-                             C54 55 45 62 32 62
-                             C18 62 8 53 7 41
-                             C6 31 12 23 20 17
-                             C19 26 24 29 27 23
-                             C31 16 27 10 34 3 Z"
-                          fill="{outer}" />
-                    <path d="M33 28 C38 34 43 38 42 46
-                             C41 54 36 58 30 58
-                             C23 58 18 53 19 46
-                             C20 40 25 37 28 32
-                             C29 37 32 39 34 36
-                             C36 33 34 30 33 28 Z"
-                          fill="{inner}" />
-                </svg>
-            </div>
+        <div style="
+            position:relative;width:{size}px;height:{size + 17}px;
+            filter:drop-shadow(0 0 {max(4, size // 7)}px {glow});
+        ">
+            <svg width="{size}" height="{size}" viewBox="0 0 64 64">
+                <path d="M34 3 C37 13 31 17 38 25
+                         C41 20 45 16 45 10
+                         C55 21 60 31 57 43
+                         C54 55 45 62 32 62
+                         C18 62 8 53 7 41
+                         C6 31 12 23 20 17
+                         C19 26 24 29 27 23
+                         C31 16 27 10 34 3 Z"
+                      fill="{outer}" />
+                <path d="M33 28 C38 34 43 38 42 46
+                         C41 54 36 58 30 58
+                         C23 58 18 53 19 46
+                         C20 40 25 37 28 32
+                         C29 37 32 39 34 36
+                         C36 33 34 30 33 28 Z"
+                      fill="{inner}" />
+            </svg>
             {score_html}
         </div>
         """
     ).strip()
 
     return DivIcon(
-        html=marker_html,
-        icon_size=(size, size + 18),
+        html=icon_html,
+        icon_size=(size, size + 17),
         icon_anchor=(size // 2, size + 8),
         popup_anchor=(0, -size),
         class_name="drama-flame-div-icon",
     )
 
 
-def add_map_styles(drama_map: folium.Map) -> None:
-    drama_map.get_root().header.add_child(
-        folium.Element(
-            """
-            <style>
-            .drama-flame-div-icon {
-                background: transparent !important;
-                border: none !important;
-            }
-            .drama-flame-marker {
-                position: relative;
-                display: flex;
-                justify-content: center;
-                cursor: pointer;
-                transform-origin: center bottom;
-                transition: transform .18s ease;
-            }
-            .drama-flame-marker:hover {
-                z-index: 9999 !important;
-                transform: scale(1.18);
-            }
-            .drama-flame-score {
-                position: absolute;
-                bottom: 0;
-                left: 50%;
-                transform: translateX(-50%);
-                min-width: 28px;
-                padding: 1px 5px;
-                border: 1px solid rgba(255,255,255,.30);
-                border-radius: 999px;
-                background: rgba(18,13,18,.92);
-                color: white;
-                font: 800 10px/14px Arial, sans-serif;
-                text-align: center;
-            }
-            @keyframes dramaPulse {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.11); }
-                100% { transform: scale(1); }
-            }
-            .flame-pulse .drama-flame-svg {
-                animation: dramaPulse 1.15s ease-in-out infinite;
-            }
-            </style>
-            """
-        )
+def map_popup(row: pd.Series) -> str:
+    store_url = safe_url(row.get("store_url"))
+
+    google_score = to_number(row.get("google_score"))
+    intensity = to_number(row.get("intensity"))
+    review_count = int(
+        to_number(row.get("db_review_count")) or 0
+    )
+    owner_reply_count = int(
+        to_number(row.get("owner_replies")) or 0
     )
 
+    badge_html = ""
 
-def popup_html(row: pd.Series) -> str:
-    """地圖火焰點擊後，只顯示使用者真正需要的資訊。"""
-    review = safe_text(str(row.get("review_text") or "")[:180])
-    owner = safe_text(str(row.get("owner_reply") or "")[:180])
-    store_url = str(row.get("store_url") or "").strip()
-    review_url = str(row.get("review_url") or "").strip()
+    if google_score is not None:
+        badge_html += (
+            f'<span style="display:inline-block;margin-right:5px;padding:4px 8px;'
+            f'border-radius:999px;background:#fff4d8;color:#946400;'
+            f'font-size:12px;font-weight:900;">⭐ {google_score:.1f}</span>'
+        )
 
-    google_score = float(row.get("google_score") or 0)
-    fire_score = ai_fire_score(row)
+    if intensity is not None:
+        badge_html += (
+            f'<span style="display:inline-block;padding:4px 8px;border-radius:999px;'
+            f'background:#ffe7ed;color:#d71952;font-size:12px;font-weight:900;">'
+            f'🔥 {intensity:.1f}</span>'
+        )
 
-    target_url = store_url or review_url
-    map_button = ""
-    if target_url:
-        map_button = (
-            f'<a href="{html.escape(target_url, quote=True)}" target="_blank" '
-            'style="display:inline-block;margin-top:10px;padding:8px 12px;'
+    place_id = str(row.get("store_id") or "").strip()
+    detail_html = ""
+
+    if place_id:
+        detail_url = f"?page=classic&store={quote(place_id)}"
+        detail_html = (
+            f'<a href="{detail_url}" target="_top" '
+            'style="display:inline-block;margin-top:11px;margin-right:6px;'
+            'padding:8px 12px;border-radius:8px;background:#c82455;'
+            'color:white;font-weight:800;text-decoration:none;font-size:12px;">'
+            '查看案例</a>'
+        )
+
+    map_html = ""
+
+    if store_url:
+        escaped = html.escape(
+            store_url,
+            quote=True,
+        )
+        map_html = (
+            f'<a href="{escaped}" target="_blank" '
+            'style="display:inline-block;margin-top:11px;padding:8px 12px;'
             'border-radius:8px;background:#242126;color:white;font-weight:800;'
             'text-decoration:none;font-size:12px;">Google Maps</a>'
         )
@@ -676,330 +952,974 @@ def popup_html(row: pd.Series) -> str:
         f"""
         <div style="width:300px;padding:8px;font-family:Arial,'Microsoft JhengHei',sans-serif;">
             <div style="font-size:17px;font-weight:900;color:#241820;margin-bottom:6px;">
-                {safe_text(row.get("name") or "未命名店家")}
+                {safe_text(short_store_name(row.get("name"), 28))}
             </div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-                <span style="padding:4px 8px;border-radius:999px;background:#fff4d8;color:#9a6900;font-size:12px;font-weight:900;">
-                    ⭐ Google {google_score:.1f}
-                </span>
-                {f'<span style="padding:4px 8px;border-radius:999px;background:#ffe7ed;color:#d71952;font-size:12px;font-weight:900;">🔥 火焰 {fire_score:.0f}/20</span>' if fire_score is not None else ''}
-            </div>
-            <div style="margin-bottom:10px;color:#74666e;font-size:12px;line-height:1.5;">
+
+            <div style="margin-bottom:8px;">{badge_html}</div>
+
+            <div style="margin:7px 0;color:#74666e;font-size:12px;line-height:1.55;">
                 📍 {safe_text(row.get("address") or "")}
             </div>
-            <div style="padding:8px;border-radius:8px;background:#fff7f8;font-size:12px;line-height:1.6;color:#41363c;">
-                <b>顧客評論</b><br>{review or "（沒有評論內容）"}
+
+            <div style="display:flex;gap:7px;margin-top:9px;">
+                <div style="flex:1;padding:8px;border-radius:8px;background:#fff7f8;
+                            color:#41363c;font-size:12px;">
+                    <b>{review_count}</b><br>1★ / 2★ 評論
+                </div>
+                <div style="flex:1;padding:8px;border-radius:8px;background:#fff7ed;
+                            color:#41363c;font-size:12px;">
+                    <b>{owner_reply_count}</b><br>店家回覆
+                </div>
             </div>
-            <div style="margin-top:7px;padding:8px;border-radius:8px;background:#f7f7f7;font-size:12px;line-height:1.6;color:#41363c;">
-                <b>店家回覆</b><br>{owner or "（店家尚未回覆）"}
-            </div>
-            <div>{map_button}</div>
+
+            {detail_html}
+            {map_html}
         </div>
         """
     ).strip()
 
 
-# ============================================================
-# 首頁 Hero + 內嵌導覽
-# ============================================================
+def render_battle_card(
+    store_name: str,
+    review: pd.Series,
+    *,
+    show_ai: bool = True,
+) -> None:
+    intensity = to_number(review.get("intensity"))
+    stars = to_number(review.get("stars"))
 
-if SPLASH_IMAGE.exists():
-    st.image(str(SPLASH_IMAGE), use_container_width=True)
-else:
-    st.warning("找不到 `dashboard/assets/splash.png`")
+    score_html = ""
 
-st.write("")
-nav_col, content_col = st.columns([1.15, 4.85], gap="large")
+    if stars is not None:
+        score_html += (
+            f'<span class="pill">⭐ {int(stars)} 星</span>'
+        )
 
-with nav_col:
-    st.markdown("### 🔥 Drama Radar")
-    current_page = st.radio(
-        "功能",
-        PAGE_OPTIONS,
-        key="nav_page",
-        label_visibility="collapsed",
+    if intensity is not None:
+        score_html += (
+            f'<span class="pill pill-hot">🔥 {intensity:.1f}/20</span>'
+        )
+
+    ai_html = ""
+
+    if show_ai:
+        guest_summary = safe_text(
+            review.get("guest_summary") or ""
+        )
+        owner_summary = safe_text(
+            review.get("owner_summary") or ""
+        )
+
+        if guest_summary or owner_summary:
+            ai_html = (
+                '<div class="ai-card">'
+                '<b>AI 摘要</b><br>'
+                f'顧客：{guest_summary or "—"}<br>'
+                f'店家：{owner_summary or "—"}'
+                '</div>'
+            )
+
+    render_html(
+        f"""
+        <div class="battle-card">
+            <div class="battle-head">
+                <div class="battle-name">{safe_text(store_name)}</div>
+                <div>{score_html}</div>
+            </div>
+
+            <div class="battle-grid">
+                <div class="battle-side battle-customer">
+                    <b>😡 顧客</b><br>
+                    {safe_text(review.get("review_text") or "") or "（沒有評論內容）"}
+                </div>
+
+                <div class="battle-vs">VS</div>
+
+                <div class="battle-side battle-owner">
+                    <b>🏪 店家</b><br>
+                    {safe_text(review.get("owner_reply") or "") or "（店家尚未回覆）"}
+                </div>
+            </div>
+
+            {ai_html}
+        </div>
+        """
     )
 
 
-def page_heading(title: str) -> None:
-    render_html(f'<div class="page-title">{safe_text(title)}</div>')
+def render_featured_duel(
+    store_row: pd.Series,
+    review: pd.Series,
+    *,
+    preview_mode: bool,
+) -> None:
+    stars = to_number(review.get("stars"))
+    guest_score = to_number(review.get("guest_score"))
+    owner_score = to_number(review.get("owner_score"))
+    intensity = to_number(review.get("intensity"))
 
+    pills: list[str] = []
 
-def render_podium(frame: pd.DataFrame, score_col: str, score_label: str) -> None:
-    ranked = frame.copy()
-    ranked[score_col] = pd.to_numeric(ranked[score_col], errors="coerce").fillna(0)
-    ranked = ranked[ranked[score_col] > 0].sort_values(score_col, ascending=False)
-    ranked = ranked.drop_duplicates("store_id").head(5)
-
-    if ranked.empty:
-        st.info("目前資料庫尚未有可用的正式 AI 分數。")
-        return
-
-    top = ranked.head(3).reset_index(drop=True)
-    cards: list[str] = []
-    slots = [(1, "🥇", "first"), (0, "🥈", "second"), (2, "🥉", "third")]
-    for idx, medal, css_class in slots:
-        if idx < len(top):
-            row = top.iloc[idx]
-            note = str(row.get("owner_reply") or row.get("review_text") or "").strip()[:55]
-            cards.append(
-                f'<div class="podium-card {css_class}">'
-                f'<div class="podium-medal">{medal}</div>'
-                f'<div class="podium-name">{safe_text(row.get("name") or "未命名店家")}</div>'
-                f'<div class="podium-score">{score_label} {float(row[score_col]):.1f}</div>'
-                f'<div class="podium-note">{safe_text(note) if note else ""}</div>'
-                '</div>'
-            )
-        else:
-            cards.append(f'<div class="podium-card {css_class}"></div>')
-
-    render_html('<div class="podium-wrap">' + ''.join(cards) + '</div>')
-
-    if len(ranked) > 3:
-        st.markdown("**其他上榜店家**")
-        for rank, (_, row) in enumerate(ranked.iloc[3:].iterrows(), start=4):
-            st.write(f"**{rank}. {row['name']}**　{score_label} {float(row[score_col]):.1f}")
-
-
-with content_col:
-    if current_page == PAGE_MAP:
-        page_heading("台北吵架地圖")
-
-        if df.empty:
-            st.error(db_error or "目前沒有台北市店家可以顯示。")
-            st.stop()
-
-        search_col, district_col = st.columns([3.4, 1.4])
-        with search_col:
-            keyword = st.text_input("搜尋店家", placeholder="搜尋店名、地址、餐飲類型…")
-
-        district_values = sorted(
-            x for x in df["district"].dropna().unique().tolist() if str(x).strip()
+    if stars is not None:
+        pills.append(
+            f'<span class="pill">⭐ {int(stars)} 星</span>'
         )
-        with district_col:
-            district = st.selectbox("行政區", ["全部", *district_values])
 
-        filtered = df.copy()
-        clean_keyword = keyword.strip()
-        if clean_keyword:
-            keyword_mask = (
-                filtered["name"].str.contains(clean_keyword, case=False, na=False)
-                | filtered["address"].str.contains(clean_keyword, case=False, na=False)
-                | filtered["category"].str.contains(clean_keyword, case=False, na=False)
-            )
-            filtered = filtered[keyword_mask]
-        if district != "全部":
-            filtered = filtered[filtered["district"] == district]
+    if intensity is not None:
+        pills.append(
+            f'<span class="pill pill-hot">🔥 烈度 {intensity:.1f}</span>'
+        )
 
-        if filtered.empty:
-            st.warning("目前找不到符合條件的店家，請清除搜尋或更換篩選條件。")
+    if guest_score is not None and bool(review.get("has_ai")):
+        pills.append(
+            f'<span class="pill">😡 顧客 {guest_score:.1f}</span>'
+        )
+
+    if owner_score is not None and bool(review.get("has_ai")):
+        pills.append(
+            f'<span class="pill">🏪 店家 {owner_score:.1f}</span>'
+        )
+
+    guest_summary = safe_text(
+        review.get("guest_summary") or ""
+    )
+    owner_summary = safe_text(
+        review.get("owner_summary") or ""
+    )
+    pr_reply = safe_text(
+        review.get("pr_reply") or ""
+    )
+
+    ai_summary_html = ""
+
+    if guest_summary or owner_summary:
+        ai_summary_html = (
+            '<div class="duel-ai">'
+            '<b>🧠 AI 摘要</b><br>'
+            f'顧客：{guest_summary or "—"}<br>'
+            f'店家：{owner_summary or "—"}'
+            '</div>'
+        )
+
+    preview_html = (
+        '<span class="preview-badge">回覆案例預覽</span>'
+        if preview_mode
+        else ""
+    )
+
+    render_html(
+        f"""
+        {preview_html}
+
+        <div class="duel-stage">
+            <div class="duel-store">
+                {safe_text(short_store_name(store_row.get("name"), 34))}
+            </div>
+
+            <div class="duel-meta">
+                {safe_text(store_row.get("district") or "")}
+                &nbsp;｜&nbsp;
+                {safe_text(str(review.get("published_at") or "")[:10])}
+            </div>
+
+            <div class="duel-scoreline">
+                {''.join(pills)}
+            </div>
+
+            <div class="duel-grid">
+                <div class="duel-side duel-customer">
+                    <div class="duel-label">😡 顧客</div>
+                    {safe_text(review.get("review_text") or "") or "（沒有評論內容）"}
+                </div>
+
+                <div class="duel-vs">VS</div>
+
+                <div class="duel-side duel-owner">
+                    <div class="duel-label">🏪 店家</div>
+                    {safe_text(review.get("owner_reply") or "") or "（店家尚未回覆）"}
+                </div>
+            </div>
+
+            {ai_summary_html}
+        </div>
+        """
+    )
+
+    if pr_reply:
+        with st.expander("🤖 公關救援"):
+            st.write(pr_reply)
+
+
+# ============================================================
+# PAGE: Map — default homepage
+# ============================================================
+
+if current_page == PAGE_MAP:
+    page_title("吵架地圖")
+
+    if df.empty:
+        st.error(
+            db_error
+            or "目前沒有可顯示的台北市低星評論店家。"
+        )
+    else:
+        # 吵架地圖只展示「至少有一則店家回覆」的店。
+        # 沒回覆的 Review 仍留在 DB 做 Recheck，但不當成地圖案例。
+        map_df = df[
+            df["owner_replies"].fillna(0) > 0
+        ].copy()
+
+        if map_df.empty:
+            st.info("目前沒有可顯示的店家回覆案例。")
         else:
-            valid_geo = filtered[
-                filtered["lat"].between(24.8, 25.3)
-                & filtered["lng"].between(121.2, 122.0)
-            ].copy()
+            district_values = sorted(
+                value
+                for value in map_df["district"].dropna().unique().tolist()
+                if str(value).strip()
+            )
 
-            if valid_geo.empty:
-                st.warning("店家資料有載入，但目前沒有可用的經緯度。")
-            else:
-                map_center = [float(valid_geo["lat"].mean()), float(valid_geo["lng"].mean())]
-                zoom = 13 if len(valid_geo) <= 2 else 11
-                drama_map = folium.Map(
-                    location=map_center,
-                    zoom_start=zoom,
-                    control_scale=True,
-                    tiles=None,
-                    prefer_canvas=False,
+            has_any_ai = bool(map_df["has_ai"].any())
+
+            if has_any_ai:
+                search_col, district_col, intensity_col = st.columns(
+                    [3.0, 1.3, 2.0]
                 )
-                folium.TileLayer(
-                    tiles="CartoDB Voyager",
-                    name="台北市地圖",
-                    control=False,
-                ).add_to(drama_map)
-                add_map_styles(drama_map)
+            else:
+                search_col, district_col = st.columns(
+                    [4.5, 1.5]
+                )
 
-                for _, store in valid_geo.iterrows():
-                    fire_score = ai_fire_score(store)
-                    tooltip = str(store["name"])
-                    if fire_score is not None:
-                        tooltip += f"｜火焰 {fire_score:.0f}/20"
-                    Marker(
-                        location=[float(store["lat"]), float(store["lng"])],
-                        icon=create_flame_icon(fire_score),
-                        tooltip=tooltip,
-                        popup=folium.Popup(popup_html(store), max_width=320),
+            with search_col:
+                keyword = st.text_input(
+                    "搜尋",
+                    placeholder="店名、地址",
+                ).strip()
+
+            with district_col:
+                district = st.selectbox(
+                    "行政區",
+                    ["全部", *district_values],
+                )
+
+            filtered = map_df.copy()
+
+            if keyword:
+                mask = (
+                    filtered["name"].str.contains(
+                        keyword,
+                        case=False,
+                        na=False,
+                    )
+                    | filtered["address"].str.contains(
+                        keyword,
+                        case=False,
+                        na=False,
+                    )
+                )
+                filtered = filtered[mask]
+
+            if district != "全部":
+                filtered = filtered[
+                    filtered["district"] == district
+                ]
+
+            if has_any_ai:
+                intensity_values = pd.to_numeric(
+                    filtered["intensity"],
+                    errors="coerce",
+                ).dropna()
+
+                with intensity_col:
+                    if intensity_values.empty:
+                        st.selectbox(
+                            "最低烈度",
+                            ["全部"],
+                            disabled=True,
+                        )
+                    else:
+                        actual_max = max(
+                            1.0,
+                            float(intensity_values.max()),
+                        )
+
+                        minimum_intensity = st.slider(
+                            "最低烈度",
+                            min_value=0.0,
+                            max_value=actual_max,
+                            value=0.0,
+                            step=1.0,
+                        )
+
+                        if minimum_intensity > 0:
+                            filtered = filtered[
+                                filtered["intensity"].fillna(-1)
+                                >= minimum_intensity
+                            ]
+
+            render_html(
+                """
+                <div class="legend">
+                    <span>🔥 灰焰：待評分</span>
+                    <span>🔥 彩焰：已有烈度</span>
+                </div>
+                """
+            )
+
+            map_col, side_col = st.columns(
+                [4.85, 1.15],
+                gap="large",
+            )
+
+            with map_col:
+                if filtered.empty:
+                    st.warning("目前沒有符合條件的店家。")
+                else:
+                    center = [
+                        float(filtered["lat"].mean()),
+                        float(filtered["lng"].mean()),
+                    ]
+
+                    drama_map = folium.Map(
+                        location=center,
+                        zoom_start=11,
+                        tiles=None,
+                        control_scale=True,
+                        prefer_canvas=True,
+                    )
+
+                    folium.TileLayer(
+                        tiles="CartoDB Voyager",
+                        name="台北市地圖",
+                        control=False,
                     ).add_to(drama_map)
 
-                if len(valid_geo) >= 3:
-                    drama_map.fit_bounds(
-                        valid_geo[["lat", "lng"]].values.tolist(),
-                        padding=(28, 28),
+                    marker_parent = drama_map
+
+                    if len(filtered) > 150:
+                        marker_parent = MarkerCluster(
+                            name="店家",
+                            overlay=True,
+                            control=False,
+                        ).add_to(drama_map)
+
+                    heat_points = []
+
+                    for _, store in filtered.iterrows():
+                        intensity = to_number(
+                            store.get("intensity")
+                        )
+
+                        tooltip = short_store_name(
+                            store.get("name"),
+                            28,
+                        )
+
+                        if intensity is not None:
+                            tooltip += f"｜🔥 {intensity:.1f}"
+
+                            heat_points.append(
+                                [
+                                    float(store["lat"]),
+                                    float(store["lng"]),
+                                    float(intensity),
+                                ]
+                            )
+
+                        Marker(
+                            location=[
+                                float(store["lat"]),
+                                float(store["lng"]),
+                            ],
+                            icon=make_flame_icon(
+                                intensity
+                            ),
+                            tooltip=tooltip,
+                            popup=folium.Popup(
+                                map_popup(store),
+                                max_width=320,
+                            ),
+                        ).add_to(marker_parent)
+
+                    if heat_points:
+                        HeatMap(
+                            heat_points,
+                            name="烈度熱區",
+                            radius=28,
+                            blur=24,
+                            min_opacity=0.22,
+                            show=False,
+                        ).add_to(drama_map)
+
+                        folium.LayerControl(
+                            collapsed=True
+                        ).add_to(drama_map)
+
+                    if len(filtered) > 1:
+                        drama_map.fit_bounds(
+                            filtered[
+                                ["lat", "lng"]
+                            ].values.tolist(),
+                            padding=(25, 25),
+                        )
+
+                    st_folium(
+                        drama_map,
+                        height=720,
+                        use_container_width=True,
+                        returned_objects=[],
+                        key="drama_map_v8",
                     )
 
-                st_folium(
-                    drama_map,
-                    height=760,
-                    use_container_width=True,
-                    returned_objects=[],
-                    key="drama_main_map",
-                )
+            with side_col:
+                ai_cases = filtered[
+                    filtered["has_ai"]
+                    & filtered["intensity"].notna()
+                ].copy()
 
-    elif current_page == PAGE_ANALYSIS:
-        page_heading("吵架分析")
+                if not ai_cases.empty:
+                    st.markdown("### 🔥 熱門對決")
+                    render_rank(
+                        ai_cases,
+                        "intensity",
+                        "🔥",
+                        limit=8,
+                    )
+                else:
+                    st.markdown("### 💬 回覆案例多")
+                    render_rank(
+                        filtered,
+                        "owner_replies",
+                        "則",
+                        limit=8,
+                    )
 
-        if df.empty:
-            st.info("目前沒有可分析的資料。")
-        else:
-            st.subheader("大家都在吵什麼？")
-            reason_counts = (
-                df["reason_display"]
-                .replace("", "其他")
-                .value_counts()
-                .rename_axis("糾紛原因")
-                .reset_index(name="店家數")
+
+# ============================================================
+# PAGE: Classic fights
+# ============================================================
+
+elif current_page == PAGE_CLASSIC:
+    page_title("經典對決")
+
+    if df.empty:
+        st.info("目前沒有店家資料。")
+    else:
+        # 經典對決頁只列出至少有一則店家回覆的店家。
+        options = (
+            df[
+                df["owner_replies"].fillna(0) > 0
+            ][
+                [
+                    "store_id",
+                    "name",
+                    "district",
+                    "db_review_count",
+                    "owner_replies",
+                ]
+            ]
+            .drop_duplicates("store_id")
+            .sort_values(
+                ["owner_replies", "db_review_count"],
+                ascending=[False, False],
             )
-            st.bar_chart(reason_counts.set_index("糾紛原因"), height=330, use_container_width=True)
+        )
 
-            st.divider()
-            st.subheader("顧客 vs 店家，誰比較火？")
-            guest_scores = pd.to_numeric(df["guest_score"], errors="coerce").fillna(0)
-            owner_scores = pd.to_numeric(df["owner_score"], errors="coerce").fillna(0)
-            guest_valid = guest_scores[guest_scores > 0]
-            owner_valid = owner_scores[owner_scores > 0]
-
-            if guest_valid.empty and owner_valid.empty:
-                st.info("目前 ai_analysis 尚未產生正式分數；資料進來後這裡會直接顯示 AI 分析結果。")
-            else:
-                g_avg = float(guest_valid.mean()) if not guest_valid.empty else 0.0
-                o_avg = float(owner_valid.mean()) if not owner_valid.empty else 0.0
-                score_frame = pd.DataFrame(
-                    {"平均分數": [g_avg, o_avg]},
-                    index=["😡 顧客", "🤬 店家"],
-                )
-                st.bar_chart(score_frame, height=260, use_container_width=True)
-                top_reason = reason_counts.iloc[0]["糾紛原因"] if not reason_counts.empty else "尚無"
-                render_html(
-                    f'<div class="analysis-summary"><b>目前分析摘要</b><br>'
-                    f'最常見糾紛：{safe_text(top_reason)}<br>'
-                    f'顧客平均分數：{g_avg:.1f} / 10<br>'
-                    f'店家平均分數：{o_avg:.1f} / 10</div>'
-                )
-
-    elif current_page == PAGE_CLASSIC:
-        page_heading("經典吵架")
-
-        if df.empty:
-            st.info("目前沒有店家資料。")
+        if options.empty:
+            st.info("目前沒有店家回覆案例。")
         else:
-            store_options = (
-                df.drop_duplicates("store_id")
-                .sort_values("intensity", ascending=False)
-                [["store_id", "name"]]
-            )
-            store_ids = store_options["store_id"].astype(str).tolist()
+            ids = options[
+                "store_id"
+            ].astype(str).tolist()
+
+            default_store_index = 0
+
+            if requested_store in ids:
+                default_store_index = ids.index(
+                    requested_store
+                )
+
             selected_id = st.selectbox(
                 "選擇店家",
-                store_ids,
-                format_func=lambda pid: store_options.loc[
-                    store_options["store_id"].astype(str) == pid,
-                    "name",
-                ].iloc[0],
+                ids,
+                index=default_store_index,
+                format_func=lambda pid: short_store_name(
+                    options.loc[
+                        options["store_id"].astype(str) == pid,
+                        "name",
+                    ].iloc[0],
+                    42,
+                ),
+                key="classic_store_v8",
             )
 
-            store_row = df[df["store_id"].astype(str) == selected_id].iloc[0]
-            st.markdown(f"## {store_row['name']}")
-            tags = []
-            persona = str(store_row.get("persona_display") or "").strip()
-            reason_display = str(store_row.get("reason_display") or "").strip()
-            if persona and persona != "尚未分類":
-                tags.append(persona)
-            if reason_display:
-                tags.append(f"🧨 {reason_display}")
-            if tags:
-                st.caption("　".join(tags))
+            selected_store = df[
+                df["store_id"].astype(str)
+                == selected_id
+            ].iloc[0]
 
-            reviews_df = get_store_reviews_dataframe(selected_id, limit=20)
-            if reviews_df.empty:
-                st.warning("這家店目前沒有評論資料。")
+            reviews = load_reviews(
+                selected_id
+            )
+
+            replied_reviews = (
+                reviews[
+                    reviews["has_owner_reply"]
+                ].copy()
+                if not reviews.empty
+                else pd.DataFrame()
+            )
+
+            if replied_reviews.empty:
+                st.info("這家店目前沒有店家回覆案例。")
             else:
-                for _, rev in reviews_df.iterrows():
-                    review_text = str(rev.get("review_text") or "").strip()
-                    owner_reply = str(rev.get("owner_reply") or "").strip()
-                    pr_reply = str(rev.get("pr_reply") or "").strip()
-                    guest_score = float(rev.get("guest_score") or 0)
-                    owner_score = float(rev.get("owner_score") or 0)
+                ai_reviews = replied_reviews[
+                    replied_reviews["has_ai"]
+                    & replied_reviews["intensity"].notna()
+                ].copy()
 
-                    with st.container(border=True):
-                        score_tags = []
-                        if guest_score > 0:
-                            score_tags.append(f"😡 顧客 {guest_score:.1f}")
-                        if owner_score > 0:
-                            score_tags.append(f"🤬 店家 {owner_score:.1f}")
-                        if score_tags:
-                            st.caption("　".join(score_tags))
+                # 有 AI 時只用正式分析結果排序；
+                # 沒 AI 時顯示「回覆案例預覽」，不宣稱已判定成真正互嗆。
+                if not ai_reviews.empty:
+                    display_reviews = ai_reviews.sort_values(
+                        ["intensity", "published_at"],
+                        ascending=[False, False],
+                        na_position="last",
+                    ).reset_index(drop=True)
 
-                        st.markdown("### 😡 顧客")
-                        st.write(review_text or "（沒有評論內容）")
-                        st.markdown("### 🏪 店家")
-                        st.write(owner_reply or "（店家尚未回覆）")
-                        st.markdown("### 🤖 AI 公關救援")
-                        if pr_reply:
-                            render_html(f'<div class="pr-card">{safe_text(pr_reply)}</div>')
-                        else:
-                            st.caption("AI 公關建議尚未產生。")
+                    preview_mode = False
+                else:
+                    display_reviews = replied_reviews.sort_values(
+                        "published_at",
+                        ascending=False,
+                        na_position="last",
+                    ).reset_index(drop=True)
 
-                        review_url = str(rev.get("review_url") or "").strip()
-                        if review_url:
-                            st.link_button("Google Maps", review_url)
+                    preview_mode = True
 
-    elif current_page == PAGE_RANKING:
-        page_heading("趣味排行榜")
+                header_left, header_right = st.columns(
+                    [5, 1]
+                )
 
-        if df.empty:
-            st.info("目前沒有可排行的店家。")
+                with header_left:
+                    render_html(
+                        f"""
+                        <div style="margin:4px 0 10px;">
+                            <div style="font-size:1.4rem;font-weight:950;">
+                                {safe_text(short_store_name(selected_store.get("name"), 36))}
+                            </div>
+                            <div class="small-muted">
+                                {safe_text(selected_store.get("district") or "")}
+                                ｜回覆案例 {len(replied_reviews)} 則
+                            </div>
+                        </div>
+                        """
+                    )
+
+                with header_right:
+                    store_url = safe_url(
+                        selected_store.get("store_url")
+                    )
+
+                    if store_url:
+                        st.link_button(
+                            "Google Maps",
+                            store_url,
+                            use_container_width=True,
+                        )
+
+                case_labels = [
+                    format_case_label(
+                        row,
+                        index + 1,
+                    )
+                    for index, (_, row)
+                    in enumerate(
+                        display_reviews.iterrows()
+                    )
+                ]
+
+                selected_case = st.selectbox(
+                    "選擇案例",
+                    list(range(len(display_reviews))),
+                    format_func=lambda index: case_labels[index],
+                    key=f"classic_case_v8_{selected_id}",
+                )
+
+                review = display_reviews.iloc[
+                    int(selected_case)
+                ]
+
+                render_featured_duel(
+                    selected_store,
+                    review,
+                    preview_mode=preview_mode,
+                )
+
+                action_left, action_right = st.columns(
+                    [1, 5]
+                )
+
+                with action_left:
+                    review_url = safe_url(
+                        review.get("review_url")
+                    )
+
+                    if review_url:
+                        st.link_button(
+                            "Google Review",
+                            review_url,
+                            use_container_width=True,
+                        )
+
+                with action_right:
+                    if not preview_mode:
+                        st.caption(
+                            "案例依正式 AI 烈度由高到低排列。"
+                        )
+
+
+# ============================================================
+# PAGE: Analysis
+# ============================================================
+
+elif current_page == PAGE_ANALYSIS:
+    page_title("戰況分析")
+
+    ai_df = (
+        df[df["has_ai"]].copy()
+        if not df.empty
+        else pd.DataFrame()
+    )
+
+    if ai_df.empty:
+        st.info("目前尚無戰況分析資料。")
+    else:
+        review_scores = pd.to_numeric(
+            ai_df["review_score"],
+            errors="coerce",
+        ).dropna()
+
+        owner_scores = pd.to_numeric(
+            ai_df["owner_score"],
+            errors="coerce",
+        ).dropna()
+
+        intensities = pd.to_numeric(
+            ai_df["intensity"],
+            errors="coerce",
+        ).dropna()
+
+        c1, c2, c3 = st.columns(3)
+
+        c1.metric(
+            "顧客平均火力",
+            f"{review_scores.mean():.1f}"
+            if not review_scores.empty
+            else "—",
+        )
+
+        c2.metric(
+            "店家平均火力",
+            f"{owner_scores.mean():.1f}"
+            if not owner_scores.empty
+            else "—",
+        )
+
+        c3.metric(
+            "平均總烈度",
+            f"{intensities.mean():.1f}/20"
+            if not intensities.empty
+            else "—",
+        )
+
+        left, right = st.columns(2)
+
+        with left:
+            st.markdown("### 😡 顧客情緒")
+            customer_sentiment = (
+                ai_df["review_sentiment"]
+                .replace("", "未標記")
+                .value_counts()
+                .rename_axis("sentiment")
+                .to_frame("店家數")
+            )
+
+            st.bar_chart(
+                customer_sentiment,
+                height=320,
+                use_container_width=True,
+            )
+
+        with right:
+            st.markdown("### 🏪 店家情緒")
+            owner_sentiment = (
+                ai_df["owner_sentiment"]
+                .replace("", "未標記")
+                .value_counts()
+                .rename_axis("sentiment")
+                .to_frame("店家數")
+            )
+
+            st.bar_chart(
+                owner_sentiment,
+                height=320,
+                use_container_width=True,
+            )
+
+        st.markdown("### ⚔️ 顧客 vs 店家")
+
+        scatter = ai_df[
+            [
+                "name",
+                "review_score",
+                "owner_score",
+                "intensity",
+            ]
+        ].dropna(
+            subset=[
+                "review_score",
+                "owner_score",
+            ]
+        )
+
+        if not scatter.empty:
+            st.scatter_chart(
+                scatter,
+                x="review_score",
+                y="owner_score",
+                size="intensity",
+                height=430,
+                use_container_width=True,
+            )
+
+
+# ============================================================
+# PAGE: Ranking
+# ============================================================
+
+elif current_page == PAGE_RANKING:
+    page_title("趣味排行")
+
+    if df.empty:
+        st.info("目前沒有排行資料。")
+    else:
+        ranking_options = [
+            "💬 低星評論最多",
+            "🏪 店家回覆率最高",
+            "⭐ Google 評分最低",
+        ]
+
+        if df["has_ai"].any():
+            ranking_options.append(
+                "🔥 AI 烈度最高"
+            )
+
+        ranking_type = st.radio(
+            "排行",
+            ranking_options,
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+
+        if ranking_type == "💬 低星評論最多":
+            render_rank(
+                df,
+                "db_review_count",
+                "則",
+                limit=15,
+            )
+
+        elif ranking_type == "🏪 店家回覆率最高":
+            render_rank(
+                df[
+                    df["db_review_count"].fillna(0) > 0
+                ],
+                "reply_rate",
+                "",
+                limit=15,
+                percentage=True,
+            )
+
+        elif ranking_type == "⭐ Google 評分最低":
+            render_rank(
+                df,
+                "google_score",
+                "⭐",
+                limit=15,
+                ascending=True,
+            )
+
         else:
-            ranking_type = st.radio(
-                "排行榜",
-                ["🔥 最激烈店家", "😡 最怒顧客", "🤬 最嗆老闆"],
-                horizontal=True,
-                label_visibility="collapsed",
+            render_rank(
+                df[
+                    df["has_ai"]
+                ],
+                "intensity",
+                "🔥",
+                limit=15,
             )
-            if ranking_type == "🔥 最激烈店家":
-                render_podium(df, "intensity", "🔥")
-            elif ranking_type == "😡 最怒顧客":
-                render_podium(df, "guest_score", "😡")
-            else:
-                render_podium(df, "owner_score", "🤬")
 
-    elif current_page == PAGE_REPORT:
-        page_heading("匿名爆料")
-        st.caption("提供公開可查證的資訊即可；正式資料是否入庫，交由後續審核流程決定。")
 
-        if "session_reports" not in st.session_state:
-            st.session_state["session_reports"] = []
+# ============================================================
+# PAGE: PR Rescue
+# ============================================================
 
-        with st.form("anonymous_report_form", clear_on_submit=True):
+elif current_page == PAGE_PR:
+    page_title("公關救援")
+
+    if df.empty:
+        st.info("目前沒有資料。")
+    else:
+        pr_cases: list[tuple[str, str, pd.Series]] = []
+
+        for _, store in df.iterrows():
+            reviews = load_reviews(
+                str(store["store_id"])
+            )
+
+            if reviews.empty:
+                continue
+
+            with_pr = reviews[
+                reviews["pr_reply"].str.strip().ne("")
+            ]
+
+            for _, review in with_pr.iterrows():
+                pr_cases.append(
+                    (
+                        str(store["name"]),
+                        str(store["store_id"]),
+                        review,
+                    )
+                )
+
+        if not pr_cases:
+            st.info("目前尚無公關救援案例。")
+        else:
+            for store_name, _, review in pr_cases[:20]:
+                render_html(
+                    f"""
+                    <div class="battle-card">
+                        <div class="battle-name">{safe_text(store_name)}</div>
+
+                        <div class="battle-side battle-customer">
+                            <b>😡 原始評論</b><br>
+                            {safe_text(review.get("review_text") or "")}
+                        </div>
+
+                        <div class="battle-side battle-owner">
+                            <b>🏪 店家原回覆</b><br>
+                            {safe_text(review.get("owner_reply") or "") or "（尚未回覆）"}
+                        </div>
+
+                        <div class="ai-card">
+                            <b>🤖 AI 建議</b><br>
+                            {safe_text(review.get("pr_reply") or "")}
+                        </div>
+                    </div>
+                    """
+                )
+
+
+# ============================================================
+# PAGE: Anonymous report
+# ============================================================
+
+elif current_page == PAGE_REPORT:
+    page_title("匿名爆料")
+
+    # schema.sql 沒有投稿 table，因此只做 Session 暫存。
+    if "session_reports" not in st.session_state:
+        st.session_state["session_reports"] = []
+
+    with st.form(
+        "anonymous_report_form",
+        clear_on_submit=True,
+    ):
+        left, right = st.columns(2)
+
+        with left:
             store_name = st.text_input("店家名稱 *")
             location = st.text_input("店家地點（台北市）")
-            category = st.selectbox(
-                "事件類型",
-                ["態度", "價格", "排隊", "品質", "熱點新聞", "其他"],
-            )
-            description = st.text_area("事件內容 *", height=180)
-            evidence_url = st.text_input("公開證據網址（選填）")
-            submitted = st.form_submit_button("送出匿名爆料", use_container_width=True)
 
-            if submitted:
-                if not store_name.strip() or not description.strip():
-                    st.warning("請至少填寫店家名稱與事件內容。")
-                else:
-                    st.session_state["session_reports"].append(
-                        {
-                            "store_name": store_name.strip(),
-                            "location": location.strip(),
-                            "category": category,
-                            "description": description.strip(),
-                            "evidence_url": evidence_url.strip(),
-                        }
+        with right:
+            category = st.text_input(
+                "事件標籤",
+                placeholder="例如：排隊、態度",
+            )
+            evidence_url = st.text_input(
+                "公開證據網址（選填）"
+            )
+
+        description = st.text_area(
+            "事件內容 *",
+            height=180,
+        )
+
+        submitted = st.form_submit_button(
+            "建立草稿",
+            use_container_width=True,
+        )
+
+        if submitted:
+            if (
+                not store_name.strip()
+                or not description.strip()
+            ):
+                st.warning(
+                    "請至少填寫店家名稱與事件內容。"
+                )
+            else:
+                st.session_state[
+                    "session_reports"
+                ].append(
+                    {
+                        "store_name": store_name.strip(),
+                        "location": location.strip(),
+                        "category": category.strip(),
+                        "description": description.strip(),
+                        "evidence_url": evidence_url.strip(),
+                    }
+                )
+
+                st.success("已建立本次 Session 草稿。")
+
+    reports = st.session_state["session_reports"]
+
+    if reports:
+        st.subheader(
+            f"本次草稿（{len(reports)}）"
+        )
+
+        for index, report in enumerate(
+            reports,
+            start=1,
+        ):
+            title = (
+                f"#{index} {report['store_name']}"
+                + (
+                    f"｜{report['category']}"
+                    if report["category"]
+                    else ""
+                )
+            )
+
+            with st.expander(title):
+                st.write(
+                    report["description"]
+                )
+
+                if report["location"]:
+                    st.caption(
+                        f"地點：{report['location']}"
                     )
-                    st.success("已收到這筆爆料（目前暫存在本次工作階段）。")
+
+                evidence = safe_url(
+                    report["evidence_url"]
+                )
+
+                if evidence:
+                    st.link_button(
+                        "公開證據",
+                        evidence,
+                    )
