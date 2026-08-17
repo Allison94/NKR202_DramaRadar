@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 def change_long_key():
     endpoint = f"{url}access_token"
-    short_token = ""
+    short_token = input("input short token:\n")
     params = {
         "grant_type":"th_exchange_token",
         "client_secret":settings.threads_api_key,
@@ -16,6 +16,8 @@ def change_long_key():
     try:
         rs = requests.get(url=endpoint,params=params)
         data = rs.json()
+        access_token = data.get("access_token")
+        set_key(".env","THREADS_LONG_KEY",access_token)
         print(data)
         return data.get("access_token",None)
     except Exception as e:
@@ -43,3 +45,7 @@ def refresh_threads_token():
     except Exception as e:
         logger.exception(f"[Error: refresh_threads_token token效期更新失敗]")
         raise e
+
+
+if __name__ == "__main__":
+    change_long_key()
