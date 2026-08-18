@@ -101,7 +101,7 @@ def build_actor_input(
     place_ids: list[str],
     *,
     max_reviews: int | None,
-    reviews_sort: str,
+    reviews_sort: str | None,
     reviews_start_date: str | None = None,
     language: str = "zh-TW",
 ) -> dict[str, Any]:
@@ -111,10 +111,12 @@ def build_actor_input(
         "language": language,
         "personalData": True,
         "placeIds": place_ids,
-        "reviewsSort": reviews_sort,
         "reviewsFilterString": "",
         "reviewsOrigin": "all",
     }
+
+    if reviews_sort:
+        payload["reviewsSort"] = reviews_sort
 
     if max_reviews is not None:
         payload["maxReviews"] = int(max_reviews)
@@ -159,7 +161,7 @@ def start_apify_run(
     *,
     pipeline: str,
     max_reviews: int | None,
-    reviews_sort: str,
+    reviews_sort: str | None,
     reviews_start_date: str | None = None,
     context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -391,7 +393,6 @@ def prepare_initial_batches(
                     "batch_index": len(batches),
                     "place_ids": chunk,
                     "max_reviews": max_reviews,
-                    "reviews_sort": "newest",
                 }
             )
 
@@ -410,7 +411,7 @@ def start_initial_batch(batch: dict[str, Any]) -> dict[str, Any]:
         list(batch["place_ids"]),
         pipeline="review_initial",
         max_reviews=int(batch["max_reviews"]),
-        reviews_sort="newest",
+        reviews_sort=None,
         context={
             "mode": "initial",
             "batch_index": int(batch["batch_index"]),
