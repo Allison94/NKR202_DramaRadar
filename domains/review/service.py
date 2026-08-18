@@ -444,8 +444,13 @@ def prepare_daily_batches(
 ) -> list[dict[str, Any]]:
     place_ids = fetch_place_ids_for_review(limit=None)
 
+    # Airflow container may run in UTC. Daily business date must use Taiwan time.
+    taipei_today = datetime.now(
+        timezone(timedelta(hours=8))
+    ).date()
+
     start_date = reviews_start_date or (
-        date.today() - timedelta(days=1)
+        taipei_today - timedelta(days=1)
     ).isoformat()
 
     batches = [

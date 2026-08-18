@@ -47,6 +47,11 @@ from domains.review.service import (
 logger = logging.getLogger(__name__)
 
 
+# Prevent a stuck Apify run from leaving the Airflow sensor waiting forever.
+# 900 seconds matches the previous Review polling timeout.
+SENSOR_TIMEOUT_SECONDS = 900
+
+
 
 # ============================================================
 # Initial DAG — manual only
@@ -89,10 +94,19 @@ def review_initial_dag():
             batch.get("max_reviews"),
         )
 
-        return start_initial_batch(batch)
+        run_info = start_initial_batch(batch)
+
+        logger.info(
+            "[review_initial] actor started batch=%s run_id=%s",
+            batch.get("batch_index"),
+            run_info.get("run_id"),
+        )
+
+        return run_info
 
     @task.sensor(
         poke_interval=STATUS_POKE_INTERVAL_SECONDS,
+        timeout=SENSOR_TIMEOUT_SECONDS,
         mode="reschedule",
     )
     def wait_batch(run_info: dict) -> PokeReturnValue:
@@ -187,10 +201,19 @@ def review_daily_dag():
             batch.get("reviews_start_date"),
         )
 
-        return start_daily_batch(batch)
+        run_info = start_daily_batch(batch)
+
+        logger.info(
+            "[review_daily] actor started batch=%s run_id=%s",
+            batch.get("batch_index"),
+            run_info.get("run_id"),
+        )
+
+        return run_info
 
     @task.sensor(
         poke_interval=STATUS_POKE_INTERVAL_SECONDS,
+        timeout=SENSOR_TIMEOUT_SECONDS,
         mode="reschedule",
     )
     def wait_daily(run_info: dict) -> PokeReturnValue:
@@ -262,10 +285,19 @@ def review_daily_dag():
             len(batch.get("due_reviews", [])),
         )
 
-        return start_recheck_batch(batch)
+        run_info = start_recheck_batch(batch)
+
+        logger.info(
+            "[review_recheck] actor started batch=%s run_id=%s",
+            batch.get("batch_index"),
+            run_info.get("run_id"),
+        )
+
+        return run_info
 
     @task.sensor(
         poke_interval=STATUS_POKE_INTERVAL_SECONDS,
+        timeout=SENSOR_TIMEOUT_SECONDS,
         mode="reschedule",
     )
     def wait_recheck(run_info: dict) -> PokeReturnValue:
