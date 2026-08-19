@@ -628,7 +628,7 @@ render_html(
 
     .block-container {
         max-width:1560px;
-        padding-top:3.3rem;
+        padding-top:1.8rem;
         padding-bottom:3rem;
     }
 
@@ -661,14 +661,51 @@ render_html(
     }
 
     .page-title {
-        margin:10px 0 4px;
+        margin:16px 0 2px;
         font-size:clamp(
-            1.6rem,
-            2.6vw,
-            2.2rem
+            1.75rem,
+            2.8vw,
+            2.35rem
         );
         font-weight:950;
         letter-spacing:-.04em;
+    }
+
+    .page-subtitle {
+        margin:0 0 14px;
+        color:var(--muted);
+        font-size:.9rem;
+        line-height:1.6;
+    }
+
+    div[role="radiogroup"] {
+        gap:.45rem;
+        padding:.4rem;
+        border:1px solid rgba(255,49,93,.14);
+        border-radius:14px;
+        background:rgba(18,15,20,.78);
+    }
+
+    div[role="radiogroup"] label {
+        margin:0 !important;
+        padding:.42rem .68rem !important;
+        border:1px solid transparent;
+        border-radius:10px;
+        transition:all .15s ease;
+    }
+
+    div[role="radiogroup"] label:hover {
+        border-color:rgba(255,255,255,.10);
+        background:rgba(255,255,255,.04);
+    }
+
+    div[role="radiogroup"] label:has(input:checked) {
+        border-color:rgba(255,49,93,.28);
+        background:linear-gradient(
+            90deg,
+            rgba(185,32,80,.30),
+            rgba(122,36,126,.28)
+        );
     }
 
     .muted {
@@ -936,7 +973,7 @@ render_html(
 
 if SPLASH_IMAGE.exists():
     _, image_column, _ = st.columns(
-        [2.4, 5.2, 2.4]
+        [3.25, 3.5, 3.25]
     )
 
     with image_column:
@@ -945,18 +982,8 @@ if SPLASH_IMAGE.exists():
             use_container_width=True,
         )
 
-render_html(
-    """
-    <div class="brand-strip">
-        <div class="brand-name">
-            🔥 Drama Radar｜台北吵架地圖
-        </div>
-    </div>
-    """
-)
-
 nav_column, refresh_column = st.columns(
-    [6, 1]
+    [8, 1.25]
 )
 
 with nav_column:
@@ -1008,12 +1035,12 @@ def flame_size(
 
     value = max(
         0.0,
-        min(float(score), 20.0),
+        min(float(score), 10.0),
     )
 
     return int(
         30
-        + (value / 20.0) * 38
+        + (value / 10.0) * 38
     )
 
 
@@ -1026,6 +1053,38 @@ def flame_colors(
             "#b9afb7",
             "rgba(180,170,178,.22)",
         )
+
+    value = max(
+        0.0,
+        min(float(score), 10.0),
+    )
+
+    if value < 3:
+        return (
+            "#ffc23e",
+            "#fff0a4",
+            "rgba(255,194,62,.45)",
+        )
+
+    if value < 5:
+        return (
+            "#ff851b",
+            "#ffd25d",
+            "rgba(255,133,27,.50)",
+        )
+
+    if value < 7:
+        return (
+            "#ff4638",
+            "#ffad3d",
+            "rgba(255,70,56,.62)",
+        )
+
+    return (
+        "#e60046",
+        "#ff7138",
+        "rgba(230,0,70,.82)",
+    )
 
     value = max(
         0.0,
@@ -1565,7 +1624,12 @@ def render_duel(
 # ============================================================
 
 if current_page == PAGE_MAP:
-    page_title("吵架地圖")
+    page_title("🔥 台北吵架地圖")
+    render_html(
+        '<div class="page-subtitle">'
+        '找出低星評論與店家回覆，看看台北今天哪裡最火爆。'
+        '</div>'
+    )
 
     if stores.empty:
         st.error(
@@ -1606,154 +1670,107 @@ if current_page == PAGE_MAP:
                 ].any()
             )
 
-            if has_any_ai:
-                search_col, district_col, intensity_col, random_col = st.columns(
-                    [3.2, 1.25, 1.75, 1.15]
-                )
-            else:
-                search_col, district_col, random_col = st.columns(
-                    [4.2, 1.5, 1.1]
-                )
-
-            with search_col:
-                keyword = st.text_input(
-                    "搜尋",
-                    placeholder=(
-                        "店名、地址"
-                    ),
-                ).strip()
-
-            with district_col:
-                district_filter = st.selectbox(
-                    "行政區",
-                    [
-                        "全部",
-                        *districts,
-                    ],
-                )
-
             filtered = map_stores.copy()
 
-            if keyword:
-                mask = (
-                    filtered[
-                        "name"
-                    ].str.contains(
-                        keyword,
-                        case=False,
-                        na=False,
+            with st.container(border=True):
+                if has_any_ai:
+                    search_col, district_col, intensity_col = st.columns(
+                        [4.0, 1.35, 1.8]
                     )
-                    | filtered[
-                        "address"
-                    ].str.contains(
-                        keyword,
-                        case=False,
-                        na=False,
+                else:
+                    search_col, district_col = st.columns(
+                        [4.5, 1.5]
                     )
-                )
 
-                filtered = filtered[
-                    mask
-                ]
+                with search_col:
+                    keyword = st.text_input(
+                        "搜尋",
+                        placeholder=(
+                            "店名、地址"
+                        ),
+                    ).strip()
 
-            if district_filter != "全部":
-                filtered = filtered[
-                    filtered[
-                        "district"
-                    ]
-                    == district_filter
-                ]
-
-            if has_any_ai:
-                with intensity_col:
-                    available_scores = pd.to_numeric(
-                        filtered[
-                            "intensity"
+                with district_col:
+                    district_filter = st.selectbox(
+                        "行政區",
+                        [
+                            "全部",
+                            *districts,
                         ],
-                        errors="coerce",
-                    ).dropna()
-
-                    if available_scores.empty:
-                        st.selectbox(
-                            "最低烈度",
-                            ["全部"],
-                            disabled=True,
-                        )
-                    else:
-                        maximum = max(
-                            1.0,
-                            float(
-                                available_scores.max()
-                            ),
-                        )
-
-                        minimum = st.slider(
-                            "最低烈度",
-                            min_value=0.0,
-                            max_value=maximum,
-                            value=0.0,
-                            step=1.0,
-                        )
-
-                        if minimum > 0:
-                            filtered = filtered[
-                                filtered[
-                                    "intensity"
-                                ].fillna(-1)
-                                >= minimum
-                            ]
-
-            with random_col:
-                st.write("")
-                st.write("")
-
-                if st.button(
-                    "🎲 隨機案例",
-                    use_container_width=True,
-                ):
-                    candidates = (
-                        filtered[
-                            filtered[
-                                "has_ai"
-                            ]
-                        ]
-                        if bool(
-                            filtered[
-                                "has_ai"
-                            ].any()
-                        )
-                        else filtered
                     )
 
-                    if not candidates.empty:
-                        random_row = candidates.sample(
-                            1
-                        ).iloc[0]
 
-                        go_to(
-                            PAGE_DUEL,
-                            store_id=str(
-                                random_row[
-                                    "store_id"
-                                ]
-                            ),
+                if keyword:
+                    mask = (
+                        filtered[
+                            "name"
+                        ].str.contains(
+                            keyword,
+                            case=False,
+                            na=False,
                         )
+                        | filtered[
+                            "address"
+                        ].str.contains(
+                            keyword,
+                            case=False,
+                            na=False,
+                        )
+                    )
 
-            render_html(
-                """
-                <div class="legend">
-                    <span>
-                        🔥 灰焰：尚未評分
-                    </span>
-                    <span>
-                        🔥 彩焰：已有烈度
-                    </span>
-                </div>
-                """
-            )
+                    filtered = filtered[
+                        mask
+                    ]
+
+                if district_filter != "全部":
+                    filtered = filtered[
+                        filtered[
+                            "district"
+                        ]
+                        == district_filter
+                    ]
+
+                if has_any_ai:
+                    with intensity_col:
+                        available_scores = pd.to_numeric(
+                            filtered[
+                                "intensity"
+                            ],
+                            errors="coerce",
+                        ).dropna()
+
+                        if available_scores.empty:
+                            st.selectbox(
+                                "最低烈度",
+                                ["全部"],
+                                disabled=True,
+                            )
+                        else:
+                            maximum = max(
+                                1.0,
+                                float(
+                                    available_scores.max()
+                                ),
+                            )
+
+                            minimum = st.slider(
+                                "最低烈度",
+                                min_value=0.0,
+                                max_value=maximum,
+                                value=0.0,
+                                step=1.0,
+                            )
+
+                            if minimum > 0:
+                                filtered = filtered[
+                                    filtered[
+                                        "intensity"
+                                    ].fillna(-1)
+                                    >= minimum
+                                ]
 
             map_col, side_col = st.columns(
-                [4.75, 1.25],
+                [4.0, 1.6],
                 gap="large",
             )
 
@@ -1779,7 +1796,7 @@ if current_page == PAGE_MAP:
 
                     drama_map = folium.Map(
                         location=center,
-                        zoom_start=11,
+                        zoom_start=12,
                         tiles=None,
                         control_scale=True,
                         prefer_canvas=True,
@@ -1893,53 +1910,163 @@ if current_page == PAGE_MAP:
 
                     st_folium(
                         drama_map,
-                        height=730,
+                        height=640,
                         use_container_width=True,
                         returned_objects=[],
                         key="main_drama_map",
                     )
 
             with side_col:
-                ai_cases = filtered[
-                    filtered[
-                        "has_ai"
+                with st.container(border=True):
+                    ai_cases = filtered[
+                        filtered[
+                            "has_ai"
+                        ]
+                        & filtered[
+                            "intensity"
+                        ].notna()
+                    ].copy()
+
+                    render_html(
+                        '<div class="map-side-title">'
+                        '🔥 熱門案例'
+                        '</div>'
+                    )
+                    st.caption(
+                        f"目前符合條件 {len(filtered)} 家"
+                    )
+
+                    if not ai_cases.empty:
+                        intensity_tab, reply_tab = st.tabs(
+                            ["🔥 烈度", "💬 回覆"]
+                        )
+
+                        with intensity_tab:
+                            render_rank_cards(
+                                ai_cases,
+                                "intensity",
+                                "🔥 ",
+                                limit=6,
+                                clickable=True,
+                                button_prefix=(
+                                    "map_hot"
+                                ),
+                            )
+
+                        with reply_tab:
+                            render_rank_cards(
+                                filtered,
+                                "owner_replies",
+                                "則 ",
+                                limit=7,
+                            )
+
+                    else:
+                        st.caption(
+                            "AI 烈度完成後，這裡會自動出現烈度排行。"
+                        )
+                        render_rank_cards(
+                            filtered,
+                            "owner_replies",
+                            "則 ",
+                            limit=7,
+                        )
+
+            st.write("")
+            render_html(
+                '<div class="map-side-title">'
+                '📍 店家概況'
+                '</div>'
+            )
+            st.caption(
+                "依照目前搜尋與行政區條件同步更新。"
+            )
+
+            overview = filtered.copy()
+
+            if not overview.empty:
+                overview["低星評論"] = pd.to_numeric(
+                    overview["db_review_count"],
+                    errors="coerce",
+                ).fillna(0).astype(int)
+                overview["店家回覆"] = pd.to_numeric(
+                    overview["owner_replies"],
+                    errors="coerce",
+                ).fillna(0).astype(int)
+                overview["回覆率"] = pd.to_numeric(
+                    overview["reply_rate"],
+                    errors="coerce",
+                )
+                overview["烈度"] = pd.to_numeric(
+                    overview["intensity"],
+                    errors="coerce",
+                )
+
+                overview = overview[
+                    [
+                        "display_name",
+                        "district",
+                        "低星評論",
+                        "店家回覆",
+                        "回覆率",
+                        "烈度",
                     ]
-                    & filtered[
-                        "intensity"
-                    ].notna()
-                ].copy()
+                ].rename(
+                    columns={
+                        "display_name": "店家",
+                        "district": "行政區",
+                    }
+                )
 
-                if not ai_cases.empty:
-                    render_html(
-                        '<div class="map-side-title">'
-                        '🔥 今晚熱榜'
-                        '</div>'
+                if has_any_ai and overview["烈度"].notna().any():
+                    overview = overview.sort_values(
+                        ["烈度", "店家回覆"],
+                        ascending=[False, False],
+                        na_position="last",
                     )
-
-                    render_rank_cards(
-                        ai_cases,
-                        "intensity",
-                        "🔥 ",
-                        limit=6,
-                        clickable=True,
-                        button_prefix=(
-                            "map_hot"
-                        ),
-                    )
-
                 else:
-                    render_html(
-                        '<div class="map-side-title">'
-                        '💬 回覆案例多'
-                        '</div>'
+                    overview = overview.sort_values(
+                        ["店家回覆", "低星評論"],
+                        ascending=[False, False],
                     )
 
-                    render_rank_cards(
-                        filtered,
-                        "owner_replies",
-                        "則 ",
-                        limit=7,
-                    )
+                st.dataframe(
+                    overview,
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "店家": st.column_config.TextColumn(
+                            "店家",
+                            width="large",
+                        ),
+                        "行政區": st.column_config.TextColumn(
+                            "行政區",
+                            width="small",
+                        ),
+                        "低星評論": st.column_config.NumberColumn(
+                            "低星評論",
+                            format="%d",
+                        ),
+                        "店家回覆": st.column_config.NumberColumn(
+                            "店家回覆",
+                            format="%d",
+                        ),
+                        "回覆率": st.column_config.NumberColumn(
+                            "回覆率",
+                            format="%.0f%%",
+                        ),
+                        "烈度": st.column_config.NumberColumn(
+                            "烈度",
+                            format="%.1f",
+                        ),
+                    },
+                    height=min(
+                        460,
+                        42 + len(overview) * 35,
+                    ),
+                )
+            else:
+                st.info("目前沒有符合條件的店家。")
 
 
 # ============================================================
