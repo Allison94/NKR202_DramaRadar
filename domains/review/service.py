@@ -24,6 +24,8 @@ from typing import Any, Literal
 from domains.review.config import (
     BATCH_SIZE,
     INITIAL_BUFFER,
+    INITIAL_SORT,
+    DAILY_SORT,
     RECHECK_AFTER_DAYS,
     RECHECK_MAX_AGE_DAYS,
 )
@@ -393,6 +395,7 @@ def prepare_initial_batches(
                     "batch_index": len(batches),
                     "place_ids": chunk,
                     "max_reviews": max_reviews,
+                    "reviewsSort": INITIAL_SORT
                 }
             )
 
@@ -458,7 +461,7 @@ def prepare_daily_batches(
         {
             "batch_index": index,
             "place_ids": chunk,
-            "reviews_sort": "newest",
+            "reviews_sort": DAILY_SORT,
             "reviews_start_date": start_date,
         }
         for index, chunk in enumerate(

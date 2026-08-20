@@ -13,7 +13,7 @@ REVIEWS_ORIGIN = "all"
 # 每家：
 # maxReviews = store.oneStar + store.twoStar + INITIAL_BUFFER
 INITIAL_BUFFER = 50
-INITIAL_SORT = "newest"
+INITIAL_SORT = "lowestRanking"
 
 
 # ============================================================
@@ -44,5 +44,3 @@ RECHECK_AFTER_DAYS = 2
 
 # 從最初 publishedAtDate 起超過 10 天 → 停止 Recheck
 RECHECK_MAX_AGE_DAYS = 10
-
-RECHECK_SORT = "newest"
