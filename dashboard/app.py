@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from textwrap import dedent
 from urllib.parse import quote, urlparse
+import base64
 import html
 import random
 import re
@@ -12,6 +13,7 @@ import sys
 import folium
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 from folium import DivIcon, Marker
 from folium.plugins import HeatMap, MarkerCluster
 from streamlit_folium import st_folium
@@ -71,7 +73,7 @@ DISTRICT_PATTERN = re.compile(
 
 # 只影響畫面顯示，不改 DB。
 DISPLAY_NAME_LIMIT = 26
-REVIEW_PAGE_SIZE = 100
+REVIEW_PAGE_SIZE = 3
 
 
 # ============================================================
@@ -102,6 +104,7 @@ def go_to(
         store_id = str(store_id)
         st.session_state["target_store_id"] = store_id
         st.session_state["selected_store_id"] = store_id
+        st.session_state["v9_selected_store_id"] = store_id
         st.session_state["map_store_detail_selector"] = store_id
 
     st.rerun()
@@ -118,6 +121,7 @@ if (
     and st.session_state.get("_consumed_store_id") != query_store_id
 ):
     st.session_state["selected_store_id"] = query_store_id
+    st.session_state["v9_selected_store_id"] = query_store_id
     st.session_state["target_store_id"] = query_store_id
     st.session_state["map_store_detail_selector"] = query_store_id
     st.session_state["main_nav"] = PAGE_MAP
@@ -369,6 +373,71 @@ def truncate_text(
         return text
 
     return text[:limit].rstrip() + "…"
+
+
+# ============================================================
+# Persona display helpers (Dashboard UI only)
+# ============================================================
+
+def persona_label(value: object) -> str:
+    """只顯示 AI 人設名稱，移除後方括號解釋。"""
+    label = str(value or "").strip()
+
+    if not label:
+        return ""
+
+    for separator in ("（", "("):
+        if separator in label:
+            label = label.split(
+                separator,
+                1,
+            )[0].strip()
+
+    return label
+
+
+def persona_emoji(
+    value: object,
+    *,
+    role: str = "guest",
+) -> str:
+    label = persona_label(value)
+
+    rules = [
+        (("暴躁", "爆氣", "怒", "開嗆", "火爆"), "😡"),
+        (("反串", "陰陽", "暗諷", "酸", "嘲諷"), "🙃"),
+        (("公關", "制式", "官腔"), "😐"),
+        (("強硬", "嗆", "不客氣"), "🤬"),
+        (("委屈", "無奈", "受傷"), "🥺"),
+        (("理性", "冷靜", "客觀"), "🙂"),
+        (("客氣", "禮貌", "溫和"), "😊"),
+        (("道歉", "認錯"), "🙇"),
+    ]
+
+    for keywords, emoji in rules:
+        if any(
+            keyword in label
+            for keyword in keywords
+        ):
+            return emoji
+
+    return "🎭" if role == "guest" else "🏪"
+
+
+def persona_text(
+    value: object,
+    *,
+    role: str = "guest",
+) -> str:
+    label = persona_label(value)
+
+    if not label:
+        return ""
+
+    return (
+        f"{persona_emoji(label, role=role)} "
+        f"{label}"
+    )
 
 
 # ============================================================
@@ -633,8 +702,6 @@ def load_map_review_previews(
           AND r."stars" <= 2
           AND r."responseFromOwnerText" IS NOT NULL
           AND LENGTH(TRIM(r."responseFromOwnerText")) > 0
-          AND r."responseFromOwnerText" IS NOT NULL
-          AND LENGTH(TRIM(r."responseFromOwnerText")) > 0
         ORDER BY
             r."placeId",
             CASE
@@ -674,7 +741,7 @@ def load_all_review_page(
     page: int,
     page_size: int = REVIEW_PAGE_SIZE,
 ) -> tuple[pd.DataFrame, int]:
-    # 讀取符合目前地圖篩選、且店家有回覆的 1–2 星案例，每頁固定 100 筆。
+    # 讀取符合目前地圖篩選、且店家有回覆的 1–2 星案例，每頁固定 3 筆。
     if not place_ids:
         return pd.DataFrame(), 0
 
@@ -688,6 +755,8 @@ def load_all_review_page(
         FROM "review" AS r
         WHERE r."placeId" IN :place_ids
           AND r."stars" <= 2
+          AND r."responseFromOwnerText" IS NOT NULL
+          AND LENGTH(TRIM(r."responseFromOwnerText")) > 0
         '''
     ).bindparams(
         bindparam("place_ids", expanding=True)
@@ -836,33 +905,22 @@ def load_store_review_page(
     safe_page_size = max(1, min(int(page_size), REVIEW_PAGE_SIZE))
     offset = (safe_page - 1) * safe_page_size
 
-    # 所有店家詳情評論都必須先符合「店家有回覆」。
-    # 再在這批有效吵架案例上做 AI / 星等篩選。
-    filter_sql = {
-        "全部": "",
-        "AI 已分析": 'AND a."reviewId" IS NOT NULL',
-        "1 星": 'AND r."stars" = 1',
-        "2 星": 'AND r."stars" = 2',
-    }.get(filter_key, "")
+    # 正式流程：有店家回覆的 Review 都會經過 AI。
+    # Dashboard 只顯示 AI 分析完整（顧客/店家分數都有值）的案例，
+    # 避免測試資料尚未補齊 AI 時把未完成案例算進總筆數。
+    filter_sql = """
+        AND a."reviewId" IS NOT NULL
+        AND a."review_score" IS NOT NULL
+        AND a."owner_score" IS NOT NULL
+    """
 
     order_sql = {
         "最新": 'r."publishedAtDate" DESC NULLS LAST, r."reviewId"',
-        "最激烈": '''
-            CASE
-                WHEN a."review_score" IS NOT NULL
-                 AND a."owner_score" IS NOT NULL
-                THEN (a."review_score" + a."owner_score") / 2.0
-                ELSE -1
-            END DESC,
+        "烈度高至低": """
+            (a."review_score" + a."owner_score") / 2.0 DESC,
             r."publishedAtDate" DESC NULLS LAST,
             r."reviewId"
-        ''',
-        "最多讚": '''
-            r."likesCount" DESC NULLS LAST,
-            r."publishedAtDate" DESC NULLS LAST,
-            r."reviewId"
-        ''',
-        "最舊": 'r."publishedAtDate" ASC NULLS LAST, r."reviewId"',
+        """,
     }.get(
         sort_key,
         'r."publishedAtDate" DESC NULLS LAST, r."reviewId"',
@@ -952,6 +1010,39 @@ def load_store_review_page(
     ttl=300,
     show_spinner=False,
 )
+def load_store_ai_case_count(
+    place_id: str,
+) -> int:
+    """READ AI-analyzed 1–2★ owner-reply case count for one store."""
+    query = sql_text(
+        r"""
+        SELECT COUNT(*)::int
+        FROM "review" AS r
+        INNER JOIN "ai_analysis" AS a
+            ON a."reviewId" = r."reviewId"
+        WHERE r."placeId" = :place_id
+          AND r."stars" <= 2
+          AND r."responseFromOwnerText" IS NOT NULL
+          AND LENGTH(TRIM(r."responseFromOwnerText")) > 0
+          AND a."review_score" IS NOT NULL
+          AND a."owner_score" IS NOT NULL
+        """
+    )
+
+    with db_engine.connect() as connection:
+        return int(
+            connection.execute(
+                query,
+                {"place_id": str(place_id)},
+            ).scalar()
+            or 0
+        )
+
+
+@st.cache_data(
+    ttl=300,
+    show_spinner=False,
+)
 def load_store_classic_reviews(
     place_id: str,
     limit: int = 20,
@@ -1035,13 +1126,92 @@ def load_store_ai_rows(
     return pd.DataFrame([dict(row) for row in rows])
 
 
-def refresh_all() -> None:
-    st.cache_data.clear()
-    st.session_state[
-        "last_refresh_at"
-    ] = datetime.now(
-        timezone.utc
+@st.cache_data(
+    ttl=300,
+    show_spinner=False,
+)
+def load_drama_inventory() -> pd.DataFrame:
+    """
+    READ-only 吵架地圖正式案例。
+    一筆資料 = 一則 1–2★、店家有回覆、AI 分析完整的評論。
+    """
+    query = sql_text(
+        r"""
+        SELECT
+            s."placeId" AS store_id,
+            s."title" AS store_name,
+            s."address" AS address,
+            r."reviewId" AS review_id,
+            a."review_score" AS guest_score,
+            a."owner_score" AS owner_score
+        FROM "store" AS s
+        INNER JOIN "review" AS r
+            ON r."placeId" = s."placeId"
+        INNER JOIN "ai_analysis" AS a
+            ON a."reviewId" = r."reviewId"
+        WHERE s."blocked" = FALSE
+          AND (
+                s."address" LIKE '%台北市%'
+             OR s."address" LIKE '%臺北市%'
+          )
+          AND r."stars" <= 2
+          AND r."responseFromOwnerText" IS NOT NULL
+          AND LENGTH(TRIM(r."responseFromOwnerText")) > 0
+          AND a."review_score" IS NOT NULL
+          AND a."owner_score" IS NOT NULL
+        ORDER BY
+            s."placeId",
+            r."publishedAtDate" DESC NULLS LAST,
+            r."reviewId"
+        """
     )
+
+    with db_engine.connect() as connection:
+        rows = connection.execute(query).mappings().all()
+
+    frame = pd.DataFrame([dict(row) for row in rows])
+
+    if frame.empty:
+        return frame
+
+    frame["guest_score"] = pd.to_numeric(
+        frame["guest_score"],
+        errors="coerce",
+    )
+    frame["owner_score"] = pd.to_numeric(
+        frame["owner_score"],
+        errors="coerce",
+    )
+    frame["intensity"] = (
+        frame["guest_score"]
+        + frame["owner_score"]
+    ) / 2
+
+    frame["district"] = (
+        frame["address"]
+        .fillna("")
+        .astype(str)
+        .apply(district_from_address)
+    )
+
+    return frame
+
+
+
+
+def refresh_all() -> None:
+    """重新讀取資料，並把整個 Dashboard UI 回復到第一次開啟的狀態。"""
+    st.cache_data.clear()
+
+    # 排行另開分頁時可能帶有 ?store_id=...；
+    # 不清掉的話 rerun 後又會把店家自動選回來。
+    st.query_params.clear()
+
+    # 清除選店、篩選、排序、頁碼、Tab / radio 等所有畫面狀態。
+    st.session_state.clear()
+
+    # 回到首頁；其餘 widget 會在 rerun 後使用程式預設值重建。
+    st.session_state["main_nav"] = PAGE_MAP
     st.rerun()
 
 
@@ -1094,9 +1264,32 @@ render_html(
     }
 
     .block-container {
-        max-width:1560px;
-        padding-top:1.35rem;
+        max-width:1800px;
+        padding-left:1rem;
+        padding-right:1rem;
+        padding-top:1.2rem;
         padding-bottom:4rem;
+    }
+
+    .hero-fullbleed {
+        width:100vw;
+        max-width:100vw;
+        height:auto;
+        margin-top:-1.2rem;
+        margin-left:calc(50% - 50vw);
+        margin-right:calc(50% - 50vw);
+        overflow:visible;
+        background:#09090c;
+        border-bottom:1px solid #e7e9ec;
+        line-height:0;
+    }
+
+    .hero-fullbleed img {
+        display:block;
+        width:100%;
+        height:auto;
+        object-fit:contain;
+        object-position:center top;
     }
 
     h1,h2,h3,h4,h5,h6,
@@ -1224,35 +1417,71 @@ render_html(
         color:#19191d;
     }
 
-    .rank-card {
+    .rank-grid {
         display:grid;
-        grid-template-columns:38px minmax(0,1fr) auto;
-        gap:9px;
-        align-items:center;
-        margin-bottom:9px;
-        padding:13px 12px;
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+        gap:14px;
+        margin-top:12px;
+    }
+
+    .rank-grid-card {
+        display:flex;
+        min-height:132px;
+        flex-direction:column;
+        justify-content:space-between;
+        padding:16px 18px;
         border:1px solid var(--line);
-        border-radius:12px;
+        border-radius:16px;
         background:#ffffff;
-        box-shadow:0 2px 10px rgba(20,20,20,.035);
+        box-shadow:0 4px 14px rgba(20,20,20,.045);
+        color:#202124;
+        text-decoration:none;
+        transition:
+            transform .15s ease,
+            box-shadow .15s ease,
+            border-color .15s ease;
+    }
+
+    .rank-grid-card:hover {
+        transform:translateY(-3px);
+        border-color:#ff9ab2;
+        box-shadow:0 10px 24px rgba(216,27,80,.10);
+    }
+
+    .rank-grid-top {
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
     }
 
     .rank-no {
         color:#d72555;
+        font-size:.9rem;
         font-weight:950;
     }
 
     .rank-name {
+        display:-webkit-box;
+        margin-top:10px;
         overflow:hidden;
-        text-overflow:ellipsis;
-        white-space:nowrap;
-        font-size:1rem;
-        font-weight:850;
-        color:#202024;
+        -webkit-box-orient:vertical;
+        -webkit-line-clamp:2;
+        font-size:1.05rem;
+        font-weight:950;
+        line-height:1.4;
+        color:#202124;
+    }
+
+    .rank-name-link {
+        color:inherit;
+        text-decoration:none;
     }
 
     .rank-score {
+        margin-top:14px;
         color:#c85b00;
+        font-size:1.18rem;
         font-weight:950;
         white-space:nowrap;
     }
@@ -1684,57 +1913,58 @@ render_html(
     }
 
     .gm-review-card {
-        margin:0 0 14px;
-        padding:20px 22px;
+        margin:0 0 10px;
+        padding:15px 17px;
         border:1px solid #e3e6ea;
-        border-radius:16px;
+        border-radius:15px;
         background:#fff;
-        box-shadow:0 2px 9px rgba(32,33,36,.035);
+        box-shadow:0 2px 8px rgba(32,33,36,.03);
     }
 
     .gm-review-top {
         display:flex;
         justify-content:space-between;
-        gap:12px;
+        gap:10px;
         align-items:flex-start;
     }
 
     .gm-review-source {
-        font-size:1rem;
-        font-weight:900;
-        color:#202124;
+        color:#80868b;
+        font-size:.78rem;
+        font-weight:850;
+        letter-spacing:.01em;
     }
 
     .gm-review-date {
-        color:#70757a;
-        font-size:.9rem;
+        color:#80868b;
+        font-size:.78rem;
         white-space:nowrap;
     }
 
     .gm-review-stars {
-        margin-top:8px;
+        margin-top:5px;
         color:#f9ab00;
-        font-size:1.08rem;
-        letter-spacing:1px;
+        font-size:1rem;
+        letter-spacing:.5px;
     }
 
     .gm-review-text {
-        margin-top:12px;
+        margin-top:10px;
         color:#202124;
-        font-size:1.04rem;
-        line-height:1.78;
+        font-size:1rem;
+        line-height:1.68;
         white-space:normal;
     }
 
     .gm-owner-box {
-        margin-top:14px;
-        padding:14px 15px;
+        margin-top:11px;
+        padding:11px 13px;
         border-left:4px solid #f4a261;
         border-radius:0 10px 10px 0;
         background:#fff8ef;
         color:#3c4043;
-        font-size:.98rem;
-        line-height:1.72;
+        font-size:.95rem;
+        line-height:1.62;
     }
 
     .gm-owner-label {
@@ -1748,6 +1978,277 @@ render_html(
         gap:7px;
         flex-wrap:wrap;
         margin-top:12px;
+    }
+
+    .gm-review-star-row {
+        display:flex;
+        align-items:center;
+        gap:9px;
+        flex-wrap:wrap;
+        margin-top:8px;
+    }
+
+    .gm-review-star-row .gm-review-stars {
+        margin-top:0;
+    }
+
+    .persona-chip {
+        display:inline-flex;
+        align-items:center;
+        min-height:32px;
+        padding:5px 11px;
+        border-radius:999px;
+        font-size:.92rem;
+        font-weight:950;
+        line-height:1.2;
+        box-shadow:0 2px 7px rgba(32,33,36,.05);
+    }
+
+    .persona-chip.guest {
+        border:1px solid #ff9fb8;
+        background:#fff0f4;
+        color:#b91848;
+    }
+
+    .persona-chip.owner {
+        border:1px solid #ffbd74;
+        background:#fff5e8;
+        color:#8b4900;
+    }
+
+    .gm-owner-title-row {
+        display:flex;
+        align-items:center;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-bottom:7px;
+    }
+
+    .gm-owner-title-row .gm-owner-label {
+        margin-bottom:0;
+    }
+
+    .gm-score-summary {
+        display:flex;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-top:14px;
+        padding-top:13px;
+        border-top:1px solid #eef0f2;
+    }
+
+    .gm-intensity-main {
+        display:flex;
+        align-items:baseline;
+        gap:7px;
+        padding:8px 12px;
+        border:2px solid #ff9db5;
+        border-radius:12px;
+        background:
+            linear-gradient(
+                180deg,
+                #fff7f9,
+                #ffe8ee
+            );
+        color:#c41449;
+        font-weight:950;
+    }
+
+    .gm-intensity-main strong {
+        font-size:1.45rem;
+        line-height:1;
+    }
+
+    .gm-firepower-chip {
+        padding:6px 10px;
+        border:1px solid #e0d8f0;
+        border-radius:999px;
+        background:#faf8ff;
+        color:#5d377c;
+        font-size:.88rem;
+        font-weight:900;
+    }
+
+    .persona-summary-grid {
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:12px;
+        margin-top:14px;
+    }
+
+    .classic-case-heading {
+        display:flex;
+        align-items:center;
+        gap:12px;
+        margin:8px 0 10px;
+        padding:2px 2px;
+    }
+
+    .classic-rank {
+        color:#202124;
+        font-size:1.18rem;
+        font-weight:950;
+    }
+
+    .classic-score {
+        color:#d41449;
+        font-size:1.55rem;
+        font-weight:950;
+        letter-spacing:-.02em;
+    }
+
+    .analysis-table-wrap {
+        margin-top:12px;
+        overflow:hidden;
+        border:1px solid #e2e5e9;
+        border-radius:14px;
+        background:#fff;
+        box-shadow:0 2px 10px rgba(32,33,36,.035);
+    }
+
+    .analysis-table {
+        width:100%;
+        border-collapse:collapse;
+        background:#fff;
+        color:#202124;
+        font-size:.94rem;
+    }
+
+    .analysis-table th {
+        padding:12px 14px;
+        border-bottom:1px solid #e2e5e9;
+        background:#f8f9fa;
+        color:#5f6368;
+        text-align:left;
+        font-weight:950;
+    }
+
+    .analysis-table td {
+        padding:12px 14px;
+        border-bottom:1px solid #eef0f2;
+        background:#fff;
+    }
+
+    .analysis-table th:nth-child(2),
+    .analysis-table th:nth-child(3),
+    .analysis-table td:nth-child(2),
+    .analysis-table td:nth-child(3) {
+        text-align:right;
+    }
+
+    .analysis-table tbody tr:last-child td {
+        border-bottom:none;
+    }
+
+    .analysis-table tbody tr:hover td {
+        background:#fff8fa;
+    }
+
+    .analysis-summary-card {
+        margin-top:14px;
+        padding:14px;
+        border:1px solid #e3e6ea;
+        border-radius:14px;
+        background:#fff;
+    }
+
+    .analysis-summary-text {
+        margin-bottom:14px;
+        padding:10px 12px;
+        border-radius:10px;
+        background:#f8f9fa;
+        color:#3c4043;
+        font-size:.92rem;
+        font-weight:850;
+        line-height:1.6;
+    }
+
+    .analysis-compare-row {
+        display:grid;
+        grid-template-columns:72px minmax(0,1fr) 36px;
+        gap:9px;
+        align-items:center;
+        margin-top:10px;
+    }
+
+    .analysis-compare-label {
+        color:#3c4043;
+        font-size:.86rem;
+        font-weight:900;
+    }
+
+    .analysis-compare-track {
+        height:10px;
+        overflow:hidden;
+        border-radius:999px;
+        background:#eef0f2;
+    }
+
+    .analysis-compare-fill {
+        height:100%;
+        border-radius:999px;
+    }
+
+    .analysis-compare-fill.guest {
+        background:#ff6f91;
+    }
+
+    .analysis-compare-fill.owner {
+        background:#f4a261;
+    }
+
+    .analysis-compare-value {
+        color:#202124;
+        text-align:right;
+        font-size:.86rem;
+        font-weight:950;
+    }
+
+    .persona-summary-card {
+        padding:14px;
+        border:1px solid #e2e5e9;
+        border-radius:14px;
+        background:#fff;
+    }
+
+    .persona-summary-title {
+        margin-bottom:9px;
+        color:#202124;
+        font-size:1rem;
+        font-weight:950;
+    }
+
+    .persona-rank-row {
+        display:grid;
+        grid-template-columns:
+            minmax(0,1fr)
+            auto;
+        gap:8px;
+        align-items:center;
+        padding:8px 0;
+        border-bottom:1px solid #f0f1f3;
+    }
+
+    .persona-rank-row:last-child {
+        border-bottom:none;
+    }
+
+    .persona-rank-name {
+        font-weight:850;
+    }
+
+    .persona-rank-count {
+        color:#70757a;
+        font-size:.84rem;
+        font-weight:850;
+    }
+
+    .podium-meta {
+        margin-bottom:12px;
+        color:#80868b;
+        font-size:.80rem;
+        font-weight:800;
     }
 
     .gm-ai-badge {
@@ -1778,6 +2279,17 @@ render_html(
     }
     .rank-detail-link:hover { text-decoration:underline; }
 
+    .rank-name-link {
+        color:inherit;
+        text-decoration:none;
+        font-weight:inherit;
+    }
+
+    .rank-name-link:hover {
+        color:inherit;
+        text-decoration:none;
+    }
+
     .gm-store-shell { scroll-margin-top:88px; }
     .gm-store-head.compact { padding:20px 22px; }
     .gm-quick-grid {
@@ -1793,8 +2305,13 @@ render_html(
     .gm-quick-value.hot { color:#d81b50; }
 
     div[data-baseweb="tab-list"] {
-        position:sticky; top:58px; z-index:30; padding-top:7px;
-        background:rgba(255,255,255,.98); border-bottom:1px solid #eceff1;
+        position:sticky;
+        top:118px;
+        z-index:40;
+        padding-top:7px;
+        background:rgba(255,255,255,.98);
+        border-bottom:1px solid #eceff1;
+        backdrop-filter:blur(10px);
     }
 
     .gm-pr-box {
@@ -1828,7 +2345,12 @@ render_html(
     .podium-medal { font-size:2rem; line-height:1; }
     .podium-rank { margin-top:8px; color:#70757a; font-size:.82rem; font-weight:850; }
     .podium-name { margin-top:5px; font-size:1.05rem; font-weight:950; line-height:1.35; }
-    .podium-score { margin:7px 0 14px; color:#d81b50; font-size:1.2rem; font-weight:950; }
+    .podium-score {
+        margin:7px 0 6px;
+        color:#d81b50;
+        font-size:1.28rem;
+        font-weight:950;
+    }
     .podium-base { display:flex; height:52px; align-items:center; justify-content:center; margin:0 -16px; background:#f5f6f8; font-size:1.5rem; font-weight:950; color:#5f6368; }
     .podium-slot.p1 .podium-base { height:76px; background:#fff1b8; color:#8b6500; }
     .podium-slot.p2 .podium-base { height:60px; background:#eceff1; }
@@ -1846,9 +2368,14 @@ render_html(
     }
 
     .explorer-store-head {
-        padding:2px 2px 12px;
+        position:sticky;
+        top:0;
+        z-index:45;
+        padding:6px 4px 12px;
         border-bottom:1px solid #eceff1;
-        margin-bottom:12px;
+        margin-bottom:8px;
+        background:rgba(255,255,255,.98);
+        backdrop-filter:blur(10px);
     }
 
     .explorer-store-name {
@@ -1887,9 +2414,65 @@ render_html(
     }
 
     .explorer-chip.hot {
-        border-color:#ffc2d1;
-        background:#fff1f5;
-        color:#c81e4f;
+        min-height:40px;
+        padding:8px 14px;
+        border:2px solid #ff8eaa;
+        background:linear-gradient(180deg,#fff7f9 0%,#ffe7ee 100%);
+        color:#bd1243;
+        font-size:1.08rem;
+        font-weight:950;
+        box-shadow:0 5px 14px rgba(216,27,80,.12);
+    }
+
+    .explorer-viewing-label {
+        margin-bottom:4px;
+        color:#d81b50;
+        font-size:.78rem;
+        font-weight:950;
+    }
+
+    .explorer-summary-row {
+        display:grid;
+        grid-template-columns:minmax(130px,.85fr) minmax(0,1.15fr);
+        gap:10px;
+        align-items:stretch;
+        margin-top:10px;
+    }
+
+    .explorer-intensity-hero {
+        padding:11px 12px;
+        border:2px solid #ff9ab2;
+        border-radius:14px;
+        background:linear-gradient(180deg,#fff7f9 0%,#ffe8ef 100%);
+        box-shadow:0 5px 14px rgba(216,27,80,.10);
+    }
+
+    .explorer-intensity-label {
+        color:#b51a45;
+        font-size:.76rem;
+        font-weight:900;
+    }
+
+    .explorer-intensity-value {
+        margin-top:2px;
+        color:#c41449;
+        font-size:1.48rem;
+        font-weight:950;
+        line-height:1.15;
+    }
+
+    .explorer-mini-stats {
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        gap:7px;
+        padding:10px 12px;
+        border:1px solid #e4e7eb;
+        border-radius:14px;
+        background:#fff;
+        color:#5f6368;
+        font-size:.83rem;
+        font-weight:850;
     }
 
     .explorer-panel-title {
@@ -1936,6 +2519,12 @@ render_html(
         min-height:720px;
     }
 
+    @media (max-width:1200px) and (min-width:901px) {
+        .rank-grid {
+            grid-template-columns:repeat(2, minmax(0, 1fr));
+        }
+    }
+
     @media (max-width:900px) {
         .block-container {
             padding-left:.8rem;
@@ -1947,7 +2536,9 @@ render_html(
         .review-dialogue,
         .gm-rating-grid,
         .gm-quick-grid,
-        .podium-wrap {
+        .podium-wrap,
+        .persona-summary-grid,
+        .explorer-summary-row {
             grid-template-columns:1fr;
         }
 
@@ -1970,12 +2561,8 @@ render_html(
             min-height:34px;
         }
 
-        .rank-card {
-            grid-template-columns:30px minmax(0,1fr);
-        }
-
-        .rank-score {
-            grid-column:2;
+        .rank-grid {
+            grid-template-columns:1fr;
         }
     }
     </style>
@@ -1988,15 +2575,21 @@ render_html(
 # ============================================================
 
 if SPLASH_IMAGE.exists():
-    _, image_column, _ = st.columns(
-        [3.25, 3.5, 3.25]
-    )
+    # 以 data URI 輸出，讓主視覺可以突破 block-container，真正滿版。
+    splash_base64 = base64.b64encode(
+        SPLASH_IMAGE.read_bytes()
+    ).decode("ascii")
 
-    with image_column:
-        st.image(
-            str(SPLASH_IMAGE),
-            use_container_width=True,
-        )
+    render_html(
+        f"""
+        <div class="hero-fullbleed">
+            <img
+                src="data:image/png;base64,{splash_base64}"
+                alt="Drama Radar 台北吵架地圖"
+            >
+        </div>
+        """
+    )
 
 nav_column, refresh_column = st.columns(
     [8, 1.25]
@@ -2047,59 +2640,29 @@ def flame_size(
     score: float | None,
 ) -> int:
     if score is None:
-        return 32
+        return 30
 
     value = max(
         0.0,
         min(float(score), 10.0),
     )
 
+    # 烈度差異直接反映在火焰尺寸：
+    # 4 分約 54px、6 分約 66px、8 分約 78px、10 分 90px。
     return int(
         30
-        + (value / 10.0) * 38
+        + (value / 10.0) * 60
     )
 
 
 def flame_colors(
     score: float | None,
 ) -> tuple[str, str, str]:
-    if score is None:
-        return (
-            "#6f6970",
-            "#b9afb7",
-            "rgba(180,170,178,.22)",
-        )
-
-    value = max(
-        0.0,
-        min(float(score), 10.0),
-    )
-
-    if value < 3:
-        return (
-            "#ffc23e",
-            "#fff0a4",
-            "rgba(255,194,62,.45)",
-        )
-
-    if value < 5:
-        return (
-            "#ff851b",
-            "#ffd25d",
-            "rgba(255,133,27,.50)",
-        )
-
-    if value < 7:
-        return (
-            "#ff4638",
-            "#ffad3d",
-            "rgba(255,70,56,.62)",
-        )
-
+    """火焰只用大小表示烈度，顏色固定，不再使用灰色分類。"""
     return (
-        "#e60046",
-        "#ff7138",
-        "rgba(230,0,70,.82)",
+        "#ff4638",
+        "#ffad3d",
+        "rgba(255,70,56,.62)",
     )
 
 
@@ -2111,7 +2674,7 @@ def flame_icon(
 ) -> DivIcon:
     size = flame_size(score)
     if selected:
-        size = int(size * 1.22)
+        size = int(size * 1.28)
     outer, inner, glow = flame_colors(
         score
     )
@@ -2148,7 +2711,12 @@ def flame_icon(
                 0 0
                 {max(4, size // 7)}px
                 {glow}
-            ){" drop-shadow(0 0 8px rgba(216,27,80,.75))" if selected else ""};
+            ){
+                " drop-shadow(0 0 5px rgba(255,255,255,.95))"
+                " drop-shadow(0 0 15px rgba(216,27,80,.95))"
+                " drop-shadow(0 0 24px rgba(255,70,56,.55))"
+                if selected else ""
+            };
         ">
             <svg
                 width="{size}"
@@ -2477,6 +3045,8 @@ def render_rank_cards(
         ],
     ).head(limit)
 
+    cards_html = []
+
     for number, (_, row) in enumerate(
         ranked.iterrows(),
         start=start_rank,
@@ -2487,10 +3057,9 @@ def render_rank_cards(
 
         if percent:
             score_text = f"{score:.0f}%"
-        elif score_column in {
-            "db_review_count",
-            "owner_replies",
-        }:
+        elif score_column == "owner_replies":
+            score_text = f"{score:.0f}場"
+        elif score_column == "db_review_count":
             score_text = f"{score:.0f}"
         else:
             score_text = f"{score:.1f}"
@@ -2500,32 +3069,52 @@ def render_rank_cards(
             or row.get("name")
             or ""
         )
-        action_html = ""
+
+        card_inner = f"""
+            <div class="rank-grid-top">
+                <span class="rank-no">#{number}</span>
+            </div>
+            <div class="rank-name">
+                {store_name}
+            </div>
+            <div class="rank-score">
+                {safe_text(score_prefix)}{score_text}
+            </div>
+        """
+
         if clickable:
             detail_href = (
                 "?store_id="
                 + quote(str(row["store_id"]), safe="")
-                + "#store-detail-start"
             )
-            action_html = (
-                f'<a class="rank-detail-link" href="{detail_href}" '
-                f'target="_top">查看店家</a>'
+            cards_html.append(
+                f"""
+                <a
+                    class="rank-grid-card"
+                    href="{detail_href}"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    {card_inner}
+                </a>
+                """
+            )
+        else:
+            cards_html.append(
+                f"""
+                <div class="rank-grid-card">
+                    {card_inner}
+                </div>
+                """
             )
 
-        render_html(
-            f"""
-            <div class="rank-card">
-                <div class="rank-no">#{number}</div>
-                <div class="rank-main">
-                    <div class="rank-name">{store_name}</div>
-                    {action_html}
-                </div>
-                <div class="rank-score">
-                    {safe_text(score_prefix)}{score_text}
-                </div>
-            </div>
-            """
-        )
+    render_html(
+        f"""
+        <div class="rank-grid">
+            {''.join(cards_html)}
+        </div>
+        """
+    )
 
 
 def render_podium(
@@ -2557,13 +3146,32 @@ def render_podium(
 
     def _score_text(row: pd.Series) -> str:
         score = float(row[score_column])
+
         if percent:
-            value = f"{score:.0f}%"
-        elif score_column in {"db_review_count", "owner_replies"}:
-            value = f"{score:.0f}"
-        else:
-            value = f"{score:.1f}"
-        return f"{safe_text(score_prefix)}{value}"
+            return f"回覆率 {score:.0f}%"
+
+        if score_column == "intensity":
+            return f"🔥 平均烈度 {score:.1f}"
+
+        if score_column == "owner_score":
+            return f"🏪 店家火力 {score:.1f}"
+
+        if score_column == "review_score":
+            return f"😡 顧客火力 {score:.1f}"
+
+        if score_column == "owner_replies":
+            return f"💬 {score:.0f}場"
+
+        if score_column == "db_review_count":
+            return f"💬 {score:.0f}"
+
+        if score_column == "google_score":
+            return f"⭐ Google {score:.1f}"
+
+        return (
+            f"{safe_text(score_prefix)}"
+            f"{score:.1f}"
+        )
 
     cards = {}
     medals = {1: "🥇", 2: "🥈", 3: "🥉"}
@@ -2576,14 +3184,29 @@ def render_podium(
         href = (
             "?store_id="
             + quote(str(row["store_id"]), safe="")
-            + "#store-detail-start"
         )
+        battle_count = int(
+            to_number(
+                row.get("owner_replies")
+            )
+            or 0
+        )
+
+        battle_meta = (
+            f'<div class="podium-meta">'
+            f'💬 {battle_count:,} 場對決'
+            f'</div>'
+            if score_column != "owner_replies"
+            else ""
+        )
+
         cards[pos] = f"""
-        <a class="podium-slot p{pos}" href="{href}" target="_top">
+        <a class="podium-slot p{pos}" href="{href}" target="_blank" rel="noopener">
             <div class="podium-medal">{medals[pos]}</div>
             <div class="podium-rank">第 {pos} 名</div>
             <div class="podium-name">{name}</div>
             <div class="podium-score">{_score_text(row)}</div>
+            {battle_meta}
             <div class="podium-base"><span>{pos}</span></div>
         </a>
         """
@@ -2741,6 +3364,19 @@ def render_duel(
                 ">
                     <div class="duel-label">
                         😡 顧客
+                        {
+                            "｜" + safe_text(
+                                persona_text(
+                                    review_row.get("guest_sentiment"),
+                                    role="guest",
+                                )
+                            )
+                            if persona_text(
+                                review_row.get("guest_sentiment"),
+                                role="guest",
+                            )
+                            else ""
+                        }
                     </div>
 
                     {safe_text(
@@ -2761,6 +3397,19 @@ def render_duel(
                 ">
                     <div class="duel-label">
                         🏪 店家
+                        {
+                            "｜" + safe_text(
+                                persona_text(
+                                    review_row.get("owner_sentiment"),
+                                    role="owner",
+                                )
+                            )
+                            if persona_text(
+                                review_row.get("owner_sentiment"),
+                                role="owner",
+                            )
+                            else ""
+                        }
                     </div>
 
                     {safe_text(
@@ -2973,78 +3622,169 @@ def render_review_feed_card(
 def render_google_review_card(
     review: pd.Series,
 ) -> None:
-    stars = to_number(review.get("stars"))
-    likes = to_number(review.get("likes_count"))
-    guest_score = to_number(review.get("guest_score"))
-    owner_score = to_number(review.get("owner_score"))
-    intensity = to_number(review.get("intensity"))
+    stars = to_number(
+        review.get("stars")
+    )
+    guest_score = to_number(
+        review.get("guest_score")
+    )
+    owner_score = to_number(
+        review.get("owner_score")
+    )
+    intensity = to_number(
+        review.get("intensity")
+    )
 
-    published_at = review.get("published_at")
+    published_at = review.get(
+        "published_at"
+    )
     date_text = ""
-    if pd.notna(published_at):
-        date_text = str(published_at)[:10]
 
-    star_text = "★" * int(stars or 0)
-    star_text += "☆" * max(0, 5 - int(stars or 0))
+    if pd.notna(published_at):
+        date_text = str(
+            published_at
+        )[:10]
+
+    star_text = (
+        "★" * int(stars or 0)
+        + "☆" * max(
+            0,
+            5 - int(stars or 0),
+        )
+    )
+
+    guest_persona = persona_text(
+        review.get("guest_sentiment"),
+        role="guest",
+    )
+    owner_persona = persona_text(
+        review.get("owner_sentiment"),
+        role="owner",
+    )
+
+    guest_persona_html = (
+        f'<span class="persona-chip guest">'
+        f'{safe_text(guest_persona)}'
+        f'</span>'
+        if guest_persona
+        else ""
+    )
+
+    owner_persona_html = (
+        f'<span class="persona-chip owner">'
+        f'{safe_text(owner_persona)}'
+        f'</span>'
+        if owner_persona
+        else ""
+    )
 
     review_html = safe_text(
         review.get("review_text")
         or "（沒有評論文字）"
-    ).replace("\n", "<br>")
+    ).replace(
+        "\n",
+        "<br>",
+    )
 
     owner_reply = str(
         review.get("owner_reply")
         or ""
     ).strip()
-    owner_html = safe_text(owner_reply).replace("\n", "<br>")
 
-    ai_badges = []
-    if intensity is not None:
-        ai_badges.append(
-            f'<span class="gm-ai-badge">🔥 本場烈度 {intensity:.1f}</span>'
-        )
-    if guest_score is not None and bool(review.get("has_ai")):
-        ai_badges.append(
-            f'<span class="gm-ai-badge">😡 顧客 {guest_score:.0f}</span>'
-        )
-    if owner_score is not None and bool(review.get("has_ai")):
-        ai_badges.append(
-            f'<span class="gm-ai-badge">🏪 店家 {owner_score:.0f}</span>'
-        )
-    if likes is not None and likes > 0:
-        ai_badges.append(
-            f'<span class="gm-ai-badge">👍 {int(likes)}</span>'
-        )
+    owner_html = safe_text(
+        owner_reply
+    ).replace(
+        "\n",
+        "<br>",
+    )
 
     if owner_reply:
         owner_section = (
             '<div class="gm-owner-box">'
-            '<div class="gm-owner-label">🏪 店家回覆</div>'
+            '<div class="gm-owner-title-row">'
+            '<div class="gm-owner-label">'
+            '🏪 店家回覆'
+            '</div>'
+            + owner_persona_html
+            + '</div>'
             + owner_html
             + '</div>'
         )
     else:
         owner_section = ""
 
-    pr_reply = str(review.get("pr_reply") or "").strip()
+    score_parts = []
+
+    if intensity is not None:
+        score_parts.append(
+            '<div class="gm-intensity-main">'
+            '<span>🔥 本場烈度</span>'
+            f'<strong>{intensity:.1f}</strong>'
+            '</div>'
+        )
+
+    if guest_score is not None:
+        score_parts.append(
+            '<span class="gm-firepower-chip">'
+            f'😡 顧客火力 {guest_score:.0f}'
+            '</span>'
+        )
+
+    if owner_score is not None:
+        score_parts.append(
+            '<span class="gm-firepower-chip">'
+            f'🏪 店家火力 {owner_score:.0f}'
+            '</span>'
+        )
+
+    score_section = (
+        '<div class="gm-score-summary">'
+        + "".join(score_parts)
+        + '</div>'
+        if score_parts
+        else ""
+    )
+
+    pr_reply = str(
+        review.get("pr_reply")
+        or ""
+    ).strip()
+
     pr_section = ""
+
     if pr_reply:
         pr_section = (
             '<div class="gm-pr-box">'
-            '<div class="gm-pr-label">🤖 AI 公關建議</div>'
-            + safe_text(pr_reply).replace("\n", "<br>")
+            '<div class="gm-pr-label">'
+            '🤖 AI 公關建議'
+            '</div>'
+            + safe_text(
+                pr_reply
+            ).replace(
+                "\n",
+                "<br>",
+            )
             + '</div>'
         )
 
-    review_url = safe_url(review.get("review_url"))
+    review_url = safe_url(
+        review.get("review_url")
+    )
+
     review_link = ""
+
     if review_url:
         review_link = (
             '<div class="gm-review-actions">'
             '<a class="gm-review-link" href="'
-            + html.escape(review_url, quote=True)
-            + '" target="_blank">查看原始 Google Review</a>'
-            '</div>'
+            + html.escape(
+                review_url,
+                quote=True,
+            )
+            + '" target="_blank">'
+            + '查看原始 Google Review ↗'
+            + '</a>'
+            + '</div>'
         )
 
     render_html(
@@ -3052,19 +3792,29 @@ def render_google_review_card(
         <div class="gm-review-card">
             <div class="gm-review-top">
                 <div>
-                    <div class="gm-review-source">Google 低星評論</div>
-                    <div class="gm-review-stars">{star_text}</div>
+                    <div class="gm-review-source">
+                        Google 低星評論
+                    </div>
+
+                    <div class="gm-review-star-row">
+                        <div class="gm-review-stars">
+                            {star_text}
+                        </div>
+                        {guest_persona_html}
+                    </div>
                 </div>
-                <div class="gm-review-date">{safe_text(date_text)}</div>
+
+                <div class="gm-review-date">
+                    {safe_text(date_text)}
+                </div>
             </div>
 
-            <div class="gm-review-text">{review_html}</div>
+            <div class="gm-review-text">
+                {review_html}
+            </div>
+
             {owner_section}
-
-            <div class="gm-ai-line">
-                {''.join(ai_badges)}
-            </div>
-
+            {score_section}
             {pr_section}
             {review_link}
         </div>
@@ -3081,15 +3831,62 @@ def render_clean_horizontal_bar(
     value_format: str = ".1f",
     height: int = 230,
 ) -> None:
-    """白底、中文欄名、直接標數值的簡潔橫條圖。"""
+    """白底橫條圖，並直接把數值標在柱子尾端。"""
     if frame.empty:
         st.info("目前沒有可顯示的資料。")
         return
 
-    data = frame[[category, value]].dropna().to_dict("records")
-    if not data:
+    chart_frame = frame[[category, value]].dropna().copy()
+    if chart_frame.empty:
         st.info("目前沒有可顯示的資料。")
         return
+
+    chart_frame[value] = pd.to_numeric(
+        chart_frame[value],
+        errors="coerce",
+    )
+    chart_frame = chart_frame.dropna(subset=[value])
+
+    if chart_frame.empty:
+        st.info("目前沒有可顯示的資料。")
+        return
+
+    data = chart_frame.to_dict("records")
+    max_value = float(chart_frame[value].max())
+    domain_max = max(
+        1.0,
+        max_value * 1.16,
+    )
+
+    y_encoding = {
+        "field": category,
+        "type": "nominal",
+        "sort": "-x",
+        "title": None,
+        "axis": {
+            "labelFontSize": 14,
+            "labelLimit": 180,
+            "labelColor": "#5f6368",
+            "domainColor": "#dadce0",
+        },
+    }
+
+    x_encoding = {
+        "field": value,
+        "type": "quantitative",
+        "title": None,
+        "scale": {
+            "domain": [0, domain_max],
+            "nice": False,
+        },
+        "axis": {
+            "labelFontSize": 12,
+            "labelColor": "#5f6368",
+            "grid": True,
+            "gridColor": "#eef0f2",
+            "domainColor": "#dadce0",
+        },
+    }
 
     spec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -3102,48 +3899,68 @@ def render_clean_horizontal_bar(
             "color": "#202124",
         },
         "data": {"values": data},
-        "mark": {
-            "type": "bar",
-            "cornerRadiusEnd": 6,
-            "color": "#7cb9e8",
-        },
-        "encoding": {
-            "y": {
-                "field": category,
-                "type": "nominal",
-                "sort": "-x",
-                "title": None,
-                "axis": {
-                    "labelFontSize": 14,
-                    "labelLimit": 180,
-                    "labelColor": "#5f6368",
-                    "domainColor": "#dadce0",
+        "layer": [
+            {
+                "mark": {
+                    "type": "bar",
+                    "cornerRadiusEnd": 6,
+                    "color": "#7cb9e8",
+                },
+                "encoding": {
+                    "y": y_encoding,
+                    "x": x_encoding,
+                    "tooltip": [
+                        {
+                            "field": category,
+                            "type": "nominal",
+                            "title": "行政區",
+                        },
+                        {
+                            "field": value,
+                            "type": "quantitative",
+                            "title": "數量",
+                            "format": value_format,
+                        },
+                    ],
                 },
             },
-            "x": {
-                "field": value,
-                "type": "quantitative",
-                "title": None,
-                "axis": {
-                    "labelFontSize": 12,
-                    "labelColor": "#5f6368",
-                    "grid": True,
-                    "gridColor": "#eef0f2",
-                    "domainColor": "#dadce0",
+            {
+                "mark": {
+                    "type": "text",
+                    "align": "left",
+                    "baseline": "middle",
+                    "dx": 7,
+                    "fontSize": 13,
+                    "fontWeight": "bold",
+                    "color": "#3c4043",
+                },
+                "encoding": {
+                    "y": y_encoding,
+                    "x": {
+                        "field": value,
+                        "type": "quantitative",
+                    },
+                    "text": {
+                        "field": value,
+                        "type": "quantitative",
+                        "format": value_format,
+                    },
                 },
             },
-            "tooltip": [
-                {"field": category, "type": "nominal", "title": "項目"},
-                {"field": value, "type": "quantitative", "title": "分數", "format": value_format},
-            ],
-        },
+        ],
         "height": height,
         "config": {
             "view": {"stroke": None},
             "axis": {"titleColor": "#5f6368"},
         },
     }
-    st.vega_lite_chart(spec, use_container_width=True)
+
+    st.vega_lite_chart(
+        spec,
+        use_container_width=True,
+    )
+
+
 
 
 def render_sentiment_comparison(
@@ -3230,11 +4047,7 @@ def render_sentiment_comparison(
 
 if current_page == PAGE_MAP:
     page_title("🔥 台北吵架地圖")
-    render_html(
-        '<div class="page-subtitle">'
-        '點地圖火焰就直接在右側看店家吵架內容，不用再跳頁或往下找。'
-        '</div>'
-    )
+    # 首頁不再顯示資料處理規則，讓使用者直接看地圖。
 
     if stores.empty:
         st.error(
@@ -3243,13 +4056,17 @@ if current_page == PAGE_MAP:
         )
 
     else:
-        # 前台只顯示 1–2★ 且店家有真實回覆的吵架案例。
+        # 正式前台只顯示完整吵架案例：
+        # 1–2★ + 店家回覆 + AI 分析完整 + 有平均烈度。
+        # 因此只要地圖上有火焰，就一定能打開經典對決與分析。
         map_stores = stores[
-            stores["owner_replies"].fillna(0) > 0
+            (stores["owner_replies"].fillna(0) > 0)
+            & stores["has_ai"]
+            & stores["intensity"].notna()
         ].copy()
 
         if map_stores.empty:
-            st.info("目前沒有符合『低星評論 + 店家回覆』的案例。")
+            st.info("目前沒有可顯示的吵架案例。")
 
         else:
             districts = sorted(
@@ -3321,7 +4138,7 @@ if current_page == PAGE_MAP:
 
             render_html(
                 '<div class="explorer-hint">'
-                f'目前 {len(filtered)} 家｜點 🔥 直接切換右側店家內容。'
+                f'目前 {len(filtered)} 家'
                 '</div>'
             )
 
@@ -3332,35 +4149,20 @@ if current_page == PAGE_MAP:
                 filtered = filtered.reset_index(drop=True)
                 filtered_ids = filtered["store_id"].astype(str).tolist()
 
-                # 預設店家：先沿用使用者剛選過的；否則用最高烈度案例。
+                # 一進首頁不自動選店。
+                # 點地圖火焰，或從排行另開網址帶 store_id，才顯示右側內容。
                 selected_store_id = str(
-                    st.session_state.get("selected_store_id", "")
+                    st.session_state.get("v9_selected_store_id", "")
                     or ""
                 )
 
                 if selected_store_id not in filtered_ids:
-                    ai_candidates = filtered[
-                        filtered["intensity"].notna()
-                    ].sort_values(
-                        ["intensity", "owner_replies"],
-                        ascending=[False, False],
-                    )
-                    if not ai_candidates.empty:
-                        selected_store_id = str(
-                            ai_candidates.iloc[0]["store_id"]
-                        )
-                    else:
-                        selected_store_id = str(
-                            filtered.sort_values(
-                                "owner_replies",
-                                ascending=False,
-                            ).iloc[0]["store_id"]
-                        )
-                    st.session_state["selected_store_id"] = selected_store_id
+                    selected_store_id = ""
+                    st.session_state["v9_selected_store_id"] = ""
 
                 map_col, detail_col = st.columns(
-                    [1.62, 1.0],
-                    gap="large",
+                    [1.55, 1.08],
+                    gap="medium",
                 )
 
                 # ----------------------------------------------------
@@ -3398,16 +4200,12 @@ if current_page == PAGE_MAP:
 
                     for _, row in filtered.iterrows():
                         score = to_number(row.get("intensity"))
-                        case_count = int(
-                            to_number(row.get("owner_replies"))
-                            or 0
-                        )
                         tooltip = (
                             f"{display_store_name(row.get('name'), 30)}"
-                            f"｜🔥 {score:.1f}" if score is not None
+                            f"｜🔥 {score:.1f}"
+                            if score is not None
                             else f"{display_store_name(row.get('name'), 30)}"
                         )
-                        tooltip += f"｜{case_count} 則"
 
                         if score is not None:
                             heat_points.append(
@@ -3452,7 +4250,7 @@ if current_page == PAGE_MAP:
                         height=720,
                         use_container_width=True,
                         returned_objects=["last_object_clicked"],
-                        key="main_drama_map_v6",
+                        key="main_drama_map_v9",
                     )
 
                     clicked = (
@@ -3480,6 +4278,7 @@ if current_page == PAGE_MAP:
 
                         if clicked_store_id != selected_store_id:
                             st.session_state["selected_store_id"] = clicked_store_id
+                            st.session_state["v9_selected_store_id"] = clicked_store_id
                             st.session_state["target_store_id"] = clicked_store_id
                             st.rerun()
 
@@ -3487,171 +4286,185 @@ if current_page == PAGE_MAP:
                 # RIGHT — one store, all useful content in one panel.
                 # ----------------------------------------------------
                 with detail_col:
-                    try:
-                        detail_container = st.container(
-                            height=720,
-                            border=True,
-                        )
-                    except TypeError:
-                        # Compatibility with older Streamlit versions.
-                        detail_container = st.container(border=True)
+                    if not selected_store_id:
+                        try:
+                            empty_detail = st.container(
+                                height=720,
+                                border=True,
+                            )
+                        except TypeError:
+                            empty_detail = st.container(border=True)
 
-                    with detail_container:
-                        selected_store = filtered[
-                            filtered["store_id"].astype(str)
-                            == str(selected_store_id)
-                        ].iloc[0]
+                        with empty_detail:
+                            render_html(
+                                """
+                                <div style="
+                                    min-height:620px;
+                                    display:flex;
+                                    flex-direction:column;
+                                    align-items:center;
+                                    justify-content:center;
+                                    text-align:center;
+                                    padding:28px;
+                                    color:#5f6368;
+                                ">
+                                    <div style="font-size:3.2rem;line-height:1;">🔥</div>
+                                    <div style="
+                                        margin-top:14px;
+                                        color:#202124;
+                                        font-size:1.4rem;
+                                        font-weight:950;
+                                    ">
+                                        點一個火焰開始看
+                                    </div>
+                                    <div style="
+                                        max-width:300px;
+                                        margin-top:8px;
+                                        font-size:.95rem;
+                                        line-height:1.75;
+                                    ">
+                                        點地圖上的店家，查看真實吵架內容。
+                                    </div>
+                                </div>
+                                """
+                            )
+                    else:
+                        try:
+                            detail_container = st.container(
+                                height=720,
+                                border=True,
+                            )
+                        except TypeError:
+                            # Compatibility with older Streamlit versions.
+                            detail_container = st.container(border=True)
 
-                        rating = load_store_rating_summary(
-                            selected_store_id
-                        )
-                        google_score = to_number(
-                            rating.get("google_score")
-                            if rating
-                            else selected_store.get("google_score")
-                        )
-                        reviews_count = int(
-                            to_number(
-                                rating.get("reviews_count")
+                        with detail_container:
+                            selected_store = filtered[
+                                filtered["store_id"].astype(str)
+                                == str(selected_store_id)
+                            ].iloc[0]
+
+                            rating = load_store_rating_summary(
+                                selected_store_id
+                            )
+                            google_score = to_number(
+                                rating.get("google_score")
                                 if rating
-                                else selected_store.get("reviews")
+                                else selected_store.get("google_score")
                             )
-                            or 0
-                        )
-                        case_count = int(
-                            to_number(selected_store.get("owner_replies"))
-                            or 0
-                        )
-                        avg_intensity = to_number(
-                            selected_store.get("intensity")
-                        )
-
-                        google_text = (
-                            f"{google_score:.1f}"
-                            if google_score is not None
-                            else "—"
-                        )
-                        intensity_text = (
-                            f"{avg_intensity:.1f}"
-                            if avg_intensity is not None
-                            else "—"
-                        )
-
-                        render_html(
-                            f'''
-                            <div class="explorer-store-head">
-                                <div style="font-size:.82rem;font-weight:900;color:#d81b50;margin-bottom:5px;">🔥 你正在查看</div>
-                                <div class="explorer-store-name">
-                                    {safe_text(selected_store.get("name") or "")}
-                                </div>
-                                <div class="explorer-store-address">
-                                    📍 {safe_text(selected_store.get("district") or "")}
-                                </div>
-                                <div class="explorer-chip-row">
-                                    <span class="explorer-chip">⭐ {google_text}</span>
-                                    <span class="explorer-chip">💬 {case_count:,} 場</span>
-                                    <span class="explorer-chip hot">🔥 {intensity_text}</span>
-                                </div>
-                            </div>
-                            '''
-                        )
-
-                        featured = load_store_classic_reviews(
-                            selected_store_id,
-                            limit=1,
-                        )
-                        if not featured.empty:
-                            featured_review = featured.iloc[0]
-                            featured_intensity = to_number(
-                                featured_review.get("intensity")
+                            reviews_count = int(
+                                to_number(
+                                    rating.get("reviews_count")
+                                    if rating
+                                    else selected_store.get("reviews")
+                                )
+                                or 0
                             )
-                            feature_badge = (
-                                f"🔥 本場 {featured_intensity:.1f}"
-                                if featured_intensity is not None
-                                else "🔥 精選案例"
+                            case_count = int(
+                                to_number(selected_store.get("owner_replies"))
+                                or 0
                             )
+                            avg_intensity = to_number(
+                                selected_store.get("intensity")
+                            )
+
+                            google_text = (
+                                f"{google_score:.1f}"
+                                if google_score is not None
+                                else "—"
+                            )
+                            intensity_text = (
+                                f"{avg_intensity:.1f}"
+                                if avg_intensity is not None
+                                else "—"
+                            )
+
                             render_html(
-                                '<div style="margin:8px 0 12px;padding:13px 14px;border:1px solid #f0d6de;border-radius:14px;background:#fff9fb;">'
-                                '<div style="font-weight:950;font-size:1rem;margin-bottom:6px;">🔥 這間店最精彩的一場</div>'
-                                f'<div style="font-size:.86rem;color:#d81b50;font-weight:900;margin-bottom:7px;">{safe_text(feature_badge)}</div>'
-                                '<div style="font-size:.91rem;line-height:1.55;"><b>😡 顧客：</b>'
-                                + safe_text(truncate_text(featured_review.get("review_text"), 92))
-                                + '</div>'
-                                '<div style="margin-top:6px;font-size:.91rem;line-height:1.55;"><b>🏪 店家：</b>'
-                                + safe_text(truncate_text(featured_review.get("owner_reply"), 92))
-                                + '</div>'
-                                '</div>'
+                                f"""
+                                <div class="explorer-store-head">
+                                    <div class="explorer-viewing-label">
+                                        🔥 你正在查看
+                                    </div>
+
+                                    <div class="explorer-store-name">
+                                        {safe_text(selected_store.get("name") or "")}
+                                    </div>
+
+                                    <div class="explorer-store-address">
+                                        📍 {safe_text(selected_store.get("district") or "")}
+                                    </div>
+
+                                    <div class="explorer-summary-row">
+                                        <div class="explorer-intensity-hero">
+                                            <div class="explorer-intensity-label">
+                                                平均烈度
+                                            </div>
+                                            <div class="explorer-intensity-value">
+                                                🔥 {intensity_text}
+                                            </div>
+                                        </div>
+
+                                        <div class="explorer-mini-stats">
+                                            <span>⭐ Google {google_text}</span>
+                                            <span>💬 {case_count:,} 場對決</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                """
                             )
 
-                        store_url = safe_url(
-                            selected_store.get("store_url")
-                        )
-                        if store_url:
-                            st.link_button(
-                                "Google Maps",
-                                store_url,
-                                use_container_width=True,
+                            classic_tab, review_tab, analysis_tab = st.tabs(
+                                [
+                                    "🔥 經典對決",
+                                    "💬 全部案例",
+                                    "📊 分析",
+                                ]
                             )
 
-                        review_tab, classic_tab, analysis_tab = st.tabs(
-                            [
-                                "💬 全部案例",
-                                "🔥 經典對決",
-                                "📊 分析",
-                            ]
-                        )
+                            # --------------------------------------------
+                            # TAB 1 — all owner-reply low-star cases
+                            # --------------------------------------------
+                            with review_tab:
+                                render_html(
+                                    '<div id="review-list-top" '
+                                    'style="height:1px;scroll-margin-top:150px;"></div>'
+                                )
 
-                        # --------------------------------------------
-                        # TAB 1 — all owner-reply low-star cases
-                        # --------------------------------------------
-                        with review_tab:
-                            render_html(
-                                '<div class="explorer-panel-title">全部吵架案例</div>'
-                                '<div class="explorer-panel-subtitle">'
-                                '只顯示 1–2 星且店家有回覆；每頁 100 筆。'
-                                '</div>'
-                            )
+                                if st.session_state.pop(
+                                    "_scroll_review_list_top",
+                                    False,
+                                ):
+                                    components.html(
+                                        """
+                                        <script>
+                                        const el = window.parent.document
+                                            .getElementById('review-list-top');
+                                        if (el) {
+                                            el.scrollIntoView({
+                                                behavior: 'auto',
+                                                block: 'start'
+                                            });
+                                        }
+                                        </script>
+                                        """,
+                                        height=0,
+                                    )
 
-                            review_filter = st.radio(
-                                "篩選",
-                                ["全部", "AI 已分析", "1 星", "2 星"],
-                                horizontal=True,
-                                key=f"v6_filter_{selected_store_id}",
-                            )
-                            review_sort = st.selectbox(
-                                "排序",
-                                ["最新", "最激烈", "最多讚", "最舊"],
-                                key=f"v6_sort_{selected_store_id}",
-                            )
+                                review_filter = "AI 已分析"
+                                review_sort = st.selectbox(
+                                    "排序",
+                                    ["最新", "烈度高至低"],
+                                    key=f"v8_sort_{selected_store_id}",
+                                )
 
-                            page_key = (
-                                f"v6_page_{selected_store_id}_"
-                                f"{review_filter}_{review_sort}"
-                            )
-                            current_page_no = int(
-                                st.session_state.get(page_key, 1)
-                            )
+                                page_key = (
+                                    f"v8_page_{selected_store_id}_"
+                                    f"{review_sort}"
+                                )
+                                current_page_no = int(
+                                    st.session_state.get(page_key, 1)
+                                )
 
-                            review_page, total_reviews = load_store_review_page(
-                                selected_store_id,
-                                current_page_no,
-                                review_filter,
-                                review_sort,
-                                REVIEW_PAGE_SIZE,
-                            )
-
-                            total_pages = max(
-                                1,
-                                (
-                                    total_reviews
-                                    + REVIEW_PAGE_SIZE
-                                    - 1
-                                ) // REVIEW_PAGE_SIZE,
-                            )
-
-                            if current_page_no > total_pages:
-                                current_page_no = total_pages
-                                st.session_state[page_key] = total_pages
                                 review_page, total_reviews = load_store_review_page(
                                     selected_store_id,
                                     current_page_no,
@@ -3660,186 +4473,252 @@ if current_page == PAGE_MAP:
                                     REVIEW_PAGE_SIZE,
                                 )
 
-                            prev_col, info_col, next_col = st.columns(
-                                [1.0, 1.4, 1.0],
-                                vertical_alignment="center",
-                            )
-
-                            with prev_col:
-                                if st.button(
-                                    "← 上一頁",
-                                    key=f"v6_prev_{page_key}",
-                                    disabled=current_page_no <= 1,
-                                    use_container_width=True,
-                                ):
-                                    st.session_state[page_key] = current_page_no - 1
-                                    st.rerun()
-
-                            with info_col:
-                                render_html(
-                                    '<div class="explorer-page-info">'
-                                    f'第 {current_page_no} / {total_pages} 頁<br>'
-                                    f'共 {total_reviews:,} 則'
-                                    '</div>'
+                                total_pages = max(
+                                    1,
+                                    (
+                                        total_reviews
+                                        + REVIEW_PAGE_SIZE
+                                        - 1
+                                    ) // REVIEW_PAGE_SIZE,
                                 )
 
-                            with next_col:
-                                if st.button(
-                                    "下一頁 →",
-                                    key=f"v6_next_{page_key}",
-                                    disabled=current_page_no >= total_pages,
-                                    use_container_width=True,
-                                ):
-                                    st.session_state[page_key] = current_page_no + 1
-                                    st.rerun()
+                                if current_page_no > total_pages:
+                                    current_page_no = total_pages
+                                    st.session_state[page_key] = total_pages
+                                    review_page, total_reviews = load_store_review_page(
+                                        selected_store_id,
+                                        current_page_no,
+                                        review_filter,
+                                        review_sort,
+                                        REVIEW_PAGE_SIZE,
+                                    )
 
-                            if review_page.empty:
-                                st.info("目前沒有符合條件的案例。")
-                            else:
-                                for _, review in review_page.iterrows():
-                                    render_google_review_card(review)
-
-                            if total_pages > 1:
-                                bottom_prev, bottom_info, bottom_next = st.columns(
+                                prev_col, info_col, next_col = st.columns(
                                     [1.0, 1.4, 1.0],
                                     vertical_alignment="center",
                                 )
-                                with bottom_prev:
+
+                                with prev_col:
                                     if st.button(
-                                        "← 上一頁 ",
-                                        key=f"v6_prev_bottom_{page_key}",
+                                        "← 上一頁",
+                                        key=f"v8_prev_{page_key}",
                                         disabled=current_page_no <= 1,
                                         use_container_width=True,
                                     ):
                                         st.session_state[page_key] = current_page_no - 1
+                                        st.session_state["_scroll_review_list_top"] = True
                                         st.rerun()
-                                with bottom_info:
+
+                                with info_col:
                                     render_html(
                                         '<div class="explorer-page-info">'
-                                        f'{current_page_no} / {total_pages}'
+                                        f'第 {current_page_no} / {total_pages} 頁<br>'
+                                        f'共 {total_reviews:,} 則'
                                         '</div>'
                                     )
-                                with bottom_next:
+
+                                with next_col:
                                     if st.button(
-                                        "下一頁 → ",
-                                        key=f"v6_next_bottom_{page_key}",
+                                        "下一頁 →",
+                                        key=f"v8_next_{page_key}",
                                         disabled=current_page_no >= total_pages,
                                         use_container_width=True,
                                     ):
                                         st.session_state[page_key] = current_page_no + 1
+                                        st.session_state["_scroll_review_list_top"] = True
                                         st.rerun()
 
-                        # --------------------------------------------
-                        # TAB 2 — strongest AI-scored cases
-                        # --------------------------------------------
-                        with classic_tab:
-                            render_html(
-                                '<div class="explorer-panel-title">🔥 最精彩對決</div>'
-                                '<div class="explorer-panel-subtitle">'
-                                '依本場烈度排序，只顯示已有 AI 評分的真實案例。'
-                                '</div>'
-                            )
+                                if review_page.empty:
+                                    st.info("目前沒有符合條件的案例。")
+                                else:
+                                    for _, review in review_page.iterrows():
+                                        render_google_review_card(review)
 
-                            classics = load_store_classic_reviews(
-                                selected_store_id,
-                                limit=20,
-                            )
-
-                            if classics.empty:
-                                st.info("這家店目前還沒有完成 AI 評分的對決。")
-                            else:
-                                for number, (_, review) in enumerate(
-                                    classics.iterrows(),
-                                    start=1,
-                                ):
-                                    intensity = to_number(
-                                        review.get("intensity")
+                                if total_pages > 1:
+                                    bottom_prev, bottom_info, bottom_next = st.columns(
+                                        [1.0, 1.4, 1.0],
+                                        vertical_alignment="center",
                                     )
-                                    title = f"#{number}"
-                                    if intensity is not None:
-                                        title += f"　🔥 {intensity:.1f}"
-                                    st.markdown(f"**{title}**")
-                                    render_google_review_card(review)
-
-                        # --------------------------------------------
-                        # TAB 3 — store analysis, no extra page needed
-                        # --------------------------------------------
-                        with analysis_tab:
-                            render_html(
-                                '<div class="explorer-panel-title">📊 店家分析</div>'
-                                '<div class="explorer-panel-subtitle">'
-                                '快速看這間店的顧客火力、店家火力與情緒，不塞工程圖表。'
-                                '</div>'
-                            )
-
-                            ai_rows = load_store_ai_rows(
-                                selected_store_id
-                            )
-
-                            if ai_rows.empty:
-                                st.info("這家店目前沒有 AI 分析資料。")
-                            else:
-                                ai_rows["guest_score"] = pd.to_numeric(
-                                    ai_rows["guest_score"], errors="coerce"
-                                )
-                                ai_rows["owner_score"] = pd.to_numeric(
-                                    ai_rows["owner_score"], errors="coerce"
-                                )
-                                ai_rows["intensity"] = (
-                                    ai_rows["guest_score"]
-                                    + ai_rows["owner_score"]
-                                ) / 2
-
-                                guest_avg = ai_rows["guest_score"].mean()
-                                owner_avg = ai_rows["owner_score"].mean()
-                                intensity_avg = ai_rows["intensity"].mean()
-
-                                m1, m2, m3 = st.columns(3)
-                                m1.metric("😡 顧客平均火力", f"{guest_avg:.1f}")
-                                m2.metric("🏪 店家平均火力", f"{owner_avg:.1f}")
-                                m3.metric("🔥 平均烈度", f"{intensity_avg:.1f}")
-
-                                score_frame = pd.DataFrame(
-                                    {
-                                        "角色": ["顧客", "店家"],
-                                        "平均火力": [guest_avg, owner_avg],
-                                    }
-                                )
-                                render_clean_horizontal_bar(
-                                    score_frame,
-                                    category="角色",
-                                    value="平均火力",
-                                    title="顧客 vs 店家，誰比較火？",
-                                    height=150,
-                                )
-
-                                sentiment_parts = []
-                                for column, role in [
-                                    ("guest_sentiment", "顧客"),
-                                    ("owner_sentiment", "店家"),
-                                ]:
-                                    if column in ai_rows.columns:
-                                        counts = (
-                                            ai_rows[column]
-                                            .fillna("")
-                                            .replace("", "未標記")
-                                            .value_counts()
-                                            .rename_axis("情緒")
-                                            .reset_index(name="筆數")
+                                    with bottom_prev:
+                                        if st.button(
+                                            "← 上一頁 ",
+                                            key=f"v8_prev_bottom_{page_key}",
+                                            disabled=current_page_no <= 1,
+                                            use_container_width=True,
+                                        ):
+                                            st.session_state[page_key] = current_page_no - 1
+                                            st.session_state["_scroll_review_list_top"] = True
+                                            st.rerun()
+                                    with bottom_info:
+                                        render_html(
+                                            '<div class="explorer-page-info">'
+                                            f'{current_page_no} / {total_pages}'
+                                            '</div>'
                                         )
-                                        counts["角色"] = role
-                                        sentiment_parts.append(counts)
+                                    with bottom_next:
+                                        if st.button(
+                                            "下一頁 → ",
+                                            key=f"v8_next_bottom_{page_key}",
+                                            disabled=current_page_no >= total_pages,
+                                            use_container_width=True,
+                                        ):
+                                            st.session_state[page_key] = current_page_no + 1
+                                            st.session_state["_scroll_review_list_top"] = True
+                                            st.rerun()
 
-                                if sentiment_parts:
-                                    sentiment_frame = pd.concat(
-                                        sentiment_parts,
-                                        ignore_index=True,
+                            # --------------------------------------------
+                            # TAB 2 — strongest AI-scored cases
+                            # --------------------------------------------
+                            with classic_tab:
+                                classics = load_store_classic_reviews(
+                                    selected_store_id,
+                                    limit=20,
+                                )
+
+                                if classics.empty:
+                                    st.info("目前沒有可顯示的對決。")
+                                else:
+                                    for number, (_, review) in enumerate(
+                                        classics.iterrows(),
+                                        start=1,
+                                    ):
+                                        intensity = to_number(
+                                            review.get("intensity")
+                                        )
+                                        intensity_html = (
+                                            f'<span class="classic-score">🔥 {intensity:.1f}</span>'
+                                            if intensity is not None
+                                            else ""
+                                        )
+                                        render_html(
+                                            f"""
+                                            <div class="classic-case-heading">
+                                                <span class="classic-rank">#{number}</span>
+                                                {intensity_html}
+                                            </div>
+                                            """
+                                        )
+                                        render_google_review_card(review)
+
+                            # --------------------------------------------
+                            # TAB 3 — store analysis, no extra page needed
+                            # --------------------------------------------
+                            with analysis_tab:
+                                render_html(
+                                    '<div class="explorer-panel-title">📊 店家分析</div>'
+                                )
+
+                                ai_rows = load_store_ai_rows(
+                                    selected_store_id
+                                )
+
+                                if ai_rows.empty:
+                                    st.info(
+                                        "目前沒有可顯示的分析資料。"
                                     )
-                                    render_sentiment_comparison(
-                                        sentiment_frame,
-                                        title="顧客 / 店家情緒分布",
-                                        height=230,
+                                else:
+                                    ai_rows["guest_score"] = pd.to_numeric(
+                                        ai_rows["guest_score"],
+                                        errors="coerce",
                                     )
+                                    ai_rows["owner_score"] = pd.to_numeric(
+                                        ai_rows["owner_score"],
+                                        errors="coerce",
+                                    )
+                                    ai_rows["intensity"] = (
+                                        ai_rows["guest_score"]
+                                        + ai_rows["owner_score"]
+                                    ) / 2
+
+                                    guest_avg = float(
+                                        ai_rows["guest_score"].mean()
+                                    )
+                                    owner_avg = float(
+                                        ai_rows["owner_score"].mean()
+                                    )
+                                    intensity_avg = float(
+                                        ai_rows["intensity"].mean()
+                                    )
+
+                                    m1, m2, m3 = st.columns(3)
+                                    m1.metric(
+                                        "😡 顧客平均火力",
+                                        f"{guest_avg:.1f}",
+                                    )
+                                    m2.metric(
+                                        "🏪 店家平均火力",
+                                        f"{owner_avg:.1f}",
+                                    )
+                                    m3.metric(
+                                        "🔥 平均烈度",
+                                        f"{intensity_avg:.1f}",
+                                    )
+
+                                    if abs(guest_avg - owner_avg) < 0.5:
+                                        summary_text = (
+                                            "顧客與店家的平均火力接近，"
+                                            "整體屬於勢均力敵。"
+                                        )
+                                    elif guest_avg > owner_avg:
+                                        summary_text = (
+                                            "顧客平均火力較高，"
+                                            "目前主要火力來自顧客端。"
+                                        )
+                                    else:
+                                        summary_text = (
+                                            "店家平均火力較高，"
+                                            "店家回覆整體更強勢。"
+                                        )
+
+                                    guest_width = max(
+                                        0.0,
+                                        min(100.0, guest_avg * 10),
+                                    )
+                                    owner_width = max(
+                                        0.0,
+                                        min(100.0, owner_avg * 10),
+                                    )
+
+                                    render_html(
+                                        f"""
+                                        <div class="analysis-summary-card">
+                                            <div class="analysis-summary-text">
+                                                {safe_text(summary_text)}
+                                            </div>
+
+                                            <div class="analysis-compare-row">
+                                                <div class="analysis-compare-label">
+                                                    😡 顧客
+                                                </div>
+                                                <div class="analysis-compare-track">
+                                                    <div
+                                                        class="analysis-compare-fill guest"
+                                                        style="width:{guest_width:.1f}%"
+                                                    ></div>
+                                                </div>
+                                                <div class="analysis-compare-value">
+                                                    {guest_avg:.1f}
+                                                </div>
+                                            </div>
+
+                                            <div class="analysis-compare-row">
+                                                <div class="analysis-compare-label">
+                                                    🏪 店家
+                                                </div>
+                                                <div class="analysis-compare-track">
+                                                    <div
+                                                        class="analysis-compare-fill owner"
+                                                        style="width:{owner_width:.1f}%"
+                                                    ></div>
+                                                </div>
+                                                <div class="analysis-compare-value">
+                                                    {owner_avg:.1f}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        """
+                                    )
+
 
 elif current_page == PAGE_DUEL:
     page_title("經典對決")
@@ -4134,117 +5013,235 @@ elif current_page == PAGE_DUEL:
 
 elif current_page == PAGE_ANALYSIS:
     page_title("📊 全站分析")
-    render_html(
-        '<div class="page-subtitle">'
-        '把台北目前已完成 AI 評分的吵架案例整理成幾個一眼能懂的指標。'
-        '</div>'
-    )
 
-    if stores.empty:
-        st.info("目前沒有資料。")
+    # 先用首頁 / 名人堂相同的正式店家條件決定「可顯示店家」。
+    visible_stores = stores[
+        (stores["owner_replies"].fillna(0) > 0)
+        & stores["has_ai"]
+        & stores["intensity"].notna()
+    ].copy()
+
+    drama_inventory = load_drama_inventory()
+
+    if visible_stores.empty or drama_inventory.empty:
+        st.info("目前沒有可顯示的吵架地圖資料。")
+
     else:
-        analyzed = stores[
-            stores["has_ai"]
-            & stores["intensity"].notna()
+        visible_store_ids = set(
+            visible_stores["store_id"]
+            .astype(str)
+            .tolist()
+        )
+
+        drama_inventory = drama_inventory[
+            drama_inventory["store_id"]
+            .astype(str)
+            .isin(visible_store_ids)
         ].copy()
 
-        if analyzed.empty:
-            st.info("目前還沒有完成評分的資料。")
-        else:
-            review_scores = pd.to_numeric(
-                analyzed["review_score"], errors="coerce"
-            ).dropna()
-            owner_scores = pd.to_numeric(
-                analyzed["owner_score"], errors="coerce"
-            ).dropna()
-            intensities = pd.to_numeric(
-                analyzed["intensity"], errors="coerce"
-            ).dropna()
+        total_stores = int(
+            visible_stores["store_id"]
+            .astype(str)
+            .nunique()
+        )
+        total_cases = int(
+            drama_inventory["review_id"]
+            .astype(str)
+            .nunique()
+        )
 
-            stat_1, stat_2, stat_3, stat_4 = st.columns(4)
-            stat_1.metric("已評分店家", f"{len(analyzed):,}")
-            stat_2.metric(
-                "😡 顧客平均火力",
-                f"{review_scores.mean():.1f}" if not review_scores.empty else "—",
+        valid_inventory = drama_inventory[
+            drama_inventory["district"]
+            .fillna("")
+            .ne("")
+            & drama_inventory["district"]
+            .ne("未辨識行政區")
+        ].copy()
+
+        district_count = int(
+            valid_inventory["district"].nunique()
+        )
+
+        district_heat = (
+            valid_inventory.groupby(
+                "district",
+                as_index=False,
             )
-            stat_3.metric(
-                "🏪 店家平均火力",
-                f"{owner_scores.mean():.1f}" if not owner_scores.empty else "—",
+            .agg(
+                平均烈度=("intensity", "mean"),
+                案例數=("review_id", "nunique"),
             )
-            stat_4.metric(
-                "🔥 平均烈度",
-                f"{intensities.mean():.1f}" if not intensities.empty else "—",
+            .sort_values(
+                ["平均烈度", "案例數"],
+                ascending=[False, False],
+            )
+            .reset_index(drop=True)
+        )
+
+        hottest_district = (
+            str(district_heat.iloc[0]["district"])
+            if not district_heat.empty
+            else "—"
+        )
+        hottest_score = (
+            float(district_heat.iloc[0]["平均烈度"])
+            if not district_heat.empty
+            else None
+        )
+
+        k1, k2, k3, k4 = st.columns(4)
+
+        k1.metric(
+            "🏪 吵架店家",
+            f"{total_stores:,} 家",
+        )
+        k2.metric(
+            "🔥 吵架案例",
+            f"{total_cases:,} 則",
+        )
+        k3.metric(
+            "📍 涵蓋行政區",
+            f"{district_count:,} 區",
+        )
+        k4.metric(
+            "🔥 最火行政區",
+            (
+                f"{hottest_district} {hottest_score:.1f}"
+                if hottest_score is not None
+                else "—"
+            ),
+        )
+
+        district_store_counts = (
+            visible_stores.groupby(
+                "district",
+                as_index=False,
+            )
+            .agg(
+                店家數=("store_id", "nunique"),
+            )
+        )
+
+        district_case_counts = (
+            valid_inventory.groupby(
+                "district",
+                as_index=False,
+            )
+            .agg(
+                吵架案例=("review_id", "nunique"),
+            )
+        )
+
+        district_summary = (
+            district_store_counts.merge(
+                district_case_counts,
+                on="district",
+                how="outer",
+            )
+            .fillna(0)
+        )
+
+        district_summary = district_summary[
+            district_summary["district"]
+            .fillna("")
+            .ne("")
+            & district_summary["district"]
+            .ne("未辨識行政區")
+        ].copy()
+
+        district_summary["店家數"] = pd.to_numeric(
+            district_summary["店家數"],
+            errors="coerce",
+        ).fillna(0).astype(int)
+
+        district_summary["吵架案例"] = pd.to_numeric(
+            district_summary["吵架案例"],
+            errors="coerce",
+        ).fillna(0).astype(int)
+
+        district_summary = district_summary.sort_values(
+            ["吵架案例", "店家數"],
+            ascending=[False, False],
+        ).reset_index(drop=True)
+
+        st.write("")
+        left, right = st.columns(
+            2,
+            gap="large",
+        )
+
+        with left:
+            render_clean_horizontal_bar(
+                district_summary.sort_values(
+                    ["店家數", "吵架案例"],
+                    ascending=[False, False],
+                ),
+                category="district",
+                value="店家數",
+                title="🏪 各行政區吵架店家",
+                value_format="d",
+                height=max(
+                    260,
+                    min(
+                        520,
+                        55 + len(district_summary) * 38,
+                    ),
+                ),
             )
 
-            st.write("")
-            left, right = st.columns(2, gap="large")
+        with right:
+            render_clean_horizontal_bar(
+                district_summary,
+                category="district",
+                value="吵架案例",
+                title="🔥 各行政區吵架案例",
+                value_format="d",
+                height=max(
+                    260,
+                    min(
+                        520,
+                        55 + len(district_summary) * 38,
+                    ),
+                ),
+            )
 
-            with left:
-                firepower = pd.DataFrame(
-                    {
-                        "角色": ["顧客", "店家"],
-                        "平均火力": [
-                            review_scores.mean() if not review_scores.empty else 0,
-                            owner_scores.mean() if not owner_scores.empty else 0,
-                        ],
-                    }
-                )
-                render_clean_horizontal_bar(
-                    firepower,
-                    category="角色",
-                    value="平均火力",
-                    title="😡 顧客 vs 店家平均火力",
-                    height=180,
-                )
+        st.write("")
+        render_html(
+            '<div class="gm-section-title">'
+            '📍 各行政區明細'
+            '</div>'
+        )
 
-            with right:
-                district_summary = (
-                    analyzed.groupby("district", as_index=False)
-                    .agg(
-                        平均烈度=("intensity", "mean"),
-                        店家數=("store_id", "count"),
-                    )
-                    .sort_values(
-                        ["平均烈度", "店家數"],
-                        ascending=[False, False],
-                    )
-                    .head(10)
-                )
-                render_clean_horizontal_bar(
-                    district_summary,
-                    category="district",
-                    value="平均烈度",
-                    title="📍 行政區平均烈度 Top 10",
-                    height=280,
-                )
+        rows_html = "".join(
+            f"""
+            <tr>
+                <td>{safe_text(row["district"])}</td>
+                <td>{int(row["店家數"])}</td>
+                <td>{int(row["吵架案例"])}</td>
+            </tr>
+            """
+            for _, row in district_summary.iterrows()
+        )
 
-            sentiment_parts = []
-            for column, role in [
-                ("review_sentiment", "顧客"),
-                ("owner_sentiment", "店家"),
-            ]:
-                if column in analyzed.columns:
-                    counts = (
-                        analyzed[column]
-                        .fillna("")
-                        .replace("", "未標記")
-                        .value_counts()
-                        .rename_axis("情緒")
-                        .reset_index(name="筆數")
-                    )
-                    counts["角色"] = role
-                    sentiment_parts.append(counts)
+        render_html(
+            f"""
+            <div class="analysis-table-wrap">
+                <table class="analysis-table">
+                    <thead>
+                        <tr>
+                            <th>行政區</th>
+                            <th>店家數</th>
+                            <th>吵架案例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows_html}
+                    </tbody>
+                </table>
+            </div>
+            """
+        )
 
-            if sentiment_parts:
-                sentiment_frame = pd.concat(
-                    sentiment_parts,
-                    ignore_index=True,
-                )
-                render_sentiment_comparison(
-                    sentiment_frame,
-                    title="🙂 全站情緒分布",
-                    height=260,
-                )
 
 
 # ============================================================
@@ -4255,7 +5252,7 @@ elif current_page == PAGE_RANKING:
     page_title("🏆 吵架名人堂")
     render_html(
         '<div class="page-subtitle">'
-        '前三名直接上頒獎台；點店家就回到地圖查看真實吵架內容。'
+        '前三名直接上頒獎台；點店家會另開新分頁查看該店的真實吵架內容。'
         '</div>'
     )
 
@@ -4275,8 +5272,13 @@ elif current_page == PAGE_RANKING:
             label_visibility="collapsed",
         )
 
+        # 名人堂與首頁地圖使用完全相同的正式可用店家範圍：
+        # 1–2★ + 店家有回覆 + AI 分析完整 + 有平均烈度。
+        # 避免測試資料中「地圖已排除，但排行榜仍出現」的店家。
         ranking_source = stores[
-            stores["owner_replies"].fillna(0) > 0
+            (stores["owner_replies"].fillna(0) > 0)
+            & stores["has_ai"]
+            & stores["intensity"].notna()
         ].copy()
 
         if ranking_type == "🔥 最火店家":
@@ -4302,7 +5304,7 @@ elif current_page == PAGE_RANKING:
 
         elif ranking_type == "💬 戰役最多":
             source = ranking_source
-            score_column, prefix, ascending = "owner_replies", "場 ", False
+            score_column, prefix, ascending = "owner_replies", "", False
 
         else:
             source = ranking_source.dropna(subset=["google_score"])
@@ -4321,7 +5323,7 @@ elif current_page == PAGE_RANKING:
                 ranked.iloc[3:],
                 score_column,
                 prefix,
-                limit=12,
+                limit=27,
                 ascending=ascending,
                 clickable=True,
                 start_rank=4,
