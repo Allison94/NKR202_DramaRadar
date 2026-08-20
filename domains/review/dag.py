@@ -163,7 +163,7 @@ review_initial_dag()
 @dag(
     dag_id="review_daily_dag_v2",
     description="Review Daily：每日新增評論 + Owner Reply Recheck",
-    schedule="0 3 * * *",
+    schedule=None,
     start_date=pendulum.datetime(
         2026,
         8,
