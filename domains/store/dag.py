@@ -63,9 +63,7 @@ def store_pipeline_dag(): #ti是紀錄try幾次
         return dataset_info
 
 
-    # taipei_postcodes = taipei_postcodes # 正式用
-    test_taipei_postcodes = ["103"] # 測試用
-    task1_rs = start_job.expand(postcode_str=test_taipei_postcodes)
+    task1_rs = start_job.expand(postcode_str=taipei_postcodes)
     task2_rs = check_status.expand(task1_output=task1_rs)
     final_rs = get_dataset.expand(task2_output=task2_rs)
 
