@@ -40,32 +40,32 @@ trigger_workflow()
 
 @dag(
     dag_id="dags_trigger_all",
-    describe="一次性抓取，沒限制數量",
-    start_date=pendulum.datetime(2026, 8, 22,tz="Asia/Taipei"),
+    description="一次性抓取，沒限制數量",
+    start_date=pendulum.datetime(2026, 8, 21,tz="Asia/Taipei"),
     schedule=None,
     catchup=False,
-    tag=["all","dags_all"]  
+    tags=["all","dags_all"]  
 )
 def trigger_workflow_once():
     store = TriggerDagRunOperator(
-        task_id="trigger_store",
+        task_id="trigger_store_all",
         trigger_dag_id="store_dag_v1",
         wait_for_completion=True,
     )
     review = TriggerDagRunOperator(
-        task_id="trigger_review",
+        task_id="trigger_review_all",
         trigger_dag_id="review_initial_dag_v2",
         wait_for_completion=True,
     )
 
     ai = TriggerDagRunOperator(
-        task_id="trigger_ai_analysis",
+        task_id="trigger_ai_analysis_all",
         trigger_dag_id="ai_analysis_all_dag_v1",
         wait_for_completion=True,
     )
 
     threads = TriggerDagRunOperator(
-        task_id="trigger_threads",
+        task_id="trigger_threads_all",
         trigger_dag_id="threads_dags_v1",
         wait_for_completion=True,
     )

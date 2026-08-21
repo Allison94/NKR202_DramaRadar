@@ -56,7 +56,7 @@ ai_analysis_daily_dag()
 )
 
 def ai_analysis_all_dag():
-    @task
+    @task(max_active_tis_per_dag=10)
     def all_task():
         logger.info(f"[INFO: all_task] Start")
         return ai_analysis_pipeline("all")

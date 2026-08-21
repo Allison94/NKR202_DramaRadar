@@ -85,7 +85,7 @@ def review_initial_dag():
 
         return batches
 
-    @task
+    @task(max_active_tis_per_dag=10)
     def start_batch(batch: dict):
         logger.info(
             "[review_initial] start batch=%s stores=%s maxReviews=%s",
@@ -192,7 +192,7 @@ def review_daily_dag():
 
         return batches
 
-    @task
+    @task(max_active_tis_per_dag=10)
     def start_daily(batch: dict):
         logger.info(
             "[review_daily] start batch=%s stores=%s date=%s",
