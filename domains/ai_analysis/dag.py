@@ -9,7 +9,7 @@ if project_root not in sys.path:
     
 from datetime import datetime,timedelta
 import logging
-from airflow.sdk import task,dag
+from airflow.sdk import Param,dag,get_current_context,task
 from domains.ai_analysis.pipeline import ai_analysis_pipeline
 
 logger = logging.getLogger(__name__)
@@ -52,14 +52,27 @@ ai_analysis_daily_dag()
     schedule=None,
     start_date=datetime(2026,1,1),
     default_args=args,
-    tags=["ai","all"]
+    tags=["ai","all"],
+    params={
+        "force":Param(
+            False,
+            type="boolean",
+            title="重新分析已經分析過的評論",
+            description=(
+                "平常不要勾。預設會略過已分析的評論，"
+                "所以 Gemini 中途 503 失敗時，重試會從斷點接續，不會重複付費。"
+                "只有改過 prompt、想整批重新分析時才勾。"
+            ),
+        ),
+    }
 )
 
 def ai_analysis_all_dag():
     @task(pool="default_pool")
     def all_task():
-        logger.info(f"[INFO: all_task] Start")
-        return ai_analysis_pipeline("all")
+        force = bool(get_current_context()["params"].get("force"))
+        logger.info(f"[INFO: all_task] Start force={force}")
+        return ai_analysis_pipeline("all",force=force)
 
     all_task()
     logger.info(f"[INFO: all_task] End")

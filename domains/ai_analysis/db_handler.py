@@ -64,13 +64,24 @@ def daily_reviews(): # 每日定時更新
             logger.exception("[Error: daily_reviews] 抓取reviews失敗")
             raise e
 
-def all_reviews(): # 一次性重跑
+def all_reviews(skip_analyzed:bool=True): # 一次性重跑
+    """
+    skip_analyzed=True（預設）只撈還沒分析過的。
+    Gemini 中途失敗（例如 503）時 Airflow 會整個 task 重跑，沒有這道過濾就會從第一批
+    重新送一次，同一批評論等於付兩次以上的 token 費用。有了它，重試會自動接續。
+    改過 prompt 想整批重新分析時才傳 False。
+    """
     with engine.connect() as conn:
         try:
             stmt = select(Review).where(
                 Review.c.responseFromOwnerText != None,
                 Review.c.responseFromOwnerText != "",
             )
+
+            if skip_analyzed:
+                # reviewId 是 ai_analysis 的主鍵（NOT NULL），用 NOT IN 不會有 NULL 陷阱
+                analyzed = select(Ai_analysis.c.reviewId)
+                stmt = stmt.where(Review.c.reviewId.notin_(analyzed))
 
             rs = conn.execute(stmt)
             data = [
@@ -81,6 +92,7 @@ def all_reviews(): # 一次性重跑
                     "responseFromOwnerText":row.responseFromOwnerText
                 }for row in rs
             ]
+            logger.info(f"[Info: all_reviews] 待分析 {len(data)} 筆 (skip_analyzed={skip_analyzed})")
             return data
         except SQLAlchemyError as e:
             logger.exception("[Error: all_reviews] 抓取reviews失敗")

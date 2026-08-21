@@ -19,7 +19,19 @@ client → db_handler 抓資料 → etl → db_handler 存資料（log & ai resu
 | 模式 | 查詢條件 | 觸發 |
 |---|---|---|
 | `daily` | 有老闆回覆 **且** `scrapedAt > 昨天` | `ai_analysis_daily_dag_v1` |
-| `all` | 有老闆回覆（不限時間） | `ai_analysis_all_dag_v1` |
+| `all` | 有老闆回覆、**且尚未分析過**（不限時間） | `ai_analysis_all_dag_v1` |
+
+## 中斷後可以接續
+
+Gemini 會回 `503 UNAVAILABLE`（模型忙碌），這是常態，不是程式的錯。
+
+pipeline 是**每批跑完就寫資料庫**，所以中斷時已完成的批次不會白跑。加上 `all` 模式預設會用 `reviewId NOT IN (SELECT reviewId FROM ai_analysis)` 濾掉分析過的，重試就會自動從斷點接續。
+
+這道過濾很重要：DAG 設定了 `retries=2`，少了它，一次 503 會讓同一批評論被送去 Gemini 三次，token 費用也付三次。
+
+改過 prompt 想整批重新分析時，在 `ai_analysis_all_dag_v1` 的 Trigger 表單勾 **force**，或呼叫 `ai_analysis_pipeline("all", force=True)`。
+
+`daily` 模式刻意**不加**這道過濾。Owner Reply Recheck 會更新既有評論的 `responseFromOwnerText`，那種情況必須重新分析；而每日的量本來就小，重跑的代價遠低於漏分析。
 
 ## Gemini 設定
 

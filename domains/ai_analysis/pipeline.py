@@ -14,17 +14,23 @@ from domains.ai_analysis.etl import Gemini
 from domains.ai_analysis.db_handler import daily_reviews,all_reviews,ai_log,ai_analysis_save
 from domains.ai_analysis.config import batch_size
 logger = logging.getLogger(__name__)
-def ai_analysis_pipeline(during:str="daily"):
+def ai_analysis_pipeline(during:str="daily",force:bool=False):
     if during == "all":
-        reviews = all_reviews()
+        # force=True 才會重新分析已經分析過的（例如改了 prompt）。
+        # 預設略過已分析的，中途失敗重試時才不會重複付 token 費用。
+        reviews = all_reviews(skip_analyzed=not force)
     else:
         reviews = daily_reviews()
 
     if reviews:
         records = []
         review_count = len(reviews)
+        total_batches = (review_count + batch_size - 1) // batch_size
         for i in range(0,review_count,batch_size):
             chunk = reviews[i : i + batch_size]
+            # 每批跑完就寫入資料庫，所以中途失敗時前面的批次不會白跑。
+            # 印出批次進度，失敗時才看得出來停在哪裡。
+            logger.info(f"[Info: ai_analysis_pipeline] batch {i//batch_size+1}/{total_batches}（{len(chunk)} 筆）")
             with genai_client() as llm_client:
                 llm = Gemini(client_obj=llm_client) # client
                 llm_result = llm.ai_analysis(chunk) # etl
