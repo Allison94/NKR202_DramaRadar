@@ -1,8 +1,10 @@
 # 004-Database Design
-- **Version**：v1.0
-- **Date**：2026/07/07
+- **Version**：v1.1
+- **Date**：2026/8/22
 - **Author**：Allison
 ---
+
+> v1.1 更新：Domain Ownership 的 `crawl_log` 更正為實作中的 `execution_log`、補上完整資料表欄位清單、並將 Index 與 Constraint 章節改為記錄**實際建置狀況**（目前僅有 Primary Key）。
 
 # 1. Purpose
 
@@ -16,11 +18,11 @@
 
 ## 2.1 Database Platform
 
-* Schema 欄位依照API名稱取，其他欄位依照Snake Case方法取名
+* Schema 欄位依照 API 名稱取，其他欄位依照 Snake Case 方法取名
 
 | Item | Value |
 |------|------|
-| Database | PostgreSQL |
+| Database | PostgreSQL 15 |
 | Schema | public |
 | Character Encoding | UTF-8 |
 | Time Zone | UTC |
@@ -57,6 +59,8 @@ Business Table
 - Business Table 必須由 ETL Pipeline 建立。
 - ETL Pipeline 必須支援重新執行（Reprocessing）。
 
+實作上所有寫入皆為 `INSERT ... ON CONFLICT DO UPDATE`（Upsert），以主鍵為衝突判定依據，因此 Pipeline 可重複執行而不產生重複資料。
+
 ## 2.4 External Identifier Principle
 
 所有 External API Identifier 皆保留原始 Key。
@@ -80,13 +84,29 @@ Business Table
 | Review | review_source、review |
 | AI Analysis | ai_analysis |
 | Threads | threads_log |
-| System | crawl_log |
+| System | execution_log（各 Domain 皆寫入自己的執行紀錄） |
+
+### 例外
+
+Review Domain 會回寫 `store.skip_review_fetch`：當偵測到某店家的老闆回覆為制式公關話術時，需標記該店家不再抓取評論。這是目前唯一跨 Domain 寫入的情形。
+
+### 實際存取矩陣
+
+| Table | Store | Review | AI Analysis | Threads | Dashboard |
+|---|:-:|:-:|:-:|:-:|:-:|
+| `store` | 讀寫 | 讀 + 寫 `skip_review_fetch` | — | — | 讀 |
+| `store_source` | 寫 | — | — | — | — |
+| `review_source` | — | 寫 | — | — | — |
+| `review` | — | 讀寫 | 讀 | 讀 | 讀 |
+| `ai_analysis` | — | — | 寫 | 讀 | 讀 |
+| `threads_log` | — | — | — | 寫 | — |
+| `execution_log` | 寫 | 寫 | 寫 | 寫 | — |
 
 ## 2.6 Naming Convention
 
 - Raw Table：`*_source`
 - Log Table：`*_log`
-- Raw API 欄位保留 External API 命名方式。
+- Raw API 欄位保留 External API 命名方式（camelCase，需以雙引號存取）。
 - 自行新增欄位採 snake_case。
 
 # 3. Table Classification
@@ -104,7 +124,104 @@ Business Table
 # 4. Entity Relationship Diagram (ERD)
 ![alt text](../diagrams/ERD.png)
 
-# 5. Index Strategy
+# 5. Table Definition
+
+完整 DDL 見 [`db/schema.sql`](../../db/schema.sql)；SQLAlchemy 定義見各 Domain 的 `models.py`。
+
+## 5.1 store
+
+| Column | Type | Null | Description |
+|---|---|:-:|---|
+| `placeId` | VARCHAR(100) PK | ✖ | Google Place ID |
+| `title` | TEXT | ✖ | 店名 |
+| `categoryName` | VARCHAR(100) | ✖ | 主分類 |
+| `categories` | TEXT | ✖ | 全部分類，以逗號串接 |
+| `address` | TEXT | ✔ | 地址，Dashboard 以此過濾台北市 |
+| `lat` / `lng` | FLOAT | ✖ | 座標，地圖標記用 |
+| `url` | TEXT | ✖ | Google Maps 連結 |
+| `imageUrl` | TEXT | ✔ | 店家縮圖 |
+| `business_status` | VARCHAR(200) | ✖ | `OPEN` / `CLOSED`，由 ETL 依歇業旗標判定 |
+| `scrapedAt` | TIMESTAMP | ✖ | 抓取時間 |
+| `totalScore` | FLOAT | ✖ | Google 平均評分 |
+| `reviewsCount` | INT | ✖ | 評論總數 |
+| `oneStar`～`fiveStar` | INT | ✖ | 星等分布 |
+| `blocked` | BOOL | ✖ | 人工下架旗標，預設 `FALSE` |
+| `skip_review_fetch` | BOOL | ✖ | 不抓取評論（連鎖店或制式公關回覆） |
+
+## 5.2 review
+
+| Column | Type | Null | Description |
+|---|---|:-:|---|
+| `reviewId` | VARCHAR(100) PK | ✖ | Google Review ID |
+| `placeId` | VARCHAR(100) | ✖ | 所屬店家 |
+| `originalLanguage` | VARCHAR(50) | ✖ | 原始語言 |
+| `text` | TEXT | ✖ | 評論內容 |
+| `publishedAtDate` | TIMESTAMP | ✖ | 發布時間，recheck 期限的計算基準 |
+| `reviewUrl` | TEXT | ✖ | 評論原始連結 |
+| `reviewImageUrls` | TEXT | ✔ | 評論附圖 |
+| `likesCount` | INT | ✖ | 按讚數 |
+| `totalScore` | FLOAT | ✖ | 店家當時平均分 |
+| `stars` | INT | ✖ | 本則星等，僅保留 1 或 2 |
+| `responseFromOwnerDate` | TIMESTAMP | ✔ | 老闆回覆時間 |
+| `responseFromOwnerText` | TEXT | ✔ | 老闆回覆內容，AI 分析的必要條件 |
+| `scrapedAt` | TIMESTAMP | ✖ | 抓取時間，Daily 增量的判斷依據 |
+| `owner_reply_recheck` | BOOL | ✖ | 是否仍需回頭確認老闆回覆 |
+| `owner_reply_recheck_at` | TIMESTAMP | ✔ | 最後一次 recheck 時間 |
+| `next_check_at` | TIMESTAMP | ✔ | 下次 recheck 時間 |
+
+## 5.3 ai_analysis
+
+| Column | Type | Null | Description |
+|---|---|:-:|---|
+| `reviewId` | VARCHAR(100) PK | ✖ | 對應評論 |
+| `placeId` | VARCHAR(100) | ✖ | 所屬店家 |
+| `review_text` | TEXT | ✖ | 清洗後顧客原文（外文另附繁中翻譯） |
+| `review_summary` | TEXT | ✖ | 顧客發言摘要（30 字內） |
+| `review_sentiment` | VARCHAR(20) | ✖ | 顧客情緒標籤（五選一） |
+| `review_score` | INT | ✖ | 顧客激烈程度 1~10 |
+| `owner_text` | TEXT | ✖ | 清洗後老闆原文 |
+| `owner_summary` | TEXT | ✖ | 老闆回覆摘要（30 字內） |
+| `owner_sentiment` | VARCHAR(20) | ✖ | 老闆情緒標籤（五選一） |
+| `owner_score` | INT | ✖ | 老闆激烈程度 1~10 |
+| `pr_reply` | TEXT | ✔ | AI 建議的最優公關回覆 |
+| `request_json` | JSONB | ✖ | 送出的 prompt 內容 |
+| `response_json` | JSONB | ✔ | Gemini 原始回應 |
+
+情緒標籤固定為五種：理性客觀、高級反串、暴躁老哥、無聊公關、高情商幽默。
+
+## 5.4 threads_log
+
+| Column | Type | Null | Description |
+|---|---|:-:|---|
+| `id` | VARCHAR(100) PK | ✖ | Threads 貼文 ID |
+| `text` | TEXT | ✔ | 貼文內容 |
+| `media_type` | VARCHAR(20) | ✖ | 媒體類型 |
+| `media_url` | TEXT | ✔ | 媒體連結 |
+| `timestamp` | TIMESTAMP | ✖ | 發文時間 |
+| `permalink` | TEXT | ✖ | 貼文永久連結 |
+
+## 5.5 execution_log
+
+| Column | Type | Null | Description |
+|---|---|:-:|---|
+| `id` | SERIAL PK | ✖ | 流水號 |
+| `pipeline` | VARCHAR(200) | ✖ | `store` / `review_initial` / `review_daily` / `review_owner_recheck` / `review_manual` / `ai_analysis` / `threads` |
+| `status` | VARCHAR(20) | ✖ | 執行狀態 |
+| `items_count` | INT | ✖ | 處理筆數 |
+| `apify_scheduler_id` | VARCHAR(20) | ✔ | Apify run id |
+| `actor_name` | VARCHAR(100) | ✔ | 執行者標記 |
+| `started_at` / `finished_at` | TIMESTAMP | ✖ / ✔ | 起訖時間 |
+| `request_json` / `response_json` | JSONB | ✔ | 請求與回應內容 |
+| `error_msg` | TEXT | ✔ | 錯誤訊息（AI 另存 token 用量） |
+| `retry_count` | INT | ✖ | 重試次數 |
+
+## 5.6 Raw Tables
+
+`store_source` 與 `review_source` 結構一致：主鍵（`placeId` / `reviewId`）、`raw_json`（JSONB）、`scrapedAt`。`review_source` 另有 `placeId` 欄位。
+
+# 6. Index Strategy
+
+## 6.1 設計目標
 
 建立 Index 原則如下：
 
@@ -113,7 +230,7 @@ Business Table
 - Dashboard 常用查詢欄位
 - Scheduler 常用查詢欄位
 
-預計建立：
+規劃中的索引：
 
 | Table | Index |
 |--------|-------|
@@ -124,9 +241,19 @@ Business Table
 | threads_log | timestamp |
 | execution_log | pipeline_name |
 
----
+## 6.2 實際狀況
 
-# 6. Constraints
+**目前資料庫中只有 Primary Key 索引。**
+
+資料表由各 `db_handler.py` 匯入時呼叫 SQLAlchemy 的 `metadata.create_all()` 建立，而 `domains/*/models.py` 與 `db/shared_tables.py` 的欄位定義中**沒有宣告任何 `Index` 或 `ForeignKey`**，因此上表規劃的次要索引尚未建立。
+
+`db/schema.sql` 雖然包含外鍵約束，但**不會被程式自動執行**，僅作為 DDL 參考。
+
+以目前 MVP 的資料量（台北市餐飲店家）尚不構成效能問題。若後續擴大地區範圍，應優先補上 `review.placeId` 與 `ai_analysis.placeId` 的索引，因為 Dashboard 的排行榜與地圖查詢皆以店家聚合。
+
+# 7. Constraints
+
+## 7.1 設計目標
 
 所有 Business Table 必須遵守：
 
@@ -135,3 +262,20 @@ Business Table
 - placeId、reviewId 保留 External API Identifier。
 - Raw Table 不允許直接修改 JSON。
 - 所有 Timestamp 使用 UTC。
+
+## 7.2 實際狀況
+
+| 約束 | 狀態 | 說明 |
+|---|---|---|
+| Primary Key | 已建立 | 各表主鍵皆定義於 `models.py` |
+| Foreign Key | **未建立** | `schema.sql` 有定義但未執行；`models.py` 未宣告 `ForeignKey`。參照完整性目前由 ETL 流程順序保證（先寫 store 才寫 review） |
+| Timestamp 時區 | **不一致** | `schema.sql` 宣告 `TIMESTAMPTZ`，但 `models.py` 使用未帶時區的 `TIMESTAMP`，實際建出的欄位為 `TIMESTAMP WITHOUT TIME ZONE` |
+
+## 7.3 Schema 變更方式
+
+專案**未導入 Alembic 或任何 migration 工具**。`metadata.create_all()` 只會建立不存在的資料表，**不會**變更既有資料表的結構。
+
+因此修改 `models.py` 的欄位後，必須擇一處理：
+
+1. 手動執行 `ALTER TABLE`，並同步更新 `db/schema.sql`；或
+2. 開發環境下重建資料表（`domains/review/run_pipeline.py --mode clear-store` 可清空業務資料表）。

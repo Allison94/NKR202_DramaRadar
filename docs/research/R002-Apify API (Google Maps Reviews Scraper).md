@@ -15,6 +15,20 @@ title: R002-Apify API (Google Maps Reviews Scraper)
 | Version      | v1.0                              |
 | Last Updated | 2026/7/6                          |
 
+> **實作對照（2026/8/22 補注）**
+>
+> 本文件所研究的 Actor 即為實際採用的 **`compass/google-maps-reviews-scraper`**。
+>
+> 實作時的參數選擇：
+> * **Initial**：`maxReviews = oneStar + twoStar + 50`、`reviewsSort = "lowestRanking"`。
+> * **Daily**：`reviewsSort = "newest"`、`reviewsStartDate = 昨天`。
+> * `language = "zh-TW"`、`reviewsOrigin = "all"`。
+> * **未使用 `reviewsFilterString`**，因為該參數會額外計費；改為在本地 ETL 過濾出 1~2 星評論。
+>
+> 批次與併行限制：每個 Apify run 一次送 50 家店，最多 5 個 run 同時執行（Apify 帳號併行記憶體上限 16GB，每 run 約 1024MB）。狀態由 Airflow Sensor 每 120 秒確認一次，逾時 30 分鐘。
+>
+> 程式位置：`domains/review/client.py`、`domains/review/config.py`、`domains/review/service.py`
+
 # 2. API Overview
 
 | Item                   | Description                                                     |

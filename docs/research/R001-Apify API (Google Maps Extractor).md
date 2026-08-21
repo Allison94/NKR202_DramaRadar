@@ -15,6 +15,16 @@ title: R001-Apify API (Google Maps Extractor)
 | Version      | v1.0                              |
 | Last Updated | 2026/7/4                          |
 
+> **實作對照（2026/8/22 補注）**
+>
+> 本文件為選型階段針對 `compass/google-maps-extractor` 的研究紀錄。
+>
+> 實際實作改用同為 Compass 出品的 **`compass/crawler-google-places`**（Google Maps Scraper），原因是前者不回傳 `reviewsDistribution` 星等分布，而店家篩選需要一星佔比。兩者的 input 參數大致相容，下方的參數說明仍適用。
+>
+> 另外，取回 dataset 時未使用 SDK 的 `list_items()`，改以 REST `https://api.apify.com/v2/datasets/{dataset_id}/items` 直接取得完整 JSON，同樣是為了拿到星等分布欄位。
+>
+> 程式位置：`domains/store/client.py`、`domains/store/config.py`
+
 # 2. API Overview
 
 | Item                   | Description                                                     |

@@ -18,7 +18,7 @@ args = {
 
 @dag(
     dag_id="threads_dags_v1",
-    description="每日晚上七點post案例到threads",
+    description="post案例到threads，排程由 dags_trigger_daily_3am 觸發",
     start_date=datetime(2026,1,1),
     schedule=None,
     catchup=False,

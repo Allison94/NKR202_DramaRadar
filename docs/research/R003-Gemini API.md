@@ -15,6 +15,16 @@ title: R003-Gemini API
 | Version      | v1.0       |
 | Last Updated | 2026/7/6   |
 
+> **實作對照（2026/8/22 補注）**
+>
+> 本文件研究階段以 `gemini-2.5-flash` 為範例，實際實作使用 **`gemini-3.6-flash`**，`temperature = 0.2`。
+>
+> 輸出格式採用文中的 structured output 機制：以 Pydantic 類別 `GeminiBatchRs`（內含 `list[GeminiAnalysisFormat]`）傳入 `config.response_schema`，強制 Gemini 回傳可直接寫入資料庫的結構。
+>
+> 批次策略：每次送 50 則評論，避免單一 request 過大；token 用量記錄於 `execution_log.error_msg`。
+>
+> 程式位置：`domains/ai_analysis/config.py`（模型與 system instruction）、`domains/ai_analysis/models.py`（輸出 schema）、`domains/ai_analysis/etl.py`
+
 # 2. API Overview
 
 | Item                   | Description                                                      |
