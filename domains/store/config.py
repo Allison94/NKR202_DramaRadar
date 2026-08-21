@@ -4,8 +4,7 @@
 params = {
     "county": "TW",
     "language": "zh-TW",
-    "maxCrawledPlacesPerSearch": 50, # 每個關鍵字 N 筆
-    # "postalCode": TAIPEI_POSTCODES,
+    "maxCrawledPlacesPerSearch": 20, # 每個關鍵字 N 筆
     "searchStringsArray": ["餐廳","小吃","麵店","便當","餐酒館","料理"],
 }
 
@@ -45,5 +44,5 @@ chains = [ # === 🤖 1. 鋼鐵罐頭訊息大軍 (不管給幾星，小編或�
         "艋舺雞排", "檀島香港茶餐廳", "翠華餐廳", "太興茶餐廳", "茗香園", "大Heart", "瓦城", 
         "PABLO", "閃電咖啡", "Flash Coffee", "彼得好咖啡", "西雅圖極品咖啡", "覺旅咖啡", 
         "Journey Kaffe", "Second Floor Cafe", "貳樓", "Miacucina","大苑子", 
-        "五桐號", "布萊恩紅茶", "叮哥茶飲", "七盞茶", "進發家","紫艷中餐廳","潮品集","Cin Cin Osteria","明水然"]
+        "五桐號", "布萊恩紅茶", "叮哥茶飲", "七盞茶", "進發家","紫艷中餐廳","潮品集","Cin Cin Osteria","明水然","司法大廈員工餐廳","臺鐵便當本舖"]
 
