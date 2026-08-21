@@ -72,6 +72,7 @@ def dataset_etl(obj:list[dict])->list[dict]:
 
     c1 = "reviewsCount >= 30"
     c2 = "(totalScore <= 4.3 or oneStarPercent >= 0.1)"
+    c3 = "business_status != 'CLOSED'"
 
     df = pd.json_normalize(obj)
 
@@ -91,7 +92,7 @@ def dataset_etl(obj:list[dict])->list[dict]:
         lat = lambda x: x["location.lat"],
         lng = lambda x: x["location.lng"]
     ).query(
-        f"{c1} and {c2}"
+        f"{c1} and {c2} and {c3}"
     ).assign(
         business_status=lambda x: np.where(x["permanentlyClosed"] | x["temporarilyClosed"],"CLOSED","OPEN"),
         skip_review_fetch = lambda x : x["title"].str.contains(str(excluded_restaurants("|")),na=False,regex=True), #排除連鎖店和已知指定店家
