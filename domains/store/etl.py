@@ -90,11 +90,11 @@ def dataset_etl(obj:list[dict])->list[dict]:
         oneStarPercent =lambda x : np.where(x["reviewsCount"] > 0,x["oneStar"]/x["reviewsCount"],0.0),
         categories = lambda x : x["categories"].fillna("").str.join(","),
         lat = lambda x: x["location.lat"],
-        lng = lambda x: x["location.lng"]
+        lng = lambda x: x["location.lng"],
+        business_status=lambda x: np.where(x["permanentlyClosed"] | x["temporarilyClosed"],"CLOSED","OPEN")
     ).query(
         f"{c1} and {c2} and {c3}"
     ).assign(
-        business_status=lambda x: np.where(x["permanentlyClosed"] | x["temporarilyClosed"],"CLOSED","OPEN"),
         skip_review_fetch = lambda x : x["title"].str.contains(str(excluded_restaurants("|")),na=False,regex=True), #排除連鎖店和已知指定店家
         blocked=False,#預設FALSE,
     ).replace({np.nan: None})
