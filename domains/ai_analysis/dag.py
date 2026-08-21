@@ -33,7 +33,7 @@ args = {
 def ai_analysis_daily_dag():
 
     # daily
-    @task
+    @task(pool="default_pool")
     def daily_task():
         logger.info(f"[INFO: daily_task] Start")
         return ai_analysis_pipeline()
@@ -56,7 +56,7 @@ ai_analysis_daily_dag()
 )
 
 def ai_analysis_all_dag():
-    @task
+    @task(pool="default_pool")
     def all_task():
         logger.info(f"[INFO: all_task] Start")
         return ai_analysis_pipeline("all")
