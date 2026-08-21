@@ -84,7 +84,6 @@ services:
             --lastname Admin \
             --role Admin \
             --email "$${AIRFLOW_ADMIN_EMAIL:-admin@example.com}"
-        fi
     depends_on:
       db:
         condition: service_healthy
