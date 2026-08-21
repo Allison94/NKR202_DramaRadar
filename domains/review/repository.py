@@ -249,7 +249,7 @@ def fetch_stores_for_review(
 
     limit=None:
         正式 Initial / Daily 取得全部符合條件 Store。
-        之後由 Airflow DAG 每 200 家拆 Batch。
+        之後由 Airflow DAG 每 50 家拆 Batch。
 
     limit=N:
         Manual / test only.

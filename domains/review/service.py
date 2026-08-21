@@ -365,39 +365,43 @@ def prepare_initial_batches(
     """
     Prepare Initial batches.
 
-    maxReviews is a per-place Actor setting, while our Initial maxReviews
-    can differ by store. Therefore stores are first grouped by identical
-    maxReviews, then each group is split into batches of at most 200 stores.
+    Each store still uses maxReviews = oneStar + twoStar + 50.
+    Stores are sorted by that combined count (not by oneStar / twoStar
+    separately), then packed 50 per Apify call. The run uses the highest
+    maxReviews in that chunk so no store is under-fetched.
     """
 
-    stores = fetch_stores_for_review(limit=None)
-
-    grouped: dict[int, list[str]] = defaultdict(list)
-
-    for store in stores:
-        place_id = str(store["placeId"])
-
-        max_reviews = initial_max_reviews(
-            store.get("oneStar", 0),
-            store.get("twoStar", 0),
-        )
-
-        grouped[max_reviews].append(place_id)
+    stores = sorted(
+        fetch_stores_for_review(limit=None),
+        key=lambda store: (
+            -initial_max_reviews(
+                store.get("oneStar", 0),
+                store.get("twoStar", 0),
+            ),
+            str(store.get("placeId") or ""),
+        ),
+    )
 
     batches: list[dict[str, Any]] = []
 
-    for max_reviews in sorted(grouped):
-        place_ids = grouped[max_reviews]
-
-        for chunk in _chunked(place_ids, batch_size):
-            batches.append(
-                {
-                    "batch_index": len(batches),
-                    "place_ids": chunk,
-                    "max_reviews": max_reviews,
-                    "reviewsSort": INITIAL_SORT
-                }
+    for chunk in _chunked(stores, batch_size):
+        place_ids = [str(store["placeId"]) for store in chunk]
+        max_reviews = max(
+            initial_max_reviews(
+                store.get("oneStar", 0),
+                store.get("twoStar", 0),
             )
+            for store in chunk
+        )
+
+        batches.append(
+            {
+                "batch_index": len(batches),
+                "place_ids": place_ids,
+                "max_reviews": max_reviews,
+                "reviewsSort": INITIAL_SORT,
+            }
+        )
 
     log.info(
         "prepare_initial_batches stores=%s batches=%s batch_size=%s",
@@ -414,7 +418,7 @@ def start_initial_batch(batch: dict[str, Any]) -> dict[str, Any]:
         list(batch["place_ids"]),
         pipeline="review_initial",
         max_reviews=int(batch["max_reviews"]),
-        reviews_sort=None,
+        reviews_sort=str(batch.get("reviewsSort") or INITIAL_SORT),
         context={
             "mode": "initial",
             "batch_index": int(batch["batch_index"]),
@@ -522,7 +526,7 @@ def prepare_recheck_batches(
     Read all due Recheck rows.
 
     No former 100-row limit.
-    Stores are deduplicated and split into batches of at most 200 places.
+    Stores are deduplicated and split into batches of at most 50 places.
     """
 
     due = fetch_reviews_needing_recheck()
