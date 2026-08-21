@@ -1,10 +1,12 @@
 # 004-Database Design
-- **Version**：v1.1
+- **Version**：v1.2
 - **Date**：2026/8/22
 - **Author**：Allison
 ---
 
 > v1.1 更新：Domain Ownership 的 `crawl_log` 更正為實作中的 `execution_log`、補上完整資料表欄位清單、並將 Index 與 Constraint 章節改為記錄**實際建置狀況**（目前僅有 Primary Key）。
+>
+> v1.2 更新：ERD 改以 Mermaid 內嵌並依 `models.py` 校正 —— 原圖缺少 `store.lat` / `store.lng` 與 `execution_log.apify_dataset_id`，`execution_log.id` 誤標為 `varchar`（實際為自增整數）、`start_at` 應為 `started_at`，`categories` 與 `reviewImageUrls` 誤標為 JSONB（實際為 TEXT），時間欄位誤標為 TIMESTAMPTZ。
 
 # 1. Purpose
 
@@ -122,7 +124,113 @@ Review Domain 會回寫 `store.skip_review_fetch`：當偵測到某店家的老�
 | execution_log | Metadata | Scheduler | Pipeline 執行紀錄 |
 
 # 4. Entity Relationship Diagram (ERD)
-![alt text](../diagrams/ERD.png)
+
+```mermaid
+erDiagram
+    store_source ||--|| store : "ETL 篩選後產生"
+    store ||--o{ review : "placeId"
+    review_source ||--|| review : "ETL 篩選後產生"
+    review ||--o| ai_analysis : "有老闆回覆才分析"
+    ai_analysis ||--o| threads_log : "每日最多取一筆發文"
+
+    store_source {
+        varchar placeId PK
+        jsonb raw_json
+        timestamp scrapedAt
+    }
+    store {
+        varchar placeId PK
+        text title
+        varchar categoryName
+        text categories
+        text address
+        float lat
+        float lng
+        text url
+        text imageUrl
+        varchar business_status
+        timestamp scrapedAt
+        float totalScore
+        int reviewsCount
+        int oneStar
+        int twoStar
+        int threeStar
+        int fourStar
+        int fiveStar
+        bool blocked
+        bool skip_review_fetch
+    }
+    review_source {
+        varchar reviewId PK
+        varchar placeId
+        jsonb raw_json
+        timestamp scrapedAt
+    }
+    review {
+        varchar reviewId PK
+        varchar placeId
+        varchar originalLanguage
+        text text
+        timestamp publishedAtDate
+        text reviewUrl
+        text reviewImageUrls
+        int likesCount
+        float totalScore
+        int stars
+        timestamp responseFromOwnerDate
+        text responseFromOwnerText
+        timestamp scrapedAt
+        bool owner_reply_recheck
+        timestamp owner_reply_recheck_at
+        timestamp next_check_at
+    }
+    ai_analysis {
+        varchar reviewId PK
+        varchar placeId
+        text review_text
+        text review_summary
+        varchar review_sentiment
+        int review_score
+        text owner_text
+        text owner_summary
+        varchar owner_sentiment
+        int owner_score
+        text pr_reply
+        jsonb request_json
+        jsonb response_json
+    }
+    threads_log {
+        varchar id PK
+        text text
+        varchar media_type
+        text media_url
+        timestamp timestamp
+        text permalink
+    }
+    execution_log {
+        int id PK
+        varchar pipeline
+        varchar status
+        int items_count
+        varchar apify_scheduler_id
+        varchar apify_dataset_id
+        varchar actor_name
+        timestamp started_at
+        timestamp finished_at
+        jsonb request_json
+        jsonb response_json
+        text error_msg
+        int retry_count
+    }
+```
+
+> **Note**
+>
+> 圖中的關聯線描述**邏輯上**的參照關係。資料庫中並未建立實際的外鍵約束，原因見第 7 節。
+>
+> `execution_log` 不與任何業務資料表關聯，是所有 Pipeline 共用的執行紀錄表。
+>
+> 型別以 `models.py` 實際建出的結果為準。時間欄位均為 `TIMESTAMP WITHOUT TIME ZONE`，與 `db/schema.sql` 宣告的 `TIMESTAMPTZ` 不一致，詳見第 7 節。
 
 # 5. Table Definition
 

@@ -1,9 +1,11 @@
 # Product Architecture
-* **Version**：v1.1
+* **Version**：v1.2
 * **Date**：2026/8/22
 * **Owner**：Allison
 
 > v1.1 更新：修正 Store Domain 使用的 Apify Actor 名稱、補上 [7. Scheduler Topology](#7-scheduler-topology) 排程拓撲，並填寫原本待補的 [8. Business Decision Flow](#8-business-decision-flow)。
+>
+> v1.2 更新：四張圖表全部改以 Mermaid 內嵌並修正錯誤 —— Production Architecture 原本畫有 `Fast API` 元件（專案並無 API 層）、Daily Workflow 原本包含 Store Domain（已移出每日排程）、Overall Architecture 原本未呈現 Scheduler 對 Threads Domain 的觸發關係。第 6 節另補上正式環境與開發環境的服務對照。
 
 # 1. Purpose
 
@@ -15,8 +17,45 @@
 
 ## Figure 2-1 Overall Architecture
 
-![alt text](../diagrams/OverallArchitecture.png)
-Note：描述 Service 間的依賴關係，並非實際呼叫流程。各 Domain 之間**不直接互相呼叫**，一律透過 PostgreSQL 交換資料。
+```mermaid
+flowchart TB
+    subgraph EXT["External Services"]
+        AP1["Apify Actor<br/>compass/crawler-google-places"]
+        AP2["Apify Actor<br/>compass/google-maps-reviews-scraper"]
+        GEM["Google Gemini<br/>gemini-3.6-flash"]
+        THA["Threads Graph API v1.0"]
+    end
+
+    SCH["Scheduler / Apache Airflow 3.3<br/>LocalExecutor"]
+
+    subgraph DOM["Business Domains"]
+        ST["Store Domain"]
+        RV["Review Domain"]
+        AI["AI Analysis Domain"]
+        TH["Threads Domain"]
+    end
+
+    DB[("PostgreSQL 15<br/>Source Data + Application Data<br/>+ Airflow Metadata")]
+    DASH["Dashboard / Streamlit<br/>read-only"]
+
+    SCH -. trigger .-> ST
+    SCH -. trigger .-> RV
+    SCH -. trigger .-> AI
+    SCH -. trigger .-> TH
+
+    AP1 --> ST
+    AP2 --> RV
+    GEM --> AI
+    TH --> THA
+
+    ST <--> DB
+    RV <--> DB
+    AI <--> DB
+    TH <--> DB
+    DB --> DASH
+```
+
+Note：描述 Service 間的依賴關係，並非實際呼叫流程。各 Domain 之間**不直接互相呼叫**，一律透過 PostgreSQL 交換資料。Scheduler 對四個 Domain 皆有觸發關係，Threads Domain 同樣由排程驅動（`threads_dags_v1`），並非只被動讀取資料庫。
 
 # 3. Domain Responsibility
 
@@ -45,35 +84,152 @@ Note：描述 Service 間的依賴關係，並非實際呼叫流程。各 Domain
 # 4. Data Flow Diagram
 
 ## Figure 4-1 Data Flow
-![alt text](../diagrams/DataFlow.png)
+
+```mermaid
+flowchart TD
+    AP1["Apify<br/>compass/crawler-google-places"]
+    SS[("store_source<br/>raw JSONB")]
+    ST[("store")]
+    AP2["Apify<br/>compass/google-maps-reviews-scraper"]
+    RS[("review_source<br/>raw JSONB")]
+    RV[("review")]
+    GEM["Google Gemini"]
+    AI[("ai_analysis")]
+    DASH["Dashboard"]
+    THA["Threads Graph API"]
+    TL[("threads_log")]
+    EL[("execution_log")]
+
+    AP1 --> SS
+    SS -->|"Store ETL<br/>見 8.1 篩選條件"| ST
+    ST -->|"blocked=FALSE 且<br/>skip_review_fetch=FALSE"| AP2
+    AP2 --> RS
+    RS -->|"Review ETL<br/>只保留 1~2 星"| RV
+    RV -->|"responseFromOwnerText 非空"| GEM
+    GEM --> AI
+    AI --> DASH
+    AI -->|"當日 review_score + owner_score<br/>最高的一筆"| THA
+    THA --> TL
+
+    AP1 -. request/response .-> EL
+    AP2 -. request/response .-> EL
+    GEM -. request/response .-> EL
+    THA -. request/response .-> EL
+```
+
+> **Note**
+>
+> 遵循 Raw First 原則：外部 API 回傳的原始 JSON 一律先完整寫入 `*_source` 表，業務表全部由 ETL 產生且可重跑。
+>
+> 每個階段的請求參數、回應內容、處理筆數與錯誤訊息另外寫入 `execution_log`（虛線）。
 
 # 5. Business Workflow Diagram
 
 ## Figure 5-1 Daily Workflow
-![alt text](../diagrams/DailyWorkflow.png)
+
+```mermaid
+flowchart TD
+    CRON["dags_trigger_daily_3am<br/>0 3 * * *（Asia/Taipei）"]
+    RV["Review Domain<br/>抓昨日新增低星評論 + 老闆回覆 recheck"]
+    AI["AI Analysis Domain<br/>分析昨日新增且已有老闆回覆的評論"]
+    TH["Threads Domain<br/>發布當日激烈度總分最高的事件"]
+    ST["Store Domain<br/>不在每日流程，需要時手動觸發"]
+    DASH["Dashboard<br/>隨時直接讀取資料庫"]
+
+    CRON --> RV --> AI --> TH
+
+    style ST stroke-dasharray: 5 5
+    style DASH stroke-dasharray: 5 5
+```
+
 > **Note**
 >
 > 本圖描述 DramaRadar 每日執行流程與各 Service 之業務依賴關係。
+>
+> 虛線方塊不屬於每日排程。**Store Domain 已自每日流程移除**（理由見 7.3），Dashboard 為唯讀前端、不由排程驅動。
 >
 > 本圖不描述程式實作方式，實際 Airflow DAG 與 Task 拆分請見第 7 節。
 
 # 6. Production Architecture
 
-## Figure 6-1 Production Architecture
-![alt text](../diagrams/ProductionArchitecture.png)
+系統**沒有 API 層**。各 Domain 是被 Airflow 直接以 Python 函式呼叫的模組，不透過 HTTP 溝通；Dashboard 也是直接連 PostgreSQL 查詢，不經過後端服務。
 
-實際部署以 Docker Compose 啟動下列服務：
+## Figure 6-1 Production Architecture
+
+```mermaid
+flowchart TB
+    subgraph VM["GCP VM（Ubuntu + Docker Compose）"]
+        subgraph AF["Airflow 3.3.0 / LocalExecutor（image: dramaradar-airflow:prod）"]
+            INIT["airflow-init<br/>一次性：db migrate + 建管理者帳號"]
+            APISRV["airflow-api-server<br/>UI 與 REST API"]
+            SCHED["airflow-scheduler<br/>排程 + 執行 task（含各 Domain 程式碼）"]
+            DAGP["airflow-dag-processor<br/>解析 DAG 檔案"]
+        end
+
+        DASH["dashboard<br/>Streamlit（image: dramaradar-dashboard:prod）"]
+        DB[("db / PostgreSQL 15<br/>業務資料 + Airflow metadata")]
+
+        VOL1[("volume: postgres_data")]
+        VOL2[("volume: airflow_logs")]
+    end
+
+    subgraph EXT["External Services"]
+        APIFY["Apify"]
+        GEM["Google Gemini"]
+        THA["Threads Graph API"]
+    end
+
+    OP(["維運者<br/>SSH tunnel"])
+
+    INIT --> DB
+    APISRV --> DB
+    SCHED --> DB
+    DAGP --> DB
+    DASH --> DB
+
+    DB --- VOL1
+    AF --- VOL2
+
+    SCHED --> APIFY
+    SCHED --> GEM
+    SCHED --> THA
+
+    OP -->|"127.0.0.1:8080"| APISRV
+    OP -->|"127.0.0.1:8501"| DASH
+```
+
+正式環境以 `docker-compose.prod.yml` 啟動下列服務：
 
 | 服務 | 說明 | Port |
 |---|---|---|
-| `app` | 開發／執行容器，Dev Container 連入點 | 8000 / 8501 |
-| `db` | PostgreSQL 15 | 5432 |
-| `airflow-webserver` | Airflow API Server 與 UI | 8080 |
-| `airflow-scheduler` | Airflow 排程器 | — |
-| `airflow-dag-processor` | DAG 解析程序 | — |
-| `airflow-init` | 一次性初始化：`airflow db migrate` + 建立管理者帳號 | — |
+| `db` | PostgreSQL 15，業務資料與 Airflow metadata 共用 | `127.0.0.1:5432` |
+| `airflow-init` | 一次性初始化：`airflow db migrate` + 建立管理者帳號，跑完即結束 | — |
+| `airflow-api-server` | Airflow UI 與 REST API | `127.0.0.1:8080` |
+| `airflow-scheduler` | 排程器，**實際執行各 Domain 業務程式碼的地方**（LocalExecutor） | — |
+| `airflow-dag-processor` | DAG 檔案解析程序 | — |
+| `dashboard` | Streamlit 前端 | `127.0.0.1:8501` |
 
-Airflow 與業務資料**共用同一個 PostgreSQL 實例**（Airflow metadata 使用 `postgresql+psycopg2`，業務資料使用 `DATABASE_URL`）。`domains/` 目錄掛載為 Airflow 的 DAG 資料夾，因此 Domain 程式碼與 DAG 定義放在一起，不另設 `dags/` 目錄。
+所有對外埠只綁 `127.0.0.1`，需透過 SSH tunnel 或反向代理存取。部署細節見 [`010-GCP VM Deployment.md`](<../05_Deployment/010-GCP VM Deployment.md>)。
+
+## 6.1 與開發環境的差異
+
+開發環境走 `docker-compose.yml`，服務組成大致相同，但有幾點關鍵差異：
+
+| 項目 | 開發（`docker-compose.yml`） | 正式（`docker-compose.prod.yml`） |
+|---|---|---|
+| 程式碼 | bind mount 整個專案目錄 | build 階段烘進 image |
+| `app` 服務 | 有，`sleep infinity` 供 VS Code Dev Container 附著 | 無 |
+| Airflow UI 服務名 | `airflow-webserver`（`command: api-server`） | `airflow-api-server` |
+| Dashboard | 手動下 `streamlit run` 啟動 | 由 compose 直接啟動 |
+| Airflow logs | bind mount `./scheduler/logs` | 具名 volume `airflow_logs` |
+| 對外埠 | `0.0.0.0` | 只綁 `127.0.0.1` |
+| DAG 初始狀態 | 暫停 | 直接啟用 |
+
+> 開發環境的服務名稱 `airflow-webserver` 是沿用 Airflow 2 的命名，實際下的指令已經是 Airflow 3 的 `api-server`。
+
+## 6.2 資料庫與 DAG 目錄配置
+
+Airflow 與業務資料**共用同一個 PostgreSQL 實例**（Airflow metadata 使用 `postgresql+psycopg2` 連線字串，業務資料使用 `DATABASE_URL`）。`domains/` 目錄掛載（正式環境為 COPY）為 Airflow 的 DAG 資料夾 `/opt/airflow/dags/domains`，因此 Domain 程式碼與 DAG 定義放在一起，不另設 `dags/` 目錄。
 
 # 7. Scheduler Topology
 
@@ -191,10 +347,13 @@ AI 對顧客與老闆**各自**輸出：摘要（30 字內）、情緒標籤、1
 
 # 9. Guide to Diagrams
 
-| Diagram          | Purpose              |
-| ----------------------- | -------------- |
-| Overall Architecture    | 有哪些元件，描述系統主要元件與彼此關係。 |
-| Data Flow               | 資料怎麼流，描述資料生命週期。      |
-| Business Workflow       | 執行順序，描述每日業務流程。      |
-| Production Architecture | 部署在哪，描述正式環境元件與互動方式。 |
-| Business Decision Flow  | 判斷條件，描述邏輯運算方式（見第 8 節，以文字表述）。 |
+所有圖表皆以 Mermaid 內嵌於本文件，不再使用外部圖片檔，改程式時可與程式碼一起 diff 與 review。
+
+| Diagram | 位置 | Purpose |
+| --- | --- | --- |
+| Overall Architecture | Figure 2-1 | 有哪些元件，描述系統主要元件與彼此關係。 |
+| Data Flow | Figure 4-1 | 資料怎麼流，描述資料生命週期。 |
+| Business Workflow | Figure 5-1 | 執行順序，描述每日業務流程。 |
+| Production Architecture | Figure 6-1 | 部署在哪，描述正式環境元件與互動方式。 |
+| Scheduler Topology | 第 7 節 | DAG 之間的觸發關係。 |
+| Business Decision Flow | 第 8 節 | 判斷條件，以表格與流程文字表述。 |

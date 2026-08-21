@@ -62,11 +62,20 @@ curl -fsSL https://get.docker.com | sudo sh
 sudo usermod -aG docker $USER
 ```
 
-`usermod` 要重新登入才生效，先 `exit` 再 `gcloud compute ssh` 進來一次，然後確認：
+> **一定要重新登入。** 群組成員資格是在登入時寫進 session 的，`usermod` 對已經開著的 shell 不會追溯生效。少了這步，接下來每個 docker 指令都會噴 `permission denied while trying to connect to the docker API at unix:///var/run/docker.sock`。
+
+```bash
+exit
+```
+
+重新 `gcloud compute ssh dramaradar --zone=asia-east1-b` 進來，然後確認：
 
 ```bash
 docker compose version
+docker ps
 ```
+
+兩個指令都不報錯才算完成。不想斷線的話，`newgrp docker` 也可以在當前 session 直接切換群組。
 
 # 6. 取得程式碼
 
@@ -95,7 +104,7 @@ cp .env.prod.example .env.prod
 chmod 600 .env.prod
 ```
 
-產生需要的密鑰：
+產生需要的密鑰。以下都只用 Debian 內建工具，不依賴 docker，所以這一步可以先做，不必等 docker 權限處理好：
 
 ```bash
 # POSTGRES_PASSWORD、AIRFLOW_ADMIN_PASSWORD
@@ -105,17 +114,55 @@ openssl rand -base64 24
 openssl rand -hex 32
 
 # AIRFLOW_FERNET_KEY
-docker run --rm apache/airflow:3.3.0-python3.12 \
-  python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+# Fernet.generate_key() 的實作就是 base64.urlsafe_b64encode(os.urandom(32))，
+# 所以用標準函式庫產生即可，不需要安裝 cryptography
+python3 -c "import os,base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
 ```
 
-編輯填入，並補上三組第三方 API 金鑰：
+嫌一個一個貼太麻煩的話，用這段一次補完所有機器可產生的欄位。它只會填**空值**，已經有值的不動，重複執行安全：
+
+```bash
+python3 - <<'PY'
+import base64, os, re, secrets, pathlib
+
+p = pathlib.Path(".env.prod")
+text = p.read_text()
+
+gen = {
+    "POSTGRES_PASSWORD":      lambda: secrets.token_urlsafe(24),
+    "AIRFLOW_ADMIN_PASSWORD": lambda: secrets.token_urlsafe(18),
+    "AIRFLOW_JWT_SECRET":     lambda: secrets.token_hex(32),
+    "AIRFLOW_API_SECRET_KEY": lambda: secrets.token_hex(32),
+    "AIRFLOW_FERNET_KEY":     lambda: base64.urlsafe_b64encode(os.urandom(32)).decode(),
+}
+for key, make in gen.items():
+    text, n = re.subn(rf"(?m)^{key}=\s*$", lambda m, k=key, f=make: f"{k}={f()}", text)
+    print(f"{key}: {'已產生' if n else '已有值，略過'}")
+p.write_text(text)
+PY
+```
+
+產生的值都限定在 URL-safe 字元集，不會弄壞 compose 組出來的 `postgresql://` 連線字串。
+
+剩下六組第三方 API 金鑰只能手動填：
 
 ```bash
 nano .env.prod
 ```
 
-`shared/config.py` 的欄位**全部必填**，少一個就會在 import 階段拋 `ValidationError`，服務起不來。`DATABASE_URL` 不用填，compose 會依 `POSTGRES_*` 自動組出來。
+`shared/config.py` 的七個欄位**全部必填**，留空的話容器會在 import 階段拋 `ValidationError` 然後反覆重啟。`DATABASE_URL` 不用填，compose 會依 `POSTGRES_*` 自動組出來。
+
+> **注意 `AIRFLOW_ADMIN_PASSWORD`。** compose 只對 Fernet key 與兩個 secret 做了必填檢查（`:?`），管理者密碼留空**不會**報錯，但會建出一個空密碼的 Admin 帳號。上面的腳本已經涵蓋這個欄位。
+
+填完先驗證，不要直接 build：
+
+```bash
+# 列出仍為空值的欄位，沒有輸出就代表填完了
+grep -nE '^[A-Z_]+=$' .env.prod
+
+# 只做解析檢查，秒回；比等 10 分鐘 build 完才發現設定錯要快得多
+docker compose -f docker-compose.prod.yml --env-file .env.prod config -q
+```
 
 # 8. 啟動
 
@@ -224,13 +271,28 @@ dc down -v                     # 連 volume 一起刪，資料會消失
 
 | 症狀 | 原因與處理 |
 |---|---|
+| `permission denied while trying to connect to the docker API at unix:///var/run/docker.sock` | `usermod -aG docker` 後沒有重新登入。用 `id -nG $USER` 對照 `groups`：前者有 docker、後者沒有，就是還沒生效。`exit` 重新 SSH，或執行 `newgrp docker`。兩邊都沒有 docker 則是 `usermod` 漏跑了 |
+| `required variable XXX is missing a value` | `.env.prod` 存在但欄位是空的（多半是複製完範本忘了填）。回到第 7 節跑產生腳本，再用 `grep -nE '^[A-Z_]+=$' .env.prod` 確認沒有漏 |
+| `env file ... not found` | `.env.prod` 根本不存在。compose 每個服務都宣告了 `env_file: .env.prod`，這與 `--env-file` 旗標是兩套機制，檔案必須實際存在 |
 | Task 被 kill、log 出現 `Killed` 或 OOM | 記憶體不足。調低 `.env.prod` 的 `AIRFLOW_PARALLELISM`（4GB 機型設 3），或升機型 |
 | build 到一半失敗，`no space left on device` | 磁碟滿了。`docker system prune -af` 清掉舊 image，或擴充磁碟 |
 | 服務起來但立刻退出，log 是 `ValidationError` | `.env.prod` 有欄位沒填。`shared/config.py` 的七個欄位全部必填 |
 | Airflow UI 連不上 | 確認 SSH tunnel 還開著，以及 `dc ps` 裡 `airflow-api-server` 是 `Up` |
+| Airflow UI 打得開，但帳密登入失敗 | 多半是**改了 `.env.prod` 的密碼但帳號早就建好了**。`airflow users create` 遇到既有帳號會直接跳過、不更新密碼。先用 `dc exec airflow-api-server airflow users list` 確認帳號存在，再依下方指令重設。另外注意手打密碼時 `O`/`0`、`l`/`1`/`I` 很容易混淆 |
 | DAG 在 UI 上看不到 | `dc logs airflow-dag-processor` 看有沒有 import error；改過程式碼但沒重新 build 也會這樣 |
 | Dashboard 顯示「已連線但沒有資料」 | 資料庫是空的，需先執行第 10 節的首次灌資料 |
 | Threads 發文突然停掉 | 長期權杖過期。見第 13 節 |
+
+## 重設 Airflow 管理者密碼
+
+```bash
+dc exec airflow-api-server \
+  airflow users reset-password --username admin --password '新密碼'
+```
+
+密碼務必用單引號包起來，否則 shell 會解讀裡面的符號。
+
+`airflow-init` 在每次啟動時都會重設一次管理者密碼，因此改完 `.env.prod` 後直接 `dc up -d` 也會生效。反過來說，**在 UI 手動改過的管理者密碼會在下次啟動時被 `.env.prod` 蓋掉** —— 要換密碼請改 `.env.prod`，不要在 UI 改。
 
 # 13. 已知限制
 

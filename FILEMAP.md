@@ -19,10 +19,23 @@ nkr202_dramaradar/
 ├── .env.example            <-- 密碼本範例，可推上 git，目的是告知需要的 key 或欄位清單
 ├── pyproject.toml          <-- 定義專案所需的套件
 ├── uv.lock                 <-- 套件版本鎖定檔，確保每個人裝到一樣的版本
+├── requirements.txt        <-- 由 pyproject.toml 編譯而來，只給 Airflow 映像檔用（Airflow 走 pip 不走 uv）
 ├── .gitignore              <-- 設定 git 排除上傳內容
 ├── .dockerignore           <-- 設定 docker 排除內容
 └── .streamlit/config.toml  <-- Dashboard 佈景設定（純 UI，不影響 Docker/DB）
 ```
+
+正式環境另有一組獨立檔案，**本機開發完全用不到**，改動時也不會影響開發環境：
+
+```text
+nkr202_dramaradar/
+├── docker-compose.prod.yml  <-- 正式環境服務定義：不掛載原始碼、埠只綁 127.0.0.1、logs 與 DB 走具名 volume
+├── Dockerfile.prod          <-- Dashboard 正式映像檔，venv 建在 /opt/venv（專案目錄外）
+├── Dockerfile.airflow.prod  <-- Airflow 正式映像檔，base image 釘死 3.3.0-python3.12
+└── .env.prod.example        <-- 正式環境設定範本（實際的 .env.prod 同樣禁止 commit）
+```
+
+部署步驟見 [`docs/05_Deployment/010-GCP VM Deployment.md`](<docs/05_Deployment/010-GCP VM Deployment.md>)。
 
 ## 程式與文件
 
@@ -40,6 +53,8 @@ nkr202_dramaradar/
 ├── scheduler/              <-- Airflow 執行期產物（logs / plugins / config），掛載進容器
 └── docs/                   <-- 專案所有架構文件，入口見 docs/map.md
 ```
+
+各資料夾內都有 `Note.md` 記錄該部分的實作細節與參數選擇理由，`docs/` 內的圖表一律以 Mermaid 內嵌，沒有獨立圖片檔。
 
 ### 快速起手式
 * 確認安裝

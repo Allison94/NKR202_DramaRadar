@@ -19,21 +19,29 @@ docs
 ├── 05_Deployment
 │   └── 010-GCP VM Deployment.md    GCP VM 部署步驟、機型試算、維運與疑難排解
 │
-├── research
-│   ├── R001-Apify API (Google Maps Extractor).md
-│   ├── R002-Apify API (Google Maps Reviews Scraper).md
-│   └── R003-Gemini API.md
-│
-├── diagrams
-│   ├── OverallArchitecture.png     系統元件與依賴
-│   ├── DataFlow.png                資料生命週期
-│   ├── DailyWorkflow.png           每日業務流程
-│   ├── DomainModel.png             UML Domain Model
-│   ├── ERD.png                     資料表關聯
-│   └── ProductionArchitecture.png  正式環境部署
-│
-└── diagrams.drawio                 上述圖表的原始檔
+└── research
+    ├── R001-Apify API (Google Maps Extractor).md
+    ├── R002-Apify API (Google Maps Reviews Scraper).md
+    └── R003-Gemini API.md
 ```
+
+## 圖表
+
+**所有圖表都以 Mermaid 內嵌在文件裡**，沒有獨立的圖片檔。這樣改程式時圖可以跟程式碼一起 diff、一起 review，不會出現圖與實作長期脫節的情況。
+
+| 圖表 | 位置 |
+|---|---|
+| Overall Architecture | `02_Architecture/002-Product Architecture.md` Figure 2-1 |
+| Data Flow | `02_Architecture/002-Product Architecture.md` Figure 4-1 |
+| Daily Workflow | `02_Architecture/002-Product Architecture.md` Figure 5-1 |
+| Production Architecture | `02_Architecture/002-Product Architecture.md` Figure 6-1 |
+| Scheduler Topology | `02_Architecture/002-Product Architecture.md` 第 7 節 |
+| Domain Model | `02_Architecture/003-Domain Model.md` Figure 2-1 |
+| ERD | `03_Database/004-Database Design.md` 第 4 節 |
+
+README 另有架構圖、資料流圖、每日流程圖與 ERD 的簡化版本。
+
+> 舊版的 `docs/diagrams/*.png` 與 `docs/diagrams.drawio` 已於 2026/8/22 移除。那批圖畫於實作定案之前，內容已與程式不符（最明顯的是 Production Architecture 畫了不存在的 `Fast API` 元件、Daily Workflow 包含已移出每日排程的 Store）。需要時可從 git 歷史取回。
 
 ## 其他位置的文件
 
@@ -41,6 +49,7 @@ docs
 |---|---|
 | `README.md` | 專案總覽、快速開始、DAG 一覽、業務規則（**現況的主要入口**） |
 | `FILEMAP.md` | 新成員環境建置檢查清單 |
+| `講稿.md` | 口頭報告講稿，依 Domain 拆解實作過程踩過的坑與解法 |
 | `db/schema.sql` | 資料庫 DDL 參考 |
 | `domains/*/Note.md` | 各 Domain 的開發筆記與 API 回應範例 |
 | `dashboard/Note.md` | Dashboard 驗收對照表 |

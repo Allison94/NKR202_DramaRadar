@@ -1,10 +1,12 @@
 # DOC-003 Domain Model
-* **Version**：v1.1
+* **Version**：v1.2
 * **Date**：2026/8/22
 * **Owner**：Allison
 ---
 
 > v1.1 更新：修正 Review 與 AI Analysis 的關聯基數（實作上只有「已有老闆回覆」的 Review 才會產生分析）、補上 Review 僅涵蓋低星評論的說明，並將 Crawl Job 對齊實作中的 Execution Log。
+>
+> v1.2 更新：Figure 2-1 改以 Mermaid 內嵌並修正錯誤 —— 原圖的實體名稱仍是 Crawl Job、Review 與 AI Analysis 標為 `1:1`、AI Analysis 與 Threads Post 標為 `n:n`，均與第 4 節的設計規則不符。
 
 # 1. Purpose
 
@@ -17,9 +19,42 @@
 # 2. Domain Model
 
 ## Figure 2-1 Domain Model
-![alt text](../diagrams/DomainModel.png)
 
-> 圖中的 Crawl Job 對應實作中的 Execution Log，見第 3 節說明。
+```mermaid
+classDiagram
+    direction LR
+
+    class Store {
+        +具備爭議性的餐飲店家
+        +是否已人工下架
+        +是否已停止抓取評論
+    }
+    class Review {
+        +僅收錄 1-2 星低星評論
+        +老闆是否已回覆
+        +是否仍在 recheck 追蹤期
+    }
+    class AIAnalysis {
+        +顧客方 摘要 情緒 激烈度
+        +老闆方 摘要 情緒 激烈度
+        +建議公關回覆
+    }
+    class ThreadsPost {
+        +貼文內容
+        +發布時間與永久連結
+    }
+    class ExecutionLog {
+        +Pipeline 名稱與狀態
+        +請求與回應內容
+        +處理筆數與錯誤訊息
+    }
+
+    Store "1" --> "0..*" Review : 擁有
+    Review "1" --> "0..1" AIAnalysis : 有老闆回覆才產生
+    AIAnalysis "1" --> "0..1" ThreadsPost : 當日最高分者發布
+```
+
+`ExecutionLog` 為獨立實體，不參照其他 Entity，因此圖上沒有連線。
 
 # 3. Entity Definition
 

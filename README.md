@@ -44,14 +44,50 @@ DramaRadar 把這件事自動化成一條完整的 Pipeline：
 
 ## 系統架構
 
-![整體架構](docs/diagrams/OverallArchitecture.png)
+```mermaid
+flowchart TB
+    subgraph EXT["外部服務"]
+        AP1["Apify Actor<br/>compass/crawler-google-places"]
+        AP2["Apify Actor<br/>compass/google-maps-reviews-scraper"]
+        GEM["Google Gemini<br/>gemini-3.6-flash"]
+        THA["Threads Graph API v1.0"]
+    end
+
+    SCH["Scheduler / Apache Airflow 3.3<br/>只負責排程，不含業務邏輯"]
+
+    subgraph DOM["業務 Domain"]
+        ST["Store"]
+        RV["Review"]
+        AI["AI Analysis"]
+        TH["Threads"]
+    end
+
+    DB[("PostgreSQL 15<br/>Raw 表 + 業務表 + execution_log")]
+    DASH["Dashboard / Streamlit<br/>唯讀"]
+
+    SCH -. 觸發 .-> ST
+    SCH -. 觸發 .-> RV
+    SCH -. 觸發 .-> AI
+    SCH -. 觸發 .-> TH
+
+    AP1 --> ST
+    AP2 --> RV
+    GEM --> AI
+    TH --> THA
+
+    ST <--> DB
+    RV <--> DB
+    AI <--> DB
+    TH <--> DB
+    DB --> DASH
+```
 
 系統依 Domain 切分，每個 Domain 只負責單一職責，彼此透過 PostgreSQL 交換資料，不直接互相呼叫：
 
 | Domain / 元件 | 職責 |
 |---|---|
-| **Store** | 串接 Apify（Google Maps Extractor），蒐集店家基本資料、Raw JSON 保存、ETL、篩選出值得追蹤的店家 |
-| **Review** | 串接 Apify（Google Maps Reviews Scraper），抓取低星評論、Raw JSON 保存、ETL、老闆回覆補抓（recheck） |
+| **Store** | 串接 Apify（`compass/crawler-google-places`），蒐集店家基本資料、Raw JSON 保存、ETL、篩選出值得追蹤的店家 |
+| **Review** | 串接 Apify（`compass/google-maps-reviews-scraper`），抓取低星評論、Raw JSON 保存、ETL、老闆回覆補抓（recheck） |
 | **AI Analysis** | 呼叫 Gemini API，分析評論與老闆回覆的情緒、摘要、激烈度評分、生成公關回覆 |
 | **Threads** | 依 AI 分析結果組成貼文、發布至 Threads Graph API、保存發文紀錄 |
 | **Dashboard** | Streamlit 前端：吵架地圖、排行榜、全站統計 |
@@ -61,29 +97,54 @@ DramaRadar 把這件事自動化成一條完整的 Pipeline：
 
 ## 資料流
 
-![資料流](docs/diagrams/DataFlow.png)
-
 遵循 **Raw First** 原則：外部 API 回傳的原始 JSON 一律完整保存於 `*_source` 表，所有業務資料表都必須由 ETL 產生，且 ETL 可重跑。
 
+```mermaid
+flowchart TD
+    AP1["Apify<br/>compass/crawler-google-places"]
+    SS[("store_source<br/>原始 JSON")]
+    ST[("store")]
+    AP2["Apify<br/>compass/google-maps-reviews-scraper"]
+    RS[("review_source<br/>原始 JSON")]
+    RV[("review")]
+    GEM["Google Gemini"]
+    AI[("ai_analysis")]
+    DASH["Dashboard"]
+    THA["Threads Graph API"]
+    TL[("threads_log")]
+
+    AP1 --> SS
+    SS -->|"Store ETL：評論數≥30<br/>且（總分≤4.3 或 1★佔比≥10%）<br/>且仍在營業"| ST
+    ST -->|"blocked=FALSE 且<br/>skip_review_fetch=FALSE"| AP2
+    AP2 --> RS
+    RS -->|"Review ETL：只留 1~2 星"| RV
+    RV -->|"只送有老闆回覆的"| GEM
+    GEM --> AI
+    AI --> DASH
+    AI -->|"當日 review_score + owner_score<br/>最高的一筆"| THA
+    THA --> TL
 ```
-Apify / Gemini / Threads API
-        │
-        ▼
-  Raw Table (JSONB)      store_source / review_source
-        │
-        ▼
-  ETL Pipeline           清洗、篩選、去重
-        │
-        ▼
-  Business Table         store / review / ai_analysis / threads_log
-        │
-        ▼
-  Dashboard & Threads
-```
+
+每個階段的 API request / response、處理筆數與錯誤訊息都會另外寫入 `execution_log`。
 
 每日流程（`dags_trigger_daily_3am`，台北時間凌晨 3 點）：
 
-![每日流程](docs/diagrams/DailyWorkflow.png)
+```mermaid
+flowchart TD
+    CRON["dags_trigger_daily_3am<br/>0 3 * * *（Asia/Taipei）"]
+    RV["review_daily_dag_v2<br/>抓昨日新增低星評論<br/>+ 老闆回覆 recheck"]
+    AI["ai_analysis_daily_dag_v1<br/>分析昨日新增且已有老闆回覆的評論"]
+    TH["threads_dags_v1<br/>發布當日最高分事件"]
+    ST["store_dag_v1<br/>不在每日流程內<br/>需要時手動觸發"]
+    DASH["Dashboard<br/>隨時直接讀資料庫"]
+
+    CRON --> RV --> AI --> TH
+
+    style ST stroke-dasharray: 5 5
+    style DASH stroke-dasharray: 5 5
+```
+
+虛線的兩個方塊不屬於每日排程：Store 的店家清單變動不頻繁且 Apify 成本較高，需要時才手動跑；Dashboard 是唯讀前端，不由排程驅動。
 
 ---
 
@@ -331,7 +392,106 @@ DDL 參考 `db/schema.sql`。實際建表是由各 `db_handler.py` 匯入時呼�
 | `threads_log` | Business | Threads | Threads 發文紀錄（含 permalink） |
 | `execution_log` | Metadata | 全部 | 各 Pipeline 執行紀錄、Apify run id、items_count、錯誤訊息 |
 
-![ERD](docs/diagrams/ERD.png)
+```mermaid
+erDiagram
+    store_source ||--|| store : "ETL 篩選後產生"
+    store ||--o{ review : "placeId"
+    review_source ||--|| review : "ETL 篩選後產生"
+    review ||--o| ai_analysis : "有老闆回覆才分析"
+    ai_analysis ||--o| threads_log : "每日最多取一筆發文"
+
+    store_source {
+        varchar placeId PK
+        jsonb raw_json
+        timestamp scrapedAt
+    }
+    store {
+        varchar placeId PK
+        text title
+        varchar categoryName
+        text categories
+        text address
+        float lat
+        float lng
+        text url
+        text imageUrl
+        varchar business_status
+        timestamp scrapedAt
+        float totalScore
+        int reviewsCount
+        int oneStar
+        int twoStar
+        int threeStar
+        int fourStar
+        int fiveStar
+        bool blocked
+        bool skip_review_fetch
+    }
+    review_source {
+        varchar reviewId PK
+        varchar placeId
+        jsonb raw_json
+        timestamp scrapedAt
+    }
+    review {
+        varchar reviewId PK
+        varchar placeId
+        varchar originalLanguage
+        text text
+        timestamp publishedAtDate
+        text reviewUrl
+        text reviewImageUrls
+        int likesCount
+        float totalScore
+        int stars
+        timestamp responseFromOwnerDate
+        text responseFromOwnerText
+        timestamp scrapedAt
+        bool owner_reply_recheck
+        timestamp owner_reply_recheck_at
+        timestamp next_check_at
+    }
+    ai_analysis {
+        varchar reviewId PK
+        varchar placeId
+        text review_text
+        text review_summary
+        varchar review_sentiment
+        int review_score
+        text owner_text
+        text owner_summary
+        varchar owner_sentiment
+        int owner_score
+        text pr_reply
+        jsonb request_json
+        jsonb response_json
+    }
+    threads_log {
+        varchar id PK
+        text text
+        varchar media_type
+        text media_url
+        timestamp timestamp
+        text permalink
+    }
+    execution_log {
+        int id PK
+        varchar pipeline
+        varchar status
+        int items_count
+        varchar apify_scheduler_id
+        varchar apify_dataset_id
+        varchar actor_name
+        timestamp started_at
+        timestamp finished_at
+        jsonb request_json
+        jsonb response_json
+        text error_msg
+        int retry_count
+    }
+```
+
+`execution_log` 沒有畫關聯線 — 它是所有 Pipeline 共用的執行紀錄表，不參照任何業務資料表。圖上的關聯線代表**邏輯上**的參照關係，資料庫中並未建立實際的外鍵約束（原因見下方 [`004-Database Design.md`](docs/03_Database/004-Database%20Design.md)）。
 
 命名規範：
 
@@ -501,6 +661,7 @@ gcloud compute ssh <vm-name> -- -N -L 8080:localhost:8080 -L 8501:localhost:8501
 | [`docs/map.md`](docs/map.md) | 文件地圖，含尚未撰寫的文件清單 |
 | [`FILEMAP.md`](FILEMAP.md) | 新成員環境建置逐步檢查清單與注意事項 |
 | [`db/schema.sql`](db/schema.sql) | 資料庫 DDL 參考 |
+| [`講稿.md`](講稿.md) | 專案口頭報告用講稿：依 Domain 拆解，記錄實作過程踩過的坑與解法 |
 
 各 Domain 資料夾內另有 `Note.md`，記錄該 Domain 的檔案職責、參數選擇與實作細節：
 
