@@ -486,6 +486,7 @@ def normalize_store_frame(
         "drama_stars",
         "review_score",
         "owner_score",
+        "max_owner_score",
     ]
 
     for column in numeric_columns:
@@ -636,9 +637,59 @@ def load_store_data() -> pd.DataFrame:
         limit=2000
     )
 
-    return normalize_store_frame(
+    frame = normalize_store_frame(
         pd.DataFrame(rows)
     )
+
+    # 最嗆店家要用「單則最高店家火力」，不吃店家平均。
+    # 這裡在 app 內再合併一次，避免 Streamlit 快取到舊的店家表時欄位全是空的。
+    max_scores = load_max_owner_scores()
+    if max_scores.empty or frame.empty:
+        return frame
+
+    frame["store_id"] = frame["store_id"].astype(str)
+    max_scores["store_id"] = max_scores["store_id"].astype(str)
+    frame = frame.drop(columns=["max_owner_score"], errors="ignore")
+    frame = frame.merge(
+        max_scores,
+        on="store_id",
+        how="left",
+    )
+    frame["max_owner_score"] = pd.to_numeric(
+        frame["max_owner_score"],
+        errors="coerce",
+    )
+    return frame
+
+
+@st.cache_data(
+    ttl=300,
+    show_spinner=False,
+)
+def load_max_owner_scores() -> pd.DataFrame:
+    query = sql_text(
+        '''
+        SELECT
+            a."placeId" AS store_id,
+            MAX(a."owner_score")::float AS max_owner_score
+        FROM "ai_analysis" AS a
+        WHERE a."owner_score" > 0
+        GROUP BY a."placeId"
+        '''
+    )
+
+    with db_engine.connect() as connection:
+        rows = connection.execute(query).mappings().all()
+
+    if not rows:
+        return pd.DataFrame(columns=["store_id", "max_owner_score"])
+
+    frame = pd.DataFrame([dict(row) for row in rows])
+    frame["max_owner_score"] = pd.to_numeric(
+        frame["max_owner_score"],
+        errors="coerce",
+    )
+    return frame
 
 
 @st.cache_data(
@@ -914,17 +965,15 @@ def load_store_review_page(
         AND a."owner_score" IS NOT NULL
     """
 
+    intensity_order_sql = """
+        (a."review_score" + a."owner_score") / 2.0 DESC,
+        r."publishedAtDate" DESC NULLS LAST,
+        r."reviewId"
+    """
     order_sql = {
         "最新": 'r."publishedAtDate" DESC NULLS LAST, r."reviewId"',
-        "烈度高至低": """
-            (a."review_score" + a."owner_score") / 2.0 DESC,
-            r."publishedAtDate" DESC NULLS LAST,
-            r."reviewId"
-        """,
-    }.get(
-        sort_key,
-        'r."publishedAtDate" DESC NULLS LAST, r."reviewId"',
-    )
+        "烈度高至低": intensity_order_sql,
+    }.get(sort_key, intensity_order_sql)
 
     count_sql = sql_text(
         f'''
@@ -1253,10 +1302,11 @@ render_html(
         display:none !important;
     }
 
-    [data-testid="stHeader"] {
-        background:rgba(255,255,255,.96) !important;
-        border-bottom:1px solid var(--line);
-        backdrop-filter:blur(14px);
+    [data-testid="stHeader"],
+    [data-testid="stAppHeader"],
+    header[data-testid="stHeader"],
+    .stAppHeader {
+        display:none !important;
     }
 
     footer {
@@ -3000,6 +3050,30 @@ def map_popup(
 # Reusable rank UI
 # ============================================================
 
+def ranking_sort_spec(
+    frame: pd.DataFrame,
+    score_column: str,
+    *,
+    ascending: bool,
+) -> tuple[list[str], list[bool]]:
+    """Primary score, then average store firepower, then case count."""
+    columns = [score_column]
+    directions = [ascending]
+
+    if (
+        score_column == "max_owner_score"
+        and "owner_score" in frame.columns
+    ):
+        columns.append("owner_score")
+        directions.append(False)
+
+    if "db_review_count" in frame.columns:
+        columns.append("db_review_count")
+        directions.append(False)
+
+    return columns, directions
+
+
 def render_rank_cards(
     frame: pd.DataFrame,
     score_column: str,
@@ -3034,15 +3108,14 @@ def render_rank_cards(
         st.info("目前沒有資料。")
         return
 
+    sort_columns, sort_ascending = ranking_sort_spec(
+        ranked,
+        score_column,
+        ascending=ascending,
+    )
     ranked = ranked.sort_values(
-        [
-            score_column,
-            "db_review_count",
-        ],
-        ascending=[
-            ascending,
-            False,
-        ],
+        sort_columns,
+        ascending=sort_ascending,
     ).head(limit)
 
     cards_html = []
@@ -3060,6 +3133,8 @@ def render_rank_cards(
         elif score_column == "owner_replies":
             score_text = f"{score:.0f}場"
         elif score_column == "db_review_count":
+            score_text = f"{score:.0f}"
+        elif score_column == "max_owner_score":
             score_text = f"{score:.0f}"
         else:
             score_text = f"{score:.1f}"
@@ -3137,9 +3212,14 @@ def render_podium(
         st.info("目前沒有排行資料。")
         return ranked
 
+    sort_columns, sort_ascending = ranking_sort_spec(
+        ranked,
+        score_column,
+        ascending=ascending,
+    )
     ranked = ranked.sort_values(
-        [score_column, "db_review_count"],
-        ascending=[ascending, False],
+        sort_columns,
+        ascending=sort_ascending,
     ).reset_index(drop=True)
 
     top = ranked.head(3).copy()
@@ -3155,6 +3235,9 @@ def render_podium(
 
         if score_column == "owner_score":
             return f"🏪 店家火力 {score:.1f}"
+
+        if score_column == "max_owner_score":
+            return f"🏪 最高火力 {score:.0f}"
 
         if score_column == "review_score":
             return f"😡 顧客火力 {score:.1f}"
@@ -4453,8 +4536,9 @@ if current_page == PAGE_MAP:
                                 review_filter = "AI 已分析"
                                 review_sort = st.selectbox(
                                     "排序",
-                                    ["最新", "烈度高至低"],
-                                    key=f"v8_sort_{selected_store_id}",
+                                    ["烈度高至低", "最新"],
+                                    index=0,
+                                    key=f"v8_sort_intensity_{selected_store_id}",
                                 )
 
                                 page_key = (
@@ -5291,9 +5375,14 @@ elif current_page == PAGE_RANKING:
         elif ranking_type == "🏪 最嗆店家":
             source = ranking_source[
                 ranking_source["has_ai"]
-                & ranking_source["owner_score"].notna()
+                & ranking_source["max_owner_score"].notna()
+                & (ranking_source["max_owner_score"] > 0)
             ]
-            score_column, prefix, ascending = "owner_score", "🏪 ", False
+            score_column, prefix, ascending = (
+                "max_owner_score",
+                "最高火力 ",
+                False,
+            )
 
         elif ranking_type == "😡 最怒顧客":
             source = ranking_source[

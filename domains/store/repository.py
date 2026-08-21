@@ -72,6 +72,12 @@ DASHBOARD_QUERY = text(
             a."placeId",
             ROUND(AVG(a."review_score")::numeric, 2) AS review_score,
             ROUND(AVG(a."owner_score")::numeric, 2) AS owner_score,
+            ROUND(
+                MAX(a."owner_score") FILTER (
+                    WHERE a."owner_score" > 0
+                )::numeric,
+                2
+            ) AS max_owner_score,
             (ARRAY_AGG(
                 a."review_summary"
                 ORDER BY GREATEST(a."review_score", a."owner_score") DESC
@@ -120,6 +126,7 @@ DASHBOARD_QUERY = text(
         COALESCE(rr.drama_stars, 0) AS drama_stars,
         COALESCE(ar.review_score, 0) AS review_score,
         COALESCE(ar.owner_score, 0) AS owner_score,
+        ar.max_owner_score AS max_owner_score,
         COALESCE(ar.review_sentiment, '') AS review_sentiment,
         COALESCE(ar.owner_sentiment, '') AS owner_sentiment
     FROM "store" AS s
