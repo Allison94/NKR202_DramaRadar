@@ -38,7 +38,7 @@ def ai_analysis_pipeline(during:str="daily"):
             }
             records.append(records_line)
 
-            if status != "STOP":
+            if status != "SUCCESS":
                 logger.error(f"[Danger: ai_analysis_pipeline] during:{during} {llm_result['response_msg']}")
         return records
     else:
