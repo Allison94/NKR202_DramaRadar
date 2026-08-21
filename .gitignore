@@ -1,5 +1,7 @@
 # Virtual Environment
 .env
+.env.prod
+!.env.prod.example
 .envrc
 .venv
 env/

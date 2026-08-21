@@ -1,0 +1,23 @@
+# Airflow 正式環境映像檔
+# 與開發用的 Dockerfile.airflow 不同之處：
+#   1. base image 釘死版本，不用 latest（避免哪天自動跳到 3.4 整組壞掉）
+#   2. 程式碼在 build 階段烘進 image，執行時不掛載原始碼
+FROM apache/airflow:3.3.0-python3.12
+
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+USER airflow
+
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir --user -r /tmp/requirements.txt
+
+# 目錄配置必須與 docker-compose.yml 的開發掛載一致，import 路徑才會相同：
+#   PYTHONPATH=/opt/airflow          → shared.* / db.* / dashboard.*
+#   DAGS_FOLDER=/opt/airflow/dags    → domains.*（Airflow 會把 dags 目錄加進 sys.path）
+COPY --chown=airflow:root shared/    /opt/airflow/shared/
+COPY --chown=airflow:root db/        /opt/airflow/db/
+COPY --chown=airflow:root dashboard/ /opt/airflow/dashboard/
+COPY --chown=airflow:root domains/   /opt/airflow/dags/domains/

@@ -1,5 +1,10 @@
+# Git（Dockerfile.prod 會 COPY . .，不排除的話整個 .git 會被打包進 image）
+.git
+.gitignore
+
 # Virtual Environment
 .env
+.env.prod
 .envrc
 .venv
 env/

@@ -1,0 +1,160 @@
+# DramaRadar 正式環境（GCP VM 等單機 Docker 主機）
+#
+# 與開發用 docker-compose.yml 的差異：
+#   1. 不掛載任何原始碼，程式碼在 build 階段烘進 image
+#   2. 沒有 app（sleep infinity）那個 Dev Container 佔位服務
+#   3. Dashboard 由 compose 直接啟動，不再需要手動下指令
+#   4. 所有對外埠只綁 127.0.0.1，需搭配反向代理或 SSH tunnel 存取
+#   5. logs 與資料庫都用具名 volume，不受 host 檔案權限（UID）影響
+#
+# 使用方式：
+#   cp .env.prod.example .env.prod   # 並填齊所有值
+#   docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+
+name: dramaradar-prod
+
+x-airflow-common: &airflow-common
+  build:
+    context: .
+    dockerfile: Dockerfile.airflow.prod
+  image: dramaradar-airflow:prod
+  env_file:
+    - .env.prod
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+    # 開發環境是空字串（連線密碼不加密），正式環境必須給真的 key
+    AIRFLOW__CORE__FERNET_KEY: "${AIRFLOW_FERNET_KEY:?AIRFLOW_FERNET_KEY 未設定}"
+    # 正式環境希望排程直接生效，不要每次部署都要進 UI 手動開 DAG
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    # 預設 parallelism=32 / max_active_tasks_per_dag=16。store_dag_v1 對 12 個郵遞區號
+    # 做 dynamic mapping 且沒有自訂上限，照預設會一次開 12 個 task process（每個約 300MB）
+    # 直接把小台 VM 的記憶體吃光。這裡收斂成 6，記憶體更小的機型請往下調。
+    AIRFLOW__CORE__PARALLELISM: "${AIRFLOW_PARALLELISM:-6}"
+    AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: "${AIRFLOW_MAX_ACTIVE_TASKS_PER_DAG:-6}"
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: "http://airflow-api-server:8080/execution/"
+    AIRFLOW__API__BASE_URL: "${AIRFLOW_BASE_URL:-http://localhost:8080}"
+    AIRFLOW__API_AUTH__JWT_SECRET: "${AIRFLOW_JWT_SECRET:?AIRFLOW_JWT_SECRET 未設定}"
+    AIRFLOW__API__SECRET_KEY: "${AIRFLOW_API_SECRET_KEY:?AIRFLOW_API_SECRET_KEY 未設定}"
+    PYTHONPATH: "/opt/airflow"
+    DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
+  volumes:
+    - airflow_logs:/opt/airflow/logs
+  restart: unless-stopped
+
+services:
+  db:
+    image: postgres:15-alpine
+    env_file:
+      - .env.prod
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER 未設定}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD 未設定}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB 未設定}
+    ports:
+      # 只綁 loopback，不讓資料庫暴露在 VM 的公網 IP 上
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 15s
+      timeout: 15s
+      retries: 10
+    restart: unless-stopped
+
+  # 一次性初始化：建 Airflow metadata 資料表 + 管理者帳號，跑完就結束
+  airflow-init:
+    <<: *airflow-common
+    restart: "no"
+    command:
+      - bash
+      - -c
+      - |
+        set -e
+        airflow db migrate
+        if airflow users list --output plain | awk '{print $$2}' | grep -qx "$${AIRFLOW_ADMIN_USER}"; then
+          echo "管理者帳號已存在，略過建立"
+        else
+          airflow users create \
+            --username "$${AIRFLOW_ADMIN_USER}" \
+            --password "$${AIRFLOW_ADMIN_PASSWORD}" \
+            --firstname Airflow \
+            --lastname Admin \
+            --role Admin \
+            --email "$${AIRFLOW_ADMIN_EMAIL:-admin@example.com}"
+        fi
+    depends_on:
+      db:
+        condition: service_healthy
+
+  airflow-api-server:
+    <<: *airflow-common
+    command: api-server
+    ports:
+      # Airflow UI 沒有 TLS，同樣只綁 loopback
+      - "127.0.0.1:8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/api/v2/version || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      db:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      db:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-dag-processor:
+    <<: *airflow-common
+    command: dag-processor
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      db:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    image: dramaradar-dashboard:prod
+    env_file:
+      - .env.prod
+    environment:
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
+    ports:
+      # 要對外開放請在前面架反向代理（Caddy / nginx）處理 TLS，不要直接改成 0.0.0.0
+      - "127.0.0.1:8501:8501"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  airflow_logs:

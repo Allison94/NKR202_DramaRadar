@@ -16,6 +16,9 @@ docs
 ├── 03_Database
 │   └── 004-Database Design.md      資料庫設計原則、資料表、索引與約束現況
 │
+├── 05_Deployment
+│   └── 010-GCP VM Deployment.md    GCP VM 部署步驟、機型試算、維運與疑難排解
+│
 ├── research
 │   ├── R001-Apify API (Google Maps Extractor).md
 │   ├── R002-Apify API (Google Maps Reviews Scraper).md
@@ -53,5 +56,6 @@ docs
 | 007 | Engineering Standards | README「專案結構」的檔案職責表 |
 | 008 | Folder Structure | README「專案結構」 |
 | 009 | Team Development Guide | `FILEMAP.md` |
+| 011 | Runbook / 監控告警 | 尚未建立，目前僅有 010 的疑難排解表 |
 | ADR-001 | 架構決策紀錄 | 尚未建立 |
 | R004 | Threads API | `domains/threads/api.py`、`token_access.py` |

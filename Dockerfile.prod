@@ -1,0 +1,39 @@
+# Dashboard（Streamlit）正式環境映像檔
+# 與開發用的 Dockerfile 不同之處：
+#   1. 程式碼在 build 階段烘進 image，執行時不掛載原始碼
+#   2. venv 建在 /opt/venv（專案目錄之外），即使有人掛載目錄也不會被蓋掉
+FROM astral/uv:python3.12-bookworm-slim
+
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
+    PATH="/opt/venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /app
+
+# libpq5 是 psycopg2-binary 的執行期依賴；curl 供 healthcheck 使用
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 先裝套件再放程式碼，改程式碼時不會讓套件層失效
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-cache
+
+COPY . .
+
+# 以非 root 執行；venv 也要一併轉移擁有權
+RUN useradd --create-home --uid 10001 appuser \
+    && chown -R appuser:appuser /app /opt/venv
+USER appuser
+
+EXPOSE 8501
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+    CMD curl -fsS http://localhost:8501/_stcore/health || exit 1
+
+CMD ["streamlit", "run", "dashboard/app.py", \
+     "--server.address=0.0.0.0", \
+     "--server.port=8501", \
+     "--server.headless=true"]

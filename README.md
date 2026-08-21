@@ -20,6 +20,8 @@
 - [手動執行 / CLI](#手動執行--cli)
 - [資料庫](#資料庫)
 - [業務規則](#業務規則)
+- [部署到正式環境](#部署到正式環境)
+- [未來事項](#未來事項)
 - [文件索引](#文件索引)
 
 ---
@@ -383,6 +385,107 @@ DDL 參考 `db/schema.sql`。實際建表是由各 `db_handler.py` 匯入時呼�
 
 ---
 
+## 部署到正式環境
+
+根目錄的 `docker-compose.yml` 是**給 Dev Container 用的**，直接搬到伺服器會出問題：它把整個專案目錄 bind mount 進容器（會蓋掉 image 內建好的 `.venv`）、`app` 服務只是 `sleep infinity` 的佔位、`.env` 依賴 Dev Container 的 hook 產生、而且資料庫與 Airflow UI 都直接綁在所有網卡上。
+
+正式環境請改用另一組檔案，開發設定完全不受影響：
+
+| 檔案 | 用途 |
+|---|---|
+| `docker-compose.prod.yml` | 正式環境服務定義 |
+| `Dockerfile.prod` | Dashboard 映像檔，venv 建在 `/opt/venv`（專案目錄外） |
+| `Dockerfile.airflow.prod` | Airflow 映像檔，base image 釘死 `3.3.0-python3.12` |
+| `.env.prod.example` | 正式環境設定範本 |
+
+### 與開發環境的差異
+
+| 項目 | 開發 | 正式 |
+|---|---|---|
+| 程式碼 | bind mount 整個專案目錄 | build 階段烘進 image，不掛載 |
+| 套件環境 | `.venv` 在專案目錄內（會被 mount 蓋掉，靠 `uv sync` 補回） | `/opt/venv`，不受掛載影響 |
+| Dashboard | 手動下指令啟動 | compose 直接啟動 |
+| `app` 服務 | `sleep infinity` 供 VS Code 附著 | 無 |
+| Airflow logs | bind mount `./scheduler/logs`（Linux 上會有 UID 權限問題） | 具名 volume |
+| 對外埠 | `0.0.0.0` | 全部只綁 `127.0.0.1` |
+| Fernet key | 空字串 | 必填 |
+| DAG 初始狀態 | 暫停 | 直接啟用 |
+
+### 快速啟動
+
+```bash
+cp .env.prod.example .env.prod
+chmod 600 .env.prod
+# 填齊所有欄位，密鑰產生指令見檔案內註解
+
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+```
+
+`init_env.py` 是 Dev Container 的 hook，在伺服器上不會執行，`.env.prod` 必須手動建立並填完整 — `shared/config.py` 的欄位全部必填，缺一個就在 import 階段拋 `ValidationError`。
+
+所有服務只綁 `127.0.0.1`，透過 SSH tunnel 存取：
+
+```bash
+gcloud compute ssh <vm-name> -- -N -L 8080:localhost:8080 -L 8501:localhost:8501
+```
+
+**完整的 GCP VM 部署步驟**（建立 VM、機型與記憶體試算、Deploy Key、首次灌資料、備份、疑難排解）見 [`docs/05_Deployment/010-GCP VM Deployment.md`](<docs/05_Deployment/010-GCP VM Deployment.md>)。
+
+### 需要留意的地方
+
+**記憶體是主要限制。** `store_dag_v1` 對 12 個郵遞區號做 dynamic mapping，照 Airflow 預設會一次開 12 個 task process（每個約 300MB）。prod compose 已把 `AIRFLOW_PARALLELISM` 收斂到 6，4GB 機型請再往下調到 3。
+
+**Threads token 無法自動續期。** 詳見下方「未來事項」。目前必須在 60 天內手動更新 `.env.prod` 的 `THREADS_LONG_KEY` 並重啟服務。
+
+**Airflow 與業務資料共用同一個 PostgreSQL。** 沿用開發環境的做法。清資料庫時不要整個 drop，會把 Airflow metadata 一起清掉。
+
+**資料庫備份沒有自動化。** `postgres_data` 是具名 volume，VM 砍掉就沒了。正式使用請自行加上 `pg_dump` 排程並送到 Cloud Storage。
+
+---
+
+## 未來事項
+
+### 1. Threads 權杖改存資料庫
+
+**現況問題。** `domains/threads/token_access.py` 的 `refresh_threads_token()` 取得新權杖後，用 `set_key(".env", ...)` 寫回專案根目錄的 `.env`：
+
+```38:41:domains/threads/token_access.py
+        if access_token:
+            set_key(".env","THREADS_LONG_KEY",access_token)
+            logger.info("[Info:refresh_threads_token] access_token已寫入")
+            return True
+```
+
+這個做法在本機開發可行，但在容器環境完全失效，原因有三個：
+
+1. **寫入位置是容器內的暫存檔。** `.env` 是相對路徑，在 Airflow 容器裡會解析成 `/opt/airflow/.env`，屬於容器可寫層，重建容器就消失。
+2. **就算寫進去也不會被讀到。** pydantic-settings 的優先序是「環境變數 > `.env` 檔」，而 compose 是用 `env_file` 把 `THREADS_LONG_KEY` 當環境變數注入的，永遠蓋過檔案內容。
+3. **無法用掛載繞過。** python-dotenv 的 `set_key` 是寫暫存檔再 `os.replace` 原子改名，如果把 `.env` 以單一檔案 bind mount 進容器，rename 會因為掛載點無法被取代而失敗。
+
+實務影響：排程**不會報錯**（`refresh_threads_token()` 仍回傳 `True`），但權杖從未真正延長，原始權杖 60 天到期後發文就靜默停止。
+
+**建議做法。** 把權杖從設定檔搬到資料庫，讓開發與正式環境走同一條路徑：
+
+- 新增 `threads_token` 資料表，欄位約為 `id`、`access_token`、`expires_at`、`refreshed_at`，永遠只保留一列。
+- `refresh_threads_token()` 改成 upsert 進這張表，不再碰 `.env`。
+- `api.py` 的 `get_header()` 改成呼叫時才從資料庫讀取，不要在 import 階段固定成 `settings.threads_long_key`。
+- `.env` 的 `THREADS_LONG_KEY` 降級為「首次啟動的種子值」：資料表是空的就用它初始化，之後一律以資料庫為準。
+- `token_access.py` 的 `change_long_key()` 目前用 `input()` 互動輸入，一併改成吃 CLI 參數，才能在伺服器上非互動執行。
+
+這樣改完之後，權杖續期就會跟其他業務資料一樣被容器化環境正確保存，也不再需要人工每 60 天進去改 `.env.prod`。
+
+### 2. 其他已知待辦
+
+| 項目 | 說明 |
+|---|---|
+| 補次要索引 | 目前只有主鍵索引。擴大到台北市以外時，`review.placeId` 與 `ai_analysis.placeId` 應優先補上 |
+| 外鍵約束 | `db/schema.sql` 有定義但不會被執行，參照完整性目前靠 ETL 順序保證 |
+| 資料庫備份自動化 | 目前需手動 `pg_dump`，應排進 crontab 並送到 Cloud Storage |
+| `test_connection.py` 修復 | 匯入了 `client.py` 中不存在的 `client` 單例，目前無法執行 |
+| 時區統一 | `models.py` 建出的是 `TIMESTAMP WITHOUT TIME ZONE`，與 `schema.sql` 宣告的 `TIMESTAMPTZ` 不一致 |
+
+---
+
 ## 文件索引
 
 | 文件 | 內容 |
@@ -394,6 +497,7 @@ DDL 參考 `db/schema.sql`。實際建表是由各 `db_handler.py` 匯入時呼�
 | [`docs/research/R001-Apify API (Google Maps Extractor).md`](<docs/research/R001-Apify API (Google Maps Extractor).md>) | Apify 店家爬蟲 API 研究 |
 | [`docs/research/R002-Apify API (Google Maps Reviews Scraper).md`](<docs/research/R002-Apify API (Google Maps Reviews Scraper).md>) | Apify 評論爬蟲 API 研究 |
 | [`docs/research/R003-Gemini API.md`](<docs/research/R003-Gemini API.md>) | Gemini API 研究 |
+| [`docs/05_Deployment/010-GCP VM Deployment.md`](<docs/05_Deployment/010-GCP VM Deployment.md>) | GCP VM 部署步驟、機型試算、維運與疑難排解 |
 | [`docs/map.md`](docs/map.md) | 文件地圖，含尚未撰寫的文件清單 |
 | [`FILEMAP.md`](FILEMAP.md) | 新成員環境建置逐步檢查清單與注意事項 |
 | [`db/schema.sql`](db/schema.sql) | 資料庫 DDL 參考 |
