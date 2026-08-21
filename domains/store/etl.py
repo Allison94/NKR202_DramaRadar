@@ -63,7 +63,7 @@ def dataset_origin(obj:list[dict])->list[dict]:
 
 def dataset_etl(obj:list[dict])->list[dict]:
     # c1. reviewsCount >= 30 (評論數大於30)
-    # c2. totalScore <= 4.4 or oneStar/reviewsCount >= (0.1 總分低於4.4或1星佔10%)
+    # c2. totalScore <= 4.3 or oneStar/reviewsCount >= (0.1 總分低於4.4或1星佔10%)
     # business_status ? permanentlyClosed & temporarilyClosed => False
     # blocked ? (預設false後續人工調整預留位)
     # skip_review_fetch ? (排除連鎖店跟制式回覆店家，這裡只能排除連鎖)
@@ -71,7 +71,7 @@ def dataset_etl(obj:list[dict])->list[dict]:
     sql_columns=["placeId","title","categoryName","categories","address","lat","lng","url","imageUrl","business_status","scrapedAt","totalScore","reviewsCount","oneStar","twoStar","threeStar","fourStar","fiveStar","blocked","skip_review_fetch"]
 
     c1 = "reviewsCount >= 30"
-    c2 = "(totalScore <= 4.4 or oneStarPercent >= 0.1)"
+    c2 = "(totalScore <= 4.3 or oneStarPercent >= 0.1)"
 
     df = pd.json_normalize(obj)
 
