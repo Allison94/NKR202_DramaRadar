@@ -128,6 +128,7 @@ INSERT_EXECUTION_LOG = text(
         "status",
         "items_count",
         "apify_scheduler_id",
+        "apify_dataset_id",
         "actor_name",
         "started_at",
         "finished_at",
@@ -140,6 +141,7 @@ INSERT_EXECUTION_LOG = text(
         :status,
         :items_count,
         :apify_scheduler_id,
+        :apify_dataset_id,
         :actor_name,
         :started_at,
         :finished_at,
@@ -149,6 +151,16 @@ INSERT_EXECUTION_LOG = text(
         :retry_count
     )
     RETURNING "id"
+    '''
+)
+
+
+FETCH_INGESTED_RUN_IDS = text(
+    '''
+    SELECT DISTINCT "apify_scheduler_id"
+    FROM "execution_log"
+    WHERE "status" = 'success'
+      AND "apify_scheduler_id" IS NOT NULL
     '''
 )
 
@@ -542,6 +554,7 @@ def write_execution_log(
     status: str,
     items_count: int = 0,
     apify_scheduler_id: str | None = None,
+    apify_dataset_id: str | None = None,
     actor_name: str | None = None,
     started_at: datetime | None = None,
     finished_at: datetime | None = None,
@@ -560,6 +573,7 @@ def write_execution_log(
         "status": status,
         "items_count": items_count,
         "apify_scheduler_id": apify_scheduler_id,
+        "apify_dataset_id": apify_dataset_id,
         "actor_name": actor_name,
         "started_at": started_at,
         "finished_at": finished_at,
@@ -592,6 +606,26 @@ def write_execution_log(
     )
 
     return int(row_id)
+
+
+def fetch_ingested_run_ids(
+    *,
+    db_engine: Engine | None = None,
+) -> set[str]:
+    """READ 已經成功入庫過的 Apify run id。
+
+    給救援流程判斷哪些 run 不必再撈一次。ETL 本身是 upsert，重複撈不會壞資料，
+    這只是避免重複執行與重複寫 log。
+    """
+
+    active = db_engine or engine
+
+    with active.connect() as connection:
+        rows = connection.execute(
+            FETCH_INGESTED_RUN_IDS
+        ).scalars().all()
+
+    return {str(row) for row in rows if row}
 
 
 def clear_all_store_and_review_data(

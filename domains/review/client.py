@@ -73,6 +73,27 @@ class ReviewClient:
             )
             raise
 
+    def list_runs(self, limit: int = 50) -> list[dict]:
+        """列出本 Actor 最近的 run，用於盤點已付費但未入庫的資料。
+
+        只讀取 run 的中繼資料，不觸發爬取，因此不產生費用。
+        """
+        try:
+            page = self.client.actor(config.ACTOR_ID).runs().list(
+                limit=limit,
+                desc=True,
+            )
+            items = getattr(page, "items", page)
+
+            return [
+                item if isinstance(item, dict) else dict(item)
+                for item in items
+            ]
+
+        except Exception:
+            logger.exception("[Error:list_runs] Review run 清單讀取錯誤")
+            raise
+
 
 # service.py 相容介面
 ACTOR_ID = config.ACTOR_ID
@@ -91,3 +112,8 @@ def check_status(run_id: str):
 def get_dataset(dataset_id: str):
     client = ReviewClient()
     return client.get_dataset(dataset_id)
+
+
+def list_runs(limit: int = 50):
+    client = ReviewClient()
+    return client.list_runs(limit=limit)

@@ -183,16 +183,6 @@ def start_apify_run(
 
     started = _utcnow()
 
-    write_execution_log(
-        pipeline=pipeline,
-        status="started",
-        items_count=0,
-        actor_name=ACTOR_ID,
-        started_at=started,
-        request_json=params,
-        response_json={},
-    )
-
     try:
         run = start_review_actor(params)
         run_id = str(
@@ -202,6 +192,19 @@ def start_apify_run(
 
         if not run_id:
             raise RuntimeError("Apify start_review_actor returned no run id")
+
+        # 先啟動再記 log，這樣 started 這筆才帶得到 run_id。
+        # 沒有 run_id 的 started 紀錄等於孤兒 run 追不回來 —— 費用照算卻沒人收網。
+        write_execution_log(
+            pipeline=pipeline,
+            status="started",
+            items_count=0,
+            apify_scheduler_id=run_id,
+            actor_name=ACTOR_ID,
+            started_at=started,
+            request_json=params,
+            response_json={},
+        )
 
         return {
             "pipeline": pipeline,
@@ -340,6 +343,7 @@ def _load_and_ingest_finished_run(
         status="success",
         items_count=len(raw_items),
         apify_scheduler_id=str(run_info["run_id"]),
+        apify_dataset_id=dataset_id,
         actor_name=ACTOR_ID,
         started_at=_parse_datetime(run_info.get("started_at")),
         finished_at=_utcnow(),
@@ -352,6 +356,82 @@ def _load_and_ingest_finished_run(
     )
 
     return raw_items, etl
+
+
+def salvage_finished_run(
+    run_id: str,
+    *,
+    pipeline: str = "review_initial",
+) -> dict[str, Any]:
+    """把已經付費跑完、但沒被寫進資料庫的 Apify run 撈回來。
+
+    用在 DAG 啟動 Actor 之後才崩潰的情況：run 照樣跑完、費用照算，
+    但沒有人去收網。本函式不啟動任何新的 Actor，因此不產生額外費用。
+    Apify 的 dataset 保留 7 天，超過就真的救不回來了。
+
+    與 _load_and_ingest_finished_run 的差別是不做 place_ids 白名單過濾 ——
+    dataset 內容本來就只有這個 run 抓的店家，而事後救援拿不到原始批次清單。
+    """
+
+    status = check_status(run_id)
+    state = _status_state(status)
+
+    if state != "SUCCEEDED":
+        return {
+            "run_id": run_id,
+            "ingested": False,
+            "run_status": state,
+            "reason": "run 尚未成功結束，沒有可用的 dataset",
+        }
+
+    dataset_id = _dataset_id_from_status(status)
+
+    if not dataset_id:
+        return {
+            "run_id": run_id,
+            "ingested": False,
+            "run_status": state,
+            "reason": "run 成功但找不到 dataset id",
+        }
+
+    raw_items = [
+        item
+        for item in get_dataset(dataset_id)
+        if isinstance(item, dict)
+    ]
+
+    etl = ingest_raw_reviews(raw_items)
+
+    write_execution_log(
+        pipeline=pipeline,
+        status="success",
+        items_count=len(raw_items),
+        apify_scheduler_id=run_id,
+        apify_dataset_id=dataset_id,
+        actor_name=ACTOR_ID,
+        started_at=_parse_datetime(
+            # apify-client 回傳 snake_case，REST API 原始格式是 camelCase。
+            (status.get("started_at") or status.get("startedAt"))
+            if isinstance(status, dict)
+            else None
+        ),
+        finished_at=_utcnow(),
+        request_json={"salvaged": True, "dataset_id": dataset_id},
+        response_json={
+            "dataset_id": dataset_id,
+            "item_count": len(raw_items),
+            "run_status": state,
+        },
+    )
+
+    return {
+        "run_id": run_id,
+        "ingested": True,
+        "run_status": state,
+        "dataset_id": dataset_id,
+        "raw_count": len(raw_items),
+        "etl": etl,
+    }
 
 
 # ============================================================
@@ -749,6 +829,7 @@ def process_recheck_batch(
         status="success",
         items_count=len(raw_items),
         apify_scheduler_id=str(run_info["run_id"]),
+        apify_dataset_id=dataset_id,
         actor_name=ACTOR_ID,
         started_at=_parse_datetime(run_info.get("started_at")),
         finished_at=now,

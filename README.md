@@ -336,6 +336,7 @@ Dashboard 為**唯讀**，直接查 PostgreSQL，資料範圍限台北市、`sta
 | `store_dag_v1` | Store | 以 12 個台北郵遞區號做 dynamic task mapping：`start_job` → `check_status` → `get_dataset` |
 | `review_initial_dag_v2` | Review | `prepare_batches` → mapped `initial_batch`（sensor 等 Apify 完成 → `process_batch`）。首次全量抓取，每批 50 家、最多 5 個 Apify run 併行 |
 | `review_daily_dag_v2` | Review | `prepare_daily` → mapped `daily_batch` → `prepare_recheck` → mapped `recheck_batch` |
+| `review_salvage_dag_v1` | Review | `find_runs` → mapped `salvage_run` → `summarize`。把已付費但沒入庫的 Apify run 撈回來，不啟動新 Actor、不產生費用 |
 | `ai_analysis_daily_dag_v1` | AI Analysis | `daily_task`：分析昨日新增且有老闆回覆的評論 |
 | `ai_analysis_all_dag_v1` | AI Analysis | `all_task`：重跑全部有老闆回覆的評論 |
 | `threads_dags_v1` | Threads | `threads_daily_post`：刷新 token → 挑出今日最高分事件 → 建立容器 → 發布 → 取回 permalink |
@@ -360,6 +361,11 @@ uv run python -m domains.review.run_pipeline --mode clear-store   # 清空所有
 
 # Review：塞一筆真實 placeId 進 store 表，方便驗收
 uv run python -m domains.review.bootstrap_real_store
+
+# Review：救援已付費但沒入庫的 Apify run（不會啟動新 Actor，不產生費用）
+# 也可以在 Airflow UI 手動觸發 review_salvage_dag_v1
+uv run python -m domains.review.salvage --list
+uv run python -m domains.review.salvage --auto --hours 6
 
 # AI Analysis：對全部有老闆回覆的評論重跑分析
 uv run python -m domains.ai_analysis.pipeline
