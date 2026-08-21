@@ -4,7 +4,6 @@
 #   1. 不掛載任何原始碼，程式碼在 build 階段烘進 image
 #   2. 沒有 app（sleep infinity）那個 Dev Container 佔位服務
 #   3. Dashboard 由 compose 直接啟動，不再需要手動下指令
-#   4. 所有對外埠只綁 127.0.0.1，需搭配反向代理或 SSH tunnel 存取
 #   5. logs 與資料庫都用具名 volume，不受 host 檔案權限（UID）影響
 #
 # 使用方式：
@@ -95,7 +94,7 @@ services:
     command: api-server
     ports:
       # Airflow UI 沒有 TLS，同樣只綁 loopback
-      - "127.0.0.1:8080:8080"
+      - "8080:8080"
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:8080/api/v2/version || exit 1"]
       interval: 30s
@@ -149,7 +148,7 @@ services:
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
     ports:
       # 要對外開放請在前面架反向代理（Caddy / nginx）處理 TLS，不要直接改成 0.0.0.0
-      - "127.0.0.1:8501:8501"
+      - "8501:8501"
     depends_on:
       db:
         condition: service_healthy
