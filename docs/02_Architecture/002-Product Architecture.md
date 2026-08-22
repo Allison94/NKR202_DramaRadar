@@ -194,8 +194,8 @@ flowchart TB
     SCHED --> GEM
     SCHED --> THA
 
-    OP -->|"127.0.0.1:8080"| APISRV
-    OP -->|"127.0.0.1:8501"| DASH
+    OP -->|"SSH tunnel；host 目前監聽 0.0.0.0:8080"| APISRV
+    OP -->|"SSH tunnel；host 目前監聽 0.0.0.0:8501"| DASH
 ```
 
 正式環境以 `docker-compose.prod.yml` 啟動下列服務：
@@ -204,12 +204,12 @@ flowchart TB
 |---|---|---|
 | `db` | PostgreSQL 15，業務資料與 Airflow metadata 共用 | `127.0.0.1:5432` |
 | `airflow-init` | 一次性初始化：`airflow db migrate` + 建立管理者帳號，跑完即結束 | — |
-| `airflow-api-server` | Airflow UI 與 REST API | `127.0.0.1:8080` |
+| `airflow-api-server` | Airflow UI 與 REST API | `0.0.0.0:8080`（現況；不可開公網 ingress） |
 | `airflow-scheduler` | 排程器，**實際執行各 Domain 業務程式碼的地方**（LocalExecutor） | — |
 | `airflow-dag-processor` | DAG 檔案解析程序 | — |
-| `dashboard` | Streamlit 前端 | `127.0.0.1:8501` |
+| `dashboard` | Streamlit 前端 | `0.0.0.0:8501`（現況；不可開公網 ingress） |
 
-所有對外埠只綁 `127.0.0.1`，需透過 SSH tunnel 或反向代理存取。部署細節見 [`010-GCP VM Deployment.md`](<../05_Deployment/010-GCP VM Deployment.md>)。
+只有 PostgreSQL 明確綁 `127.0.0.1`；Airflow UI 與 Dashboard 的 compose mapping 目前是 `8080:8080`、`8501:8501`，會監聽所有網卡。GCP 防火牆不可開放這兩個 port 的公網 ingress，維運仍應透過 SSH tunnel。若要在容器層硬化，應改成 `127.0.0.1:8080:8080` 與 `127.0.0.1:8501:8501`。部署細節見 [`010-GCP VM Deployment.md`](<../05_Deployment/010-GCP VM Deployment.md>)。
 
 ## 6.1 與開發環境的差異
 
@@ -222,7 +222,7 @@ flowchart TB
 | Airflow UI 服務名 | `airflow-webserver`（`command: api-server`） | `airflow-api-server` |
 | Dashboard | 手動下 `streamlit run` 啟動 | 由 compose 直接啟動 |
 | Airflow logs | bind mount `./scheduler/logs` | 具名 volume `airflow_logs` |
-| 對外埠 | `0.0.0.0` | 只綁 `127.0.0.1` |
+| 對外埠 | `0.0.0.0` | DB 綁 `127.0.0.1`；UI／Dashboard 目前仍是 `0.0.0.0` |
 | DAG 初始狀態 | 暫停 | 直接啟用 |
 
 > 開發環境的服務名稱 `airflow-webserver` 是沿用 Airflow 2 的命名，實際下的指令已經是 Airflow 3 的 `api-server`。
@@ -259,7 +259,7 @@ dags_trigger_all              schedule = None（手動觸發）
 * **Store 不納入每日排程。** 店家清單變動不頻繁，而 Apify 店家爬蟲成本相對高（每筆 place 約 $0.005 USD），因此改為需要時手動觸發。
 * **集中排程。** 子 DAG 一律 `schedule=None`，避免同一支 DAG 同時被自身排程與上游 Trigger 啟動而重複執行。
 * **同步等待。** `wait_for_completion=True` 保證資料相依順序：沒有評論就不會有 AI 分析，沒有 AI 分析就沒有可發布的內容。
-* **Sensor 而非輪詢迴圈。** Apify Actor 執行時間不固定，Review DAG 以 Airflow Sensor 每 120 秒 poke 一次（逾時 30 分鐘），避免長時間佔用 worker。
+* **Sensor 而非 Python 輪詢迴圈。** Apify Actor 執行時間不固定，Review DAG 以 Airflow Sensor 每 120 秒 poke 一次（逾時 30 分鐘）。目前使用 `mode="poke"`，會保留 task slot，以 `MAX_ACTIVE_APIFY_RUNS=5` 控制真正同時執行的 Actor 數量。
 
 # 8. Business Decision Flow
 
@@ -319,7 +319,7 @@ next_check_at += 2 天
 
 ## 8.4 制式公關回覆排除
 
-老闆回覆若與制式公關話術範本相似度 `>= 80%`（以 `thefuzz` 計算），視為無交鋒價值：該筆不列入分析對象，且該店家的 `store.skip_review_fetch` 會被設為 `TRUE`，不再浪費額度抓取。
+老闆回覆若與制式公關話術範本相似度 `>= 80%`（以 Python `difflib.SequenceMatcher` 計算），視為無交鋒價值：該筆不列入分析對象，且該店家的 `store.skip_review_fetch` 會被設為 `TRUE`，不再浪費額度抓取。
 
 這是 Review Domain 唯一會寫入 `store` 表的例外情形。
 
@@ -329,7 +329,7 @@ next_check_at += 2 天
 |---|---|
 | 必要條件 | `responseFromOwnerText` 非空 — 只有顧客單方面抱怨不構成「吵架」 |
 | Daily 模式 | 另加 `scrapedAt > 昨天`，只分析新資料 |
-| All 模式 | 不限時間，重跑全部符合必要條件者 |
+| All 模式 | 不限時間；預設排除已存在 `ai_analysis` 的 `reviewId`，中斷重試可從斷點接續；`force=true` 才重算全部 |
 | 批次大小 | 每 50 則送一次 Gemini，避免單次 request 過大 |
 
 AI 對顧客與老闆**各自**輸出：摘要（30 字內）、情緒標籤、1~10 分激烈度，並額外產生一則建議公關回覆。情緒標籤為固定五選一（理性客觀、高級反串、暴躁老哥、無聊公關、高情商幽默），以 Pydantic schema 強制約束輸出格式。
@@ -348,6 +348,8 @@ AI 對顧客與老闆**各自**輸出：摘要（30 字內）、情緒標籤、1
 # 9. Guide to Diagrams
 
 所有圖表皆以 Mermaid 內嵌於本文件，不再使用外部圖片檔，改程式時可與程式碼一起 diff 與 review。
+
+跨文件的完整圖集（含 Store／Review／Recheck／Salvage／AI／Threads 流程、GCP 部署圖、Domain Model 與修正版 ERD）見 [`011-Complete Architecture Diagrams.md`](011-Complete%20Architecture%20Diagrams.md)。
 
 | Diagram | 位置 | Purpose |
 | --- | --- | --- |

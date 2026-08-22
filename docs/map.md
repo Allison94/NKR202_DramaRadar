@@ -11,7 +11,9 @@ docs
 │
 ├── 02_Architecture
 │   ├── 002-Product Architecture.md 整體架構、Domain 職責、資料流、排程拓撲、業務判斷邏輯
-│   └── 003-Domain Model.md         業務實體與關聯規則
+│   ├── 003-Domain Model.md         業務實體與關聯規則
+│   └── 011-Complete Architecture Diagrams.md
+│                                    完整架構圖、Domain 流程、部署圖與 ERD
 │
 ├── 03_Database
 │   └── 004-Database Design.md      資料庫設計原則、資料表、索引與約束現況
@@ -29,15 +31,15 @@ docs
 
 **所有圖表都以 Mermaid 內嵌在文件裡**，沒有獨立的圖片檔。這樣改程式時圖可以跟程式碼一起 diff、一起 review，不會出現圖與實作長期脫節的情況。
 
-| 圖表 | 位置 |
-|---|---|
-| Overall Architecture | `02_Architecture/002-Product Architecture.md` Figure 2-1 |
-| Data Flow | `02_Architecture/002-Product Architecture.md` Figure 4-1 |
-| Daily Workflow | `02_Architecture/002-Product Architecture.md` Figure 5-1 |
-| Production Architecture | `02_Architecture/002-Product Architecture.md` Figure 6-1 |
-| Scheduler Topology | `02_Architecture/002-Product Architecture.md` 第 7 節 |
-| Domain Model | `02_Architecture/003-Domain Model.md` Figure 2-1 |
-| ERD | `03_Database/004-Database Design.md` 第 4 節 |
+完整圖集統一放在 `02_Architecture/011-Complete Architecture Diagrams.md`，共 14 張：
+
+- 系統情境圖、容器／服務架構圖、Domain 元件圖
+- 端到端資料流、Airflow DAG 拓撲
+- Store、Review、Owner Reply Recheck、Apify Salvage、AI Analysis 流程
+- Threads API 序列圖、GCP 正式環境部署圖
+- Domain Model、實體資料庫 ERD
+
+`002-Product Architecture.md`、`003-Domain Model.md` 與 `004-Database Design.md` 保留各自章節需要的核心圖
 
 README 另有架構圖、資料流圖、每日流程圖與 ERD 的簡化版本。
 
@@ -49,7 +51,6 @@ README 另有架構圖、資料流圖、每日流程圖與 ERD 的簡化版本�
 |---|---|
 | `README.md` | 專案總覽、快速開始、DAG 一覽、業務規則（**現況的主要入口**） |
 | `FILEMAP.md` | 新成員環境建置檢查清單 |
-| `講稿.md` | 口頭報告講稿，依 Domain 拆解實作過程踩過的坑與解法 |
 | `db/schema.sql` | 資料庫 DDL 參考 |
 | `domains/*/Note.md` | 各 Domain 的開發筆記與 API 回應範例 |
 | `dashboard/Note.md` | Dashboard 驗收對照表 |

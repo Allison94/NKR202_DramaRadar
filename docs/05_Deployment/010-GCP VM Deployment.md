@@ -47,7 +47,7 @@ gcloud compute instances create dramaradar \
   --boot-disk-type=pd-balanced
 ```
 
-**不需要開任何防火牆規則。** `docker-compose.prod.yml` 裡所有服務都只綁 `127.0.0.1`，公網 IP 上看不到任何東西，一律透過 SSH tunnel 存取（見第 9 節）。這是刻意的設計，不要為了方便去改。
+**不要新增 8080／8501 的公網 ingress 規則。** 現行 `docker-compose.prod.yml` 只有 PostgreSQL 綁 `127.0.0.1`；Airflow UI 的 `8080:8080` 與 Dashboard 的 `8501:8501` 會監聽 VM 所有網卡，安全性依賴 GCP 防火牆沒有開放這兩個 port。日常存取一律走 SSH tunnel（見第 9 節）。若要做雙層防護，可把 compose mapping 改為 `127.0.0.1:8080:8080`、`127.0.0.1:8501:8501`。
 
 # 5. 安裝 Docker
 
@@ -208,7 +208,7 @@ gcloud compute ssh dramaradar --zone=asia-east1-b -- -N \
 | Airflow UI | http://localhost:8080 | `.env.prod` 的 `AIRFLOW_ADMIN_USER` / `AIRFLOW_ADMIN_PASSWORD` |
 | Dashboard | http://localhost:8501 | 無 |
 
-要讓團隊長期存取 Dashboard，請在 VM 上加一層反向代理（Caddy 最省事，自動處理 Let's Encrypt 憑證）並設定認證，**不要**把 compose 裡的 `127.0.0.1` 改成 `0.0.0.0`。
+要讓團隊長期存取 Dashboard，請在 VM 上加一層反向代理（Caddy 最省事，自動處理 Let's Encrypt 憑證）並設定認證。現況 Dashboard 已監聽 `0.0.0.0:8501`，部署反向代理前應先把 compose mapping 收斂為 `127.0.0.1:8501:8501`，只讓 Caddy 對外。
 
 # 10. 首次灌資料
 
@@ -292,7 +292,7 @@ dc exec airflow-api-server \
 
 密碼務必用單引號包起來，否則 shell 會解讀裡面的符號。
 
-`airflow-init` 在每次啟動時都會重設一次管理者密碼，因此改完 `.env.prod` 後直接 `dc up -d` 也會生效。反過來說，**在 UI 手動改過的管理者密碼會在下次啟動時被 `.env.prod` 蓋掉** —— 要換密碼請改 `.env.prod`，不要在 UI 改。
+現行 `airflow-init` 只在帳號不存在時執行 `airflow users create`，**不會更新既有帳號密碼**。因此只改 `.env.prod` 再重啟不會生效；請明確執行上面的 `airflow users reset-password`。若希望每次部署都同步 `.env.prod`，需把同一條 reset 指令加入 `airflow-init`。
 
 # 13. 已知限制
 

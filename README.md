@@ -400,11 +400,10 @@ DDL 參考 `db/schema.sql`。實際建表是由各 `db_handler.py` 匯入時呼�
 
 ```mermaid
 erDiagram
-    store_source ||--|| store : "ETL 篩選後產生"
+    store_source ||--o| store : "ETL 後可能保留"
     store ||--o{ review : "placeId"
-    review_source ||--|| review : "ETL 篩選後產生"
+    review_source ||--o| review : "ETL 後可能保留"
     review ||--o| ai_analysis : "有老闆回覆才分析"
-    ai_analysis ||--o| threads_log : "每日最多取一筆發文"
 
     store_source {
         varchar placeId PK
@@ -497,7 +496,7 @@ erDiagram
     }
 ```
 
-`execution_log` 沒有畫關聯線 — 它是所有 Pipeline 共用的執行紀錄表，不參照任何業務資料表。圖上的關聯線代表**邏輯上**的參照關係，資料庫中並未建立實際的外鍵約束（原因見下方 [`004-Database Design.md`](docs/03_Database/004-Database%20Design.md)）。
+`execution_log` 沒有畫關聯線 — 它是所有 Pipeline 共用的執行紀錄表，不參照任何業務資料表。`threads_log` 也沒有畫到 `ai_analysis`：貼文雖由當日最高分分析產生，但表內沒有 `reviewId` / `analysisId`，無法直接追溯。圖上的其餘關聯線代表**邏輯上**的參照關係，資料庫中並未建立實際的外鍵約束（原因見下方 [`004-Database Design.md`](docs/03_Database/004-Database%20Design.md)）。
 
 命名規範：
 
@@ -531,7 +530,7 @@ erDiagram
 - **Initial 模式**：每家 `maxReviews = oneStar + twoStar + 50`，排序 `lowestRanking`。
 - **Daily 模式**：排序 `newest`，`reviewsStartDate` 設為昨天，只抓新增。
 - **Owner Reply Recheck**：老闆回覆常常晚幾天才出現。沒有回覆的評論會排入 recheck，每 2 天回頭查一次，超過發文日 10 天就放棄。
-- 老闆回覆若與制式公關罐頭文相似度 `>= 80%`（thefuzz），視為無效戲劇性，該店會被標記 `skip_review_fetch`。
+- 老闆回覆若與制式公關罐頭文相似度 `>= 80%`（Python `difflib.SequenceMatcher`），視為無效戲劇性，該店會被標記 `skip_review_fetch`。
 - 批次設定：每個 Apify run 50 家、最多 5 個 run 併行、sensor 每 120 秒 poke 一次、逾時 30 分鐘。
 
 ### AI 分析（`domains/ai_analysis/`）
@@ -573,7 +572,7 @@ erDiagram
 | Dashboard | 手動下指令啟動 | compose 直接啟動 |
 | `app` 服務 | `sleep infinity` 供 VS Code 附著 | 無 |
 | Airflow logs | bind mount `./scheduler/logs`（Linux 上會有 UID 權限問題） | 具名 volume |
-| 對外埠 | `0.0.0.0` | 全部只綁 `127.0.0.1` |
+| 對外埠 | `0.0.0.0` | DB 綁 `127.0.0.1`；UI／Dashboard 現況仍綁 `0.0.0.0` |
 | Fernet key | 空字串 | 必填 |
 | DAG 初始狀態 | 暫停 | 直接啟用 |
 
@@ -589,7 +588,7 @@ docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 
 `init_env.py` 是 Dev Container 的 hook，在伺服器上不會執行，`.env.prod` 必須手動建立並填完整 — `shared/config.py` 的欄位全部必填，缺一個就在 import 階段拋 `ValidationError`。
 
-所有服務只綁 `127.0.0.1`，透過 SSH tunnel 存取：
+現行 compose 只有 PostgreSQL 綁 `127.0.0.1`；Airflow UI 與 Dashboard 的 `8080:8080`、`8501:8501` 會監聽所有網卡。**不要在 GCP 防火牆開放這兩個 port 的公網 ingress**，維運仍透過 SSH tunnel 存取：
 
 ```bash
 gcloud compute ssh <vm-name> -- -N -L 8080:localhost:8080 -L 8501:localhost:8501
@@ -659,6 +658,7 @@ gcloud compute ssh <vm-name> -- -N -L 8080:localhost:8080 -L 8501:localhost:8501
 | [`docs/01_Project/001-PRD.md`](docs/01_Project/001-PRD.md) | 產品需求、目標、TA、開發原則與限制 |
 | [`docs/02_Architecture/002-Product Architecture.md`](docs/02_Architecture/002-Product%20Architecture.md) | 整體架構、Domain 職責、資料流、正式環境架構 |
 | [`docs/02_Architecture/003-Domain Model.md`](docs/02_Architecture/003-Domain%20Model.md) | UML Domain Model 與實體關聯規則 |
+| [`docs/02_Architecture/011-Complete Architecture Diagrams.md`](docs/02_Architecture/011-Complete%20Architecture%20Diagrams.md) | 完整架構圖集：系統情境、Domain 流程、DAG、部署、ERD |
 | [`docs/03_Database/004-Database Design.md`](docs/03_Database/004-Database%20Design.md) | 資料庫設計原則、資料表欄位、索引與約束現況 |
 | [`docs/research/R001-Apify API (Google Maps Extractor).md`](<docs/research/R001-Apify API (Google Maps Extractor).md>) | Apify 店家爬蟲 API 研究 |
 | [`docs/research/R002-Apify API (Google Maps Reviews Scraper).md`](<docs/research/R002-Apify API (Google Maps Reviews Scraper).md>) | Apify 評論爬蟲 API 研究 |
@@ -667,7 +667,6 @@ gcloud compute ssh <vm-name> -- -N -L 8080:localhost:8080 -L 8501:localhost:8501
 | [`docs/map.md`](docs/map.md) | 文件地圖，含尚未撰寫的文件清單 |
 | [`FILEMAP.md`](FILEMAP.md) | 新成員環境建置逐步檢查清單與注意事項 |
 | [`db/schema.sql`](db/schema.sql) | 資料庫 DDL 參考 |
-| [`講稿.md`](講稿.md) | 專案口頭報告用講稿：依 Domain 拆解，記錄實作過程踩過的坑與解法 |
 
 各 Domain 資料夾內另有 `Note.md`，記錄該 Domain 的檔案職責、參數選擇與實作細節：
 

@@ -51,7 +51,7 @@ classDiagram
 
     Store "1" --> "0..*" Review : 擁有
     Review "1" --> "0..1" AIAnalysis : 有老闆回覆才產生
-    AIAnalysis "1" --> "0..1" ThreadsPost : 當日最高分者發布
+    AIAnalysis "0..1" --> "0..*" ThreadsPost : 當日候選來源
 ```
 
 `ExecutionLog` 為獨立實體，不參照其他 Entity，因此圖上沒有連線。
@@ -82,7 +82,9 @@ Review 具有「老闆是否已回覆」的狀態。由於老闆回覆通常晚�
 
 代表根據 AI Analysis 自動產生並發布至 Threads 的貼文。
 
-每日最多產生一則，取當日激烈程度總分最高的事件。若當日無合格事件，仍會發布一則替代貼文。
+每日排程最多產生一則，取當日激烈程度總分最高的事件。若當日無合格事件，仍會發布一則不對應 AI Analysis 的替代貼文。手動重跑 DAG 可能再次發布同一候選，因此單一 AI Analysis 在概念上可成為多筆貼文的來源。
+
+目前 `threads_log` 沒有保存 `reviewId` 或 `analysisId`，所以這個關係只存在於執行流程，資料庫中無法直接追溯。
 
 ## Execution Log
 
@@ -96,7 +98,8 @@ Review 具有「老闆是否已回覆」的狀態。由於老闆回覆通常晚�
 * 每一筆 Review 必須屬於一個 Store。
 * 一筆 Review 可對應零或一筆 AI Analysis；僅當該 Review 已有老闆回覆時才會產生。
 * 一筆 AI Analysis 必須對應一筆 Review。
-* 一筆 AI Analysis 可產生零或一筆 Threads Post。
+* 一筆 Threads Post 對應零或一筆 AI Analysis；替代貼文不對應分析。
+* 一筆 AI Analysis 可成為零或多筆 Threads Post 的來源（例如手動重跑發文 DAG）。
 * Execution Log 為獨立業務實體，不直接擁有其他 Domain Entity。
 * **Domain Model 僅描述業務實體及其關聯**，不包含資料庫設計、資料處理流程、API 或程式實作細節。
 * Domain Entity 應保持與 Business Concept 一致，不得以資料表、API 或程式實作命名。
@@ -107,5 +110,5 @@ Review 具有「老闆是否已回覆」的狀態。由於老闆回覆通常晚�
 |---|---|
 | Store → Review | `1 : 0..*` |
 | Review → AI Analysis | `1 : 0..1` |
-| AI Analysis → Threads Post | `1 : 0..1` |
+| AI Analysis → Threads Post | `0..1 : 0..*`（流程關聯，未保存外鍵） |
 | Execution Log | 獨立，無關聯 |

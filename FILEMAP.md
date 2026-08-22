@@ -29,7 +29,7 @@ nkr202_dramaradar/
 
 ```text
 nkr202_dramaradar/
-├── docker-compose.prod.yml  <-- 正式環境服務定義：不掛載原始碼、埠只綁 127.0.0.1、logs 與 DB 走具名 volume
+├── docker-compose.prod.yml  <-- 正式環境服務定義：不掛載原始碼、logs 與 DB 走具名 volume；目前只有 DB 明確綁 127.0.0.1
 ├── Dockerfile.prod          <-- Dashboard 正式映像檔，venv 建在 /opt/venv（專案目錄外）
 ├── Dockerfile.airflow.prod  <-- Airflow 正式映像檔，base image 釘死 3.3.0-python3.12
 └── .env.prod.example        <-- 正式環境設定範本（實際的 .env.prod 同樣禁止 commit）

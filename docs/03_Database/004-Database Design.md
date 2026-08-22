@@ -127,11 +127,10 @@ Review Domain 會回寫 `store.skip_review_fetch`：當偵測到某店家的老�
 
 ```mermaid
 erDiagram
-    store_source ||--|| store : "ETL 篩選後產生"
+    store_source ||--o| store : "ETL 後可能保留"
     store ||--o{ review : "placeId"
-    review_source ||--|| review : "ETL 篩選後產生"
+    review_source ||--o| review : "ETL 後可能保留"
     review ||--o| ai_analysis : "有老闆回覆才分析"
-    ai_analysis ||--o| threads_log : "每日最多取一筆發文"
 
     store_source {
         varchar placeId PK
@@ -230,6 +229,10 @@ erDiagram
 >
 > `execution_log` 不與任何業務資料表關聯，是所有 Pipeline 共用的執行紀錄表。
 >
+> `threads_log` 雖由 `ai_analysis` 的當日最高分候選產生，但表內沒有 `reviewId` 或 `analysisId`，因此 ERD 不畫直接關聯。若未來需要稽核貼文來源，應新增來源識別欄位。
+>
+> Raw row 經篩選後不一定會進 Business table，因此 `store_source → store` 與 `review_source → review` 都是 `1 → 0..1`，不是必然一對一。
+>
 > 型別以 `models.py` 實際建出的結果為準。時間欄位均為 `TIMESTAMP WITHOUT TIME ZONE`，與 `db/schema.sql` 宣告的 `TIMESTAMPTZ` 不一致，詳見第 7 節。
 
 # 5. Table Definition
@@ -317,6 +320,7 @@ erDiagram
 | `status` | VARCHAR(20) | ✖ | 執行狀態 |
 | `items_count` | INT | ✖ | 處理筆數 |
 | `apify_scheduler_id` | VARCHAR(20) | ✔ | Apify run id |
+| `apify_dataset_id` | VARCHAR(20) | ✔ | Apify dataset id |
 | `actor_name` | VARCHAR(100) | ✔ | 執行者標記 |
 | `started_at` / `finished_at` | TIMESTAMP | ✖ / ✔ | 起訖時間 |
 | `request_json` / `response_json` | JSONB | ✔ | 請求與回應內容 |
